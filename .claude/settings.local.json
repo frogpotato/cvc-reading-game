@@ -5,7 +5,9 @@
       "Bash(brew install:*)",
       "Bash(/opt/homebrew/bin/brew install:*)",
       "Bash(git config:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(/opt/homebrew/bin/gh repo:*)",
+      "Bash(/opt/homebrew/bin/gh api:*)"
     ]
   }
 }

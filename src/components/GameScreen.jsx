@@ -50,7 +50,7 @@ export default function GameScreen({ selectedSetIndex, onSetComplete, onBack }) 
         onClick={onBack}
         className="absolute top-3 left-3 z-20 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-5 py-2 text-xl shadow-md transition-all hover:scale-105 active:scale-95"
       >
-        \u2190 Map
+        ← Map
       </button>
 
       <ProgressIndicator

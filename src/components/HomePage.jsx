@@ -113,12 +113,12 @@ function SetNode({ set, index, done, isCurrent, onSelect }) {
         ${done ? 'ring-3 ring-green-400' : ''}
       `}
     >
-      <span className="text-5xl">{done ? '\u2B50' : set.icon}</span>
+      <span className="text-5xl">{done ? '⭐' : set.icon}</span>
       <span className={`text-base font-extrabold mt-1 ${available ? 'text-indigo-800' : 'text-gray-500'}`}>
         {set.name}
       </span>
       {done && (
-        <span className="absolute -top-1 -right-1 text-green-500 text-2xl">\u2714</span>
+        <span className="absolute -top-1 -right-1 text-green-500 text-2xl">✔</span>
       )}
     </button>
   );
@@ -138,7 +138,7 @@ function TreasureNode({ allComplete }) {
         }
       `}
     >
-      <span className="text-6xl">{allComplete ? '\uD83C\uDF1F' : '\uD83D\uDD12'}</span>
+      <span className="text-6xl">{allComplete ? '🌟' : '🔒'}</span>
       <span className={`text-lg font-extrabold mt-1 ${allComplete ? 'text-amber-800' : 'text-gray-500'}`}>
         Treasure!
       </span>

@@ -137,7 +137,7 @@ export default function FightAnimation({ onComplete, theme }) {
               animate={{ scale: [0, 1.5, 1], opacity: 1, rotate: 360 }}
               transition={{ duration: 0.6 }}
             >
-              \u2B50
+              ⭐
             </motion.div>
 
             <motion.div
