@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import wordSets from '../data/wordSets';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -22,21 +21,15 @@ function generateBubbles(wordA, wordB) {
   }));
 }
 
-export default function useGameState(selectedSetIndex) {
-  const [currentPairIndex, setCurrentPairIndex] = useState(0);
-
-  const currentSet = wordSets[selectedSetIndex];
-  const currentPair = currentSet.pairs[currentPairIndex];
-  const wordA = currentPair[0];
-  const wordB = currentPair[1];
+// Now takes a single level object { wordA, wordB }
+export default function useGameState(level) {
+  const { wordA, wordB } = level;
 
   const [bubbles, setBubbles] = useState(() => generateBubbles(wordA, wordB));
   const [dragonCollected, setDragonCollected] = useState(0);
   const [knightCollected, setKnightCollected] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [totalCorrect, setTotalCorrect] = useState(0);
-
-  const totalPairsInCurrentSet = currentSet.pairs.length;
 
   const handleDrop = useCallback((bubbleId, target) => {
     const bubble = bubbles.find(b => b.id === bubbleId);
@@ -66,35 +59,13 @@ export default function useGameState(selectedSetIndex) {
     return { result: 'correct', isRoundComplete: complete };
   }, [bubbles, wordA, wordB, dragonCollected, knightCollected]);
 
-  // Returns true if the set is now fully complete
-  const advanceRound = useCallback(() => {
-    const nextPairIndex = currentPairIndex + 1;
-
-    if (nextPairIndex >= currentSet.pairs.length) {
-      return true; // set complete
-    }
-
-    const nextPair = currentSet.pairs[nextPairIndex];
-    setCurrentPairIndex(nextPairIndex);
-    setBubbles(generateBubbles(nextPair[0], nextPair[1]));
-    setDragonCollected(0);
-    setKnightCollected(0);
-    return false;
-  }, [currentPairIndex, currentSet]);
-
   return {
-    currentSetIndex: selectedSetIndex,
-    currentPairIndex,
     wordA,
     wordB,
     bubbles,
     dragonCollected,
     knightCollected,
     handleDrop,
-    advanceRound,
-    totalSets: wordSets.length,
-    totalPairsInCurrentSet,
-    currentSetName: currentSet.name,
     totalAttempts,
     totalCorrect,
   };

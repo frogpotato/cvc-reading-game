@@ -1,44 +1,52 @@
 import { useCallback, useState } from 'react';
 import HomePage from './components/HomePage';
 import GameScreen from './components/GameScreen';
-import wordSets from './data/wordSets';
+import allWorlds from './data/wordSets';
 
-function loadCompletedSets() {
+function loadCompleted() {
   try {
-    const raw = localStorage.getItem('cvc-completed-sets');
+    const raw = localStorage.getItem('cvc-completed-levels');
     return raw ? new Set(JSON.parse(raw)) : new Set();
   } catch {
     return new Set();
   }
 }
 
-function saveCompletedSets(completed) {
-  localStorage.setItem('cvc-completed-sets', JSON.stringify([...completed]));
+function saveCompleted(completed) {
+  localStorage.setItem('cvc-completed-levels', JSON.stringify([...completed]));
+}
+
+// Build a flat key for each level: "worldIdx-levelIdx"
+function levelKey(worldIdx, levelIdx) {
+  return `${worldIdx}-${levelIdx}`;
 }
 
 export default function App() {
-  const [page, setPage] = useState('home'); // 'home' | 'game'
-  const [selectedSet, setSelectedSet] = useState(0);
-  const [completedSets, setCompletedSets] = useState(loadCompletedSets);
+  const [page, setPage] = useState('home');
+  const [selectedLevel, setSelectedLevel] = useState(null); // { worldIdx, levelIdx }
+  const [completedLevels, setCompletedLevels] = useState(loadCompleted);
 
-  // The first incomplete set is the "current" one
-  const currentSetIndex = (() => {
-    for (let i = 0; i < wordSets.length; i++) {
-      if (!completedSets.has(i)) return i;
+  // Find the current world (first world with incomplete levels)
+  const currentWorldIdx = (() => {
+    for (let w = 0; w < allWorlds.length; w++) {
+      const world = allWorlds[w];
+      for (let l = 0; l < world.levels.length; l++) {
+        if (!completedLevels.has(levelKey(w, l))) return w;
+      }
     }
-    return wordSets.length; // all done
+    return allWorlds.length; // all done
   })();
 
-  const handleSelectSet = useCallback((setIndex) => {
-    setSelectedSet(setIndex);
+  const handleSelectLevel = useCallback((worldIdx, levelIdx) => {
+    setSelectedLevel({ worldIdx, levelIdx });
     setPage('game');
   }, []);
 
-  const handleSetComplete = useCallback((setIndex) => {
-    setCompletedSets(prev => {
+  const handleLevelComplete = useCallback((worldIdx, levelIdx) => {
+    setCompletedLevels(prev => {
       const next = new Set(prev);
-      next.add(setIndex);
-      saveCompletedSets(next);
+      next.add(levelKey(worldIdx, levelIdx));
+      saveCompleted(next);
       return next;
     });
     setPage('home');
@@ -49,26 +57,32 @@ export default function App() {
   }, []);
 
   const handleRestart = useCallback(() => {
-    setCompletedSets(new Set());
-    saveCompletedSets(new Set());
+    setCompletedLevels(new Set());
+    saveCompleted(new Set());
   }, []);
 
-  if (page === 'home') {
+  if (page === 'home' || !selectedLevel) {
     return (
       <HomePage
-        completedSets={completedSets}
-        currentSetIndex={currentSetIndex}
-        onSelectSet={handleSelectSet}
+        completedLevels={completedLevels}
+        currentWorldIdx={currentWorldIdx}
+        onSelectLevel={handleSelectLevel}
         onRestart={handleRestart}
+        levelKey={levelKey}
       />
     );
   }
 
+  const world = allWorlds[selectedLevel.worldIdx];
+  const level = world.levels[selectedLevel.levelIdx];
+
   return (
     <GameScreen
-      key={selectedSet}
-      selectedSetIndex={selectedSet}
-      onSetComplete={handleSetComplete}
+      key={`${selectedLevel.worldIdx}-${selectedLevel.levelIdx}`}
+      level={level}
+      worldIdx={selectedLevel.worldIdx}
+      levelIdx={selectedLevel.levelIdx}
+      onLevelComplete={handleLevelComplete}
       onBack={handleBackToHome}
     />
   );

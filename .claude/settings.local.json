@@ -7,7 +7,8 @@
       "Bash(git config:*)",
       "Bash(git:*)",
       "Bash(/opt/homebrew/bin/gh repo:*)",
-      "Bash(/opt/homebrew/bin/gh api:*)"
+      "Bash(/opt/homebrew/bin/gh api:*)",
+      "Bash(/opt/homebrew/bin/gh run:*)"
     ]
   }
 }

@@ -1,13 +1,25 @@
-import wordSets from '../data/wordSets';
+import allWorlds from '../data/wordSets';
 
 const TREASURE_URL = 'https://www.youtube.com/watch?v=1qN72LEQnaU';
-const COLS = 3; // nodes per row before snaking
+const COLS = 3;
 
-export default function HomePage({ completedSets, currentSetIndex, onSelectSet, onRestart }) {
-  const allComplete = completedSets.size === wordSets.length;
+export default function HomePage({ completedLevels, currentWorldIdx, onSelectLevel, onRestart, levelKey }) {
+  // Show the current world (or last world if all done)
+  const worldIdx = Math.min(currentWorldIdx, allWorlds.length - 1);
+  const world = allWorlds[worldIdx];
+  const allWorldsDone = currentWorldIdx >= allWorlds.length;
 
-  // Build rows of COLS items, alternating direction for snake effect
-  const items = [...wordSets.map((set, i) => ({ type: 'set', set, index: i })), { type: 'treasure' }];
+  // Check if current world is fully complete
+  const worldComplete = world.levels.every((_, i) => completedLevels.has(levelKey(worldIdx, i)));
+
+  // Find first incomplete level in this world
+  const currentLevelIdx = world.levels.findIndex((_, i) => !completedLevels.has(levelKey(worldIdx, i)));
+
+  // Build snaking rows
+  const items = [
+    ...world.levels.map((level, i) => ({ type: 'level', level, index: i })),
+    { type: 'treasure' },
+  ];
   const rows = [];
   for (let i = 0; i < items.length; i += COLS) {
     rows.push(items.slice(i, i + COLS));
@@ -18,11 +30,11 @@ export default function HomePage({ completedSets, currentSetIndex, onSelectSet, 
       <h1 className="text-center pt-6 pb-2 text-5xl font-extrabold text-indigo-700 drop-shadow-md">
         Dragon Reading Quest
       </h1>
-      <div className="flex items-center justify-center gap-4 mb-6">
-        <p className="text-2xl text-indigo-500">
-          Choose your battle!
+      <div className="flex items-center justify-center gap-4 mb-2">
+        <p className="text-3xl font-bold text-indigo-400">
+          {world.name}
         </p>
-        {completedSets.size > 0 && (
+        {completedLevels.size > 0 && (
           <button
             onClick={onRestart}
             className="bg-white/80 hover:bg-white text-red-500 font-extrabold rounded-full px-5 py-2 text-lg shadow-md transition-all hover:scale-105 active:scale-95"
@@ -32,56 +44,56 @@ export default function HomePage({ completedSets, currentSetIndex, onSelectSet, 
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-0 pb-16 px-4">
+      <div className="flex flex-col items-center gap-0 pb-16 px-4 pt-4">
         {rows.map((row, rowIdx) => {
           const reversed = rowIdx % 2 === 1;
           const displayRow = reversed ? [...row].reverse() : row;
 
           return (
             <div key={rowIdx}>
-              {/* Vertical connector from previous row */}
               {rowIdx > 0 && (
                 <div className="flex justify-center">
                   <div
                     className={`w-1.5 h-10 rounded-full ${
-                      isConnectorLit(rows, rowIdx, completedSets) ? 'bg-amber-400' : 'bg-gray-300'
+                      isConnectorLit(rows, rowIdx, reversed, worldIdx, completedLevels, levelKey, worldComplete)
+                        ? 'bg-amber-400'
+                        : 'bg-gray-300'
                     }`}
                     style={{
-                      marginLeft: reversed ? `-${(COLS - 1) * 160}px` : `${(COLS - 1) * 160}px`,
+                      marginLeft: reversed
+                        ? `-${(Math.min(row.length, COLS) - 1) * 160}px`
+                        : `${(Math.min(rows[rowIdx - 1].length, COLS) - 1) * 160}px`,
                     }}
                   />
                 </div>
               )}
 
-              {/* Row of nodes */}
               <div className="flex items-center justify-center">
                 {displayRow.map((item, colIdx) => {
-                  const actualCol = reversed ? row.length - 1 - colIdx : colIdx;
                   const showConnector = colIdx > 0;
 
                   return (
-                    <div key={`${rowIdx}-${actualCol}`} className="flex items-center">
-                      {/* Horizontal connector */}
+                    <div key={`${rowIdx}-${colIdx}`} className="flex items-center">
                       {showConnector && (
                         <div
                           className={`h-1.5 w-16 sm:w-24 rounded-full ${
-                            isHorizontalConnectorLit(rowIdx, colIdx, reversed, rows, completedSets)
+                            isHConnectorLit(rowIdx, colIdx, reversed, rows, worldIdx, completedLevels, levelKey, worldComplete)
                               ? 'bg-amber-400'
                               : 'bg-gray-300'
                           }`}
                         />
                       )}
 
-                      {item.type === 'set' ? (
-                        <SetNode
-                          set={item.set}
+                      {item.type === 'level' ? (
+                        <LevelNode
+                          level={item.level}
                           index={item.index}
-                          done={completedSets.has(item.index)}
-                          isCurrent={item.index === currentSetIndex}
-                          onSelect={onSelectSet}
+                          done={completedLevels.has(levelKey(worldIdx, item.index))}
+                          isCurrent={item.index === currentLevelIdx}
+                          onSelect={() => onSelectLevel(worldIdx, item.index)}
                         />
                       ) : (
-                        <TreasureNode allComplete={allComplete} />
+                        <TreasureNode complete={worldComplete} allDone={allWorldsDone} />
                       )}
                     </div>
                   );
@@ -95,13 +107,13 @@ export default function HomePage({ completedSets, currentSetIndex, onSelectSet, 
   );
 }
 
-function SetNode({ set, index, done, isCurrent, onSelect }) {
+function LevelNode({ level, index, done, isCurrent, onSelect }) {
   const available = done || isCurrent;
 
   return (
     <button
       disabled={!available}
-      onClick={() => available && onSelect(index)}
+      onClick={() => available && onSelect()}
       className={`
         relative w-28 h-28 sm:w-32 sm:h-32 rounded-full flex flex-col items-center justify-center
         transition-all duration-300 border-4 shrink-0
@@ -113,9 +125,9 @@ function SetNode({ set, index, done, isCurrent, onSelect }) {
         ${done ? 'ring-3 ring-green-400' : ''}
       `}
     >
-      <span className="text-5xl">{done ? '⭐' : set.icon}</span>
-      <span className={`text-base font-extrabold mt-1 ${available ? 'text-indigo-800' : 'text-gray-500'}`}>
-        {set.name}
+      <span className="text-4xl">{done ? '⭐' : level.icon}</span>
+      <span className={`text-lg font-extrabold mt-1 leading-tight text-center ${available ? 'text-indigo-800' : 'text-gray-500'}`}>
+        {level.wordA} / {level.wordB}
       </span>
       {done && (
         <span className="absolute -top-1 -right-1 text-green-500 text-2xl">✔</span>
@@ -124,44 +136,42 @@ function SetNode({ set, index, done, isCurrent, onSelect }) {
   );
 }
 
-function TreasureNode({ allComplete }) {
+function TreasureNode({ complete, allDone }) {
   return (
     <button
-      disabled={!allComplete}
-      onClick={() => allComplete && window.open(TREASURE_URL, '_blank')}
+      disabled={!complete}
+      onClick={() => complete && window.open(TREASURE_URL, '_blank')}
       className={`
         w-32 h-32 sm:w-36 sm:h-36 rounded-2xl flex flex-col items-center justify-center
         transition-all duration-300 border-4 shrink-0
-        ${allComplete
+        ${complete
           ? 'border-yellow-500 bg-gradient-to-br from-yellow-200 to-amber-300 shadow-xl cursor-pointer hover:scale-110 active:scale-95 animate-bounce'
           : 'border-gray-300 bg-gray-200 opacity-40 cursor-not-allowed grayscale'
         }
       `}
     >
-      <span className="text-6xl">{allComplete ? '🌟' : '🔒'}</span>
-      <span className={`text-lg font-extrabold mt-1 ${allComplete ? 'text-amber-800' : 'text-gray-500'}`}>
+      <span className="text-6xl">{complete ? '🌟' : '🔒'}</span>
+      <span className={`text-lg font-extrabold mt-1 ${complete ? 'text-amber-800' : 'text-gray-500'}`}>
         Treasure!
       </span>
     </button>
   );
 }
 
-// Check if the vertical connector leading into this row should be lit
-function isConnectorLit(rows, rowIdx, completedSets) {
-  // Lit if the last item of the previous row is completed
-  const prevRow = rows[rowIdx - 1];
-  const lastItem = prevRow[prevRow.length - 1];
-  if (lastItem.type === 'treasure') return completedSets.size === wordSets.length;
-  return completedSets.has(lastItem.index);
+function itemDone(item, worldIdx, completedLevels, levelKey, worldComplete) {
+  if (item.type === 'treasure') return worldComplete;
+  return completedLevels.has(levelKey(worldIdx, item.index));
 }
 
-// Check if a horizontal connector should be lit
-function isHorizontalConnectorLit(rowIdx, colIdx, reversed, rows, completedSets) {
+function isConnectorLit(rows, rowIdx, reversed, worldIdx, completedLevels, levelKey, worldComplete) {
+  const prevRow = rows[rowIdx - 1];
+  const lastItem = prevRow[prevRow.length - 1];
+  return itemDone(lastItem, worldIdx, completedLevels, levelKey, worldComplete);
+}
+
+function isHConnectorLit(rowIdx, colIdx, reversed, rows, worldIdx, completedLevels, levelKey, worldComplete) {
   const row = rows[rowIdx];
-  // In display order, the connector is between displayRow[colIdx-1] and displayRow[colIdx]
-  // We need the actual items
   const displayRow = reversed ? [...row].reverse() : row;
   const prevItem = displayRow[colIdx - 1];
-  if (prevItem.type === 'treasure') return completedSets.size === wordSets.length;
-  return completedSets.has(prevItem.index);
+  return itemDone(prevItem, worldIdx, completedLevels, levelKey, worldComplete);
 }

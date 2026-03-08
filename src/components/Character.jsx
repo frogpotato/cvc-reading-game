@@ -13,6 +13,8 @@ const colorMap = {
   cyan:   { bg: 'bg-cyan-100',   border: 'border-cyan-300',   dot: 'bg-cyan-400'   },
   pink:   { bg: 'bg-pink-100',   border: 'border-pink-300',   dot: 'bg-pink-400'   },
   violet: { bg: 'bg-violet-100', border: 'border-violet-300', dot: 'bg-violet-400' },
+  lime:   { bg: 'bg-lime-100',   border: 'border-lime-300',   dot: 'bg-lime-400'   },
+  slate:  { bg: 'bg-slate-100',  border: 'border-slate-300',  dot: 'bg-slate-400'  },
 };
 
 export default function Character({ type, word, collected, theme }) {

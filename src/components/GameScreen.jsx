@@ -2,16 +2,13 @@ import { useCallback, useState } from 'react';
 import Character from './Character';
 import BubbleField from './BubbleField';
 import FightAnimation from './FightAnimation';
-import ProgressIndicator from './ProgressIndicator';
 import useGameState from '../hooks/useGameState';
 import useSounds from '../hooks/useSounds';
-import wordSets from '../data/wordSets';
 
-export default function GameScreen({ selectedSetIndex, onSetComplete, onBack }) {
-  const game = useGameState(selectedSetIndex);
+export default function GameScreen({ level, worldIdx, levelIdx, onLevelComplete, onBack }) {
+  const game = useGameState(level);
   const sounds = useSounds();
   const [showFight, setShowFight] = useState(false);
-  const theme = wordSets[selectedSetIndex].theme;
 
   const [dragonEl, setDragonEl] = useState(null);
   const [knightEl, setKnightEl] = useState(null);
@@ -37,15 +34,11 @@ export default function GameScreen({ selectedSetIndex, onSetComplete, onBack }) 
 
   const handleFightComplete = useCallback(() => {
     setShowFight(false);
-    const setComplete = game.advanceRound();
-    if (setComplete) {
-      onSetComplete(selectedSetIndex);
-    }
-  }, [game, selectedSetIndex, onSetComplete]);
+    onLevelComplete(worldIdx, levelIdx);
+  }, [worldIdx, levelIdx, onLevelComplete]);
 
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 relative overflow-hidden">
-      {/* Back button */}
       <button
         onClick={onBack}
         className="absolute top-3 left-3 z-20 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-5 py-2 text-xl shadow-md transition-all hover:scale-105 active:scale-95"
@@ -53,15 +46,11 @@ export default function GameScreen({ selectedSetIndex, onSetComplete, onBack }) 
         ← Map
       </button>
 
-      <ProgressIndicator
-        currentSetIndex={game.currentSetIndex}
-        currentPairIndex={game.currentPairIndex}
-        totalSets={game.totalSets}
-        totalPairsInCurrentSet={game.totalPairsInCurrentSet}
-        setName={game.currentSetName}
-        totalAttempts={game.totalAttempts}
-        totalCorrect={game.totalCorrect}
-      />
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none">
+        <div className="text-2xl font-bold text-gray-500 opacity-60">
+          {level.wordA} vs {level.wordB}
+        </div>
+      </div>
 
       <div className="flex w-full h-full">
         <div
@@ -72,7 +61,7 @@ export default function GameScreen({ selectedSetIndex, onSetComplete, onBack }) 
             type="dragon"
             word={game.wordA}
             collected={game.dragonCollected}
-            theme={theme}
+            theme={level.theme}
           />
         </div>
 
@@ -92,13 +81,13 @@ export default function GameScreen({ selectedSetIndex, onSetComplete, onBack }) 
             type="knight"
             word={game.wordB}
             collected={game.knightCollected}
-            theme={theme}
+            theme={level.theme}
           />
         </div>
       </div>
 
       {showFight && (
-        <FightAnimation onComplete={handleFightComplete} theme={theme} />
+        <FightAnimation onComplete={handleFightComplete} theme={level.theme} />
       )}
     </div>
   );

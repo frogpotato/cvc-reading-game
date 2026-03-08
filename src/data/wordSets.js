@@ -1,8 +1,21 @@
-const wordSets = [
+// Each level is one word pair with its own theme.
+// Levels are grouped into "worlds" — complete all levels in a world to unlock the treasure.
+// After the treasure, the next world's levels appear.
+
+const themes = [
+  { left: '🐉', right: '🧝', leftColor: 'amber', rightColor: 'teal' },
+  { left: '🦕', right: '🦸', leftColor: 'green', rightColor: 'blue' },
+  { left: '👻', right: '🤺', leftColor: 'purple', rightColor: 'sky' },
+  { left: '🧛', right: '🛡️', leftColor: 'red', rightColor: 'indigo' },
+  { left: '👹', right: '⚔️', leftColor: 'orange', rightColor: 'cyan' },
+  { left: '🦄', right: '🌟', leftColor: 'pink', rightColor: 'violet' },
+  { left: '👽', right: '🚀', leftColor: 'lime', rightColor: 'blue' },
+  { left: '🤖', right: '⚡', leftColor: 'slate', rightColor: 'amber' },
+];
+
+const worlds = [
   {
     name: 'at / it',
-    icon: '\uD83D\uDC09',
-    theme: { left: '\uD83D\uDC09', right: '\uD83E\uDDDD', leftColor: 'amber', rightColor: 'teal' },
     pairs: [
       ['at', 'it'],
       ['sat', 'sit'],
@@ -16,8 +29,6 @@ const wordSets = [
   },
   {
     name: 'an / in',
-    icon: '\uD83E\uDD95',
-    theme: { left: '\uD83E\uDD95', right: '\uD83E\uDDB8', leftColor: 'green', rightColor: 'blue' },
     pairs: [
       ['an', 'in'],
       ['ban', 'bin'],
@@ -31,8 +42,6 @@ const wordSets = [
   },
   {
     name: 'am / im',
-    icon: '\uD83D\uDC7B',
-    theme: { left: '\uD83D\uDC7B', right: '\uD83E\uDD3A', leftColor: 'purple', rightColor: 'sky' },
     pairs: [
       ['am', 'im'],
       ['bam', 'bim'],
@@ -44,8 +53,6 @@ const wordSets = [
   },
   {
     name: 'ap / ip',
-    icon: '\uD83E\uDDDB',
-    theme: { left: '\uD83E\uDDDB', right: '\uD83D\uDEE1\uFE0F', leftColor: 'red', rightColor: 'indigo' },
     pairs: [
       ['ap', 'ip'],
       ['lap', 'lip'],
@@ -59,8 +66,6 @@ const wordSets = [
   },
   {
     name: 'ad / id',
-    icon: '\uD83D\uDC79',
-    theme: { left: '\uD83D\uDC79', right: '\u2694\uFE0F', leftColor: 'orange', rightColor: 'cyan' },
     pairs: [
       ['ad', 'id'],
       ['bad', 'bid'],
@@ -74,8 +79,6 @@ const wordSets = [
   },
   {
     name: 'ag / ig',
-    icon: '\uD83E\uDD84',
-    theme: { left: '\uD83E\uDD84', right: '\uD83C\uDF1F', leftColor: 'pink', rightColor: 'violet' },
     pairs: [
       ['ag', 'ig'],
       ['bag', 'big'],
@@ -86,4 +89,26 @@ const wordSets = [
   },
 ];
 
-export default wordSets;
+// Flatten worlds into levels: each level = { wordA, wordB, icon, theme, worldName }
+// Themes cycle within each world so every level looks different
+function buildLevels() {
+  const allLevels = [];
+  for (const world of worlds) {
+    const worldLevels = world.pairs.map((pair, i) => {
+      const theme = themes[i % themes.length];
+      return {
+        wordA: pair[0],
+        wordB: pair[1],
+        icon: theme.left,
+        theme,
+        worldName: world.name,
+      };
+    });
+    allLevels.push({ name: world.name, levels: worldLevels });
+  }
+  return allLevels;
+}
+
+const allWorlds = buildLevels();
+
+export default allWorlds;
