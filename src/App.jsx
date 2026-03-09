@@ -46,6 +46,7 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [completedLevels, setCompletedLevels] = useState(loadCompleted);
+  const [testMode, setTestMode] = useState(false);
   const [activeWorldIdx, setActiveWorldIdx] = useState(() => {
     const saved = loadSelectedWorld();
     return saved !== null ? saved : findFirstIncompleteWorld(loadCompleted());
@@ -110,6 +111,8 @@ export default function App() {
         onRestart={handleRestart}
         onAdvanceWorld={handleAdvanceWorld}
         levelKey={levelKey}
+        testMode={testMode}
+        onToggleTestMode={() => setTestMode(prev => !prev)}
       />
     );
   }
@@ -125,6 +128,7 @@ export default function App() {
       levelIdx={selectedLevel.levelIdx}
       onLevelComplete={handleLevelComplete}
       onBack={handleBackToHome}
+      testMode={testMode}
     />
   );
 }

@@ -7,7 +7,7 @@ import useGameState from '../hooks/useGameState';
 import useSounds from '../hooks/useSounds';
 
 // Intro phases: 'show-left' → 'slide-left' → 'show-right' → 'slide-right' → 'playing'
-export default function GameScreen({ level, worldIdx, levelIdx, onLevelComplete, onBack }) {
+export default function GameScreen({ level, worldIdx, levelIdx, onLevelComplete, onBack, testMode }) {
   const game = useGameState(level);
   const sounds = useSounds();
   const [showFight, setShowFight] = useState(false);
@@ -60,6 +60,15 @@ export default function GameScreen({ level, worldIdx, levelIdx, onLevelComplete,
       >
         ← Map
       </button>
+
+      {testMode && (
+        <button
+          onClick={() => onLevelComplete(worldIdx, levelIdx)}
+          className="absolute top-3 right-3 z-20 bg-yellow-400/80 hover:bg-yellow-400 text-yellow-900 font-extrabold rounded-full px-5 py-2 text-sm shadow-md transition-all hover:scale-105 active:scale-95"
+        >
+          Skip →
+        </button>
+      )}
 
       {/* Intro sequence */}
       {isIntro && (

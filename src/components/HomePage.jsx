@@ -4,7 +4,7 @@ import allWorlds from '../data/wordSets';
 const TREASURE_URL = 'https://www.youtube.com/watch?v=1qN72LEQnaU';
 const COLS = 3;
 
-export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey }) {
+export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey, testMode, onToggleTestMode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const worldIdx = activeWorldIdx;
@@ -64,6 +64,14 @@ export default function HomePage({ completedLevels, activeWorldIdx, onSelectLeve
           })}
           <hr className="my-2" />
           <button
+            onClick={onToggleTestMode}
+            className={`block w-full text-left px-3 py-2 rounded-lg text-base font-bold transition-all ${
+              testMode ? 'bg-yellow-100 text-yellow-700' : 'hover:bg-gray-100 text-gray-700'
+            }`}
+          >
+            {testMode ? '✓ Test Mode ON' : 'Test Mode'}
+          </button>
+          <button
             onClick={() => { onRestart(); setMenuOpen(false); }}
             className="block w-full text-left px-3 py-2 rounded-lg text-base font-bold text-red-500 hover:bg-red-50 transition-all"
           >
@@ -75,6 +83,11 @@ export default function HomePage({ completedLevels, activeWorldIdx, onSelectLeve
       <h1 className="text-center pt-6 pb-2 text-5xl font-extrabold text-indigo-700 drop-shadow-md">
         Dragon Reading Quest
       </h1>
+      {testMode && (
+        <p className="text-center text-sm font-bold text-yellow-600 bg-yellow-100 rounded-full mx-auto w-fit px-4 py-1">
+          TEST MODE
+        </p>
+      )}
       <p className="text-center text-3xl font-bold text-indigo-400 mb-4">
         {world.name}
       </p>
