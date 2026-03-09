@@ -12,30 +12,49 @@ function loadCompleted() {
   }
 }
 
+function loadSelectedWorld() {
+  try {
+    const raw = localStorage.getItem('cvc-selected-world');
+    return raw !== null ? parseInt(raw, 10) : null;
+  } catch {
+    return null;
+  }
+}
+
 function saveCompleted(completed) {
   localStorage.setItem('cvc-completed-levels', JSON.stringify([...completed]));
 }
 
-// Build a flat key for each level: "worldIdx-levelIdx"
+function saveSelectedWorld(idx) {
+  localStorage.setItem('cvc-selected-world', String(idx));
+}
+
 function levelKey(worldIdx, levelIdx) {
   return `${worldIdx}-${levelIdx}`;
 }
 
+function findFirstIncompleteWorld(completedLevels) {
+  for (let w = 0; w < allWorlds.length; w++) {
+    for (let l = 0; l < allWorlds[w].levels.length; l++) {
+      if (!completedLevels.has(levelKey(w, l))) return w;
+    }
+  }
+  return 0;
+}
+
 export default function App() {
   const [page, setPage] = useState('home');
-  const [selectedLevel, setSelectedLevel] = useState(null); // { worldIdx, levelIdx }
+  const [selectedLevel, setSelectedLevel] = useState(null);
   const [completedLevels, setCompletedLevels] = useState(loadCompleted);
+  const [activeWorldIdx, setActiveWorldIdx] = useState(() => {
+    const saved = loadSelectedWorld();
+    return saved !== null ? saved : findFirstIncompleteWorld(loadCompleted());
+  });
 
-  // Find the current world (first world with incomplete levels)
-  const currentWorldIdx = (() => {
-    for (let w = 0; w < allWorlds.length; w++) {
-      const world = allWorlds[w];
-      for (let l = 0; l < world.levels.length; l++) {
-        if (!completedLevels.has(levelKey(w, l))) return w;
-      }
-    }
-    return allWorlds.length; // all done
-  })();
+  const handleSelectWorld = useCallback((idx) => {
+    setActiveWorldIdx(idx);
+    saveSelectedWorld(idx);
+  }, []);
 
   const handleSelectLevel = useCallback((worldIdx, levelIdx) => {
     setSelectedLevel({ worldIdx, levelIdx });
@@ -47,27 +66,49 @@ export default function App() {
       const next = new Set(prev);
       next.add(levelKey(worldIdx, levelIdx));
       saveCompleted(next);
+
+      // If this world is now complete, auto-advance to next world
+      const world = allWorlds[worldIdx];
+      const worldDone = world.levels.every((_, i) => next.has(levelKey(worldIdx, i)));
+      if (worldDone && worldIdx < allWorlds.length - 1) {
+        // Will advance after treasure is clicked, but set up next world
+      }
+
       return next;
     });
     setPage('home');
   }, []);
+
+  const handleAdvanceWorld = useCallback(() => {
+    const next = Math.min(activeWorldIdx + 1, allWorlds.length - 1);
+    setActiveWorldIdx(next);
+    saveSelectedWorld(next);
+  }, [activeWorldIdx]);
 
   const handleBackToHome = useCallback(() => {
     setPage('home');
   }, []);
 
   const handleRestart = useCallback(() => {
-    setCompletedLevels(new Set());
-    saveCompleted(new Set());
-  }, []);
+    // Reset only the current world's levels
+    setCompletedLevels(prev => {
+      const next = new Set(prev);
+      const world = allWorlds[activeWorldIdx];
+      world.levels.forEach((_, i) => next.delete(levelKey(activeWorldIdx, i)));
+      saveCompleted(next);
+      return next;
+    });
+  }, [activeWorldIdx]);
 
   if (page === 'home' || !selectedLevel) {
     return (
       <HomePage
         completedLevels={completedLevels}
-        currentWorldIdx={currentWorldIdx}
+        activeWorldIdx={activeWorldIdx}
         onSelectLevel={handleSelectLevel}
+        onSelectWorld={handleSelectWorld}
         onRestart={handleRestart}
+        onAdvanceWorld={handleAdvanceWorld}
         levelKey={levelKey}
       />
     );

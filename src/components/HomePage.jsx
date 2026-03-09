@@ -1,19 +1,25 @@
+import { useState } from 'react';
 import allWorlds from '../data/wordSets';
 
 const TREASURE_URL = 'https://www.youtube.com/watch?v=1qN72LEQnaU';
 const COLS = 3;
 
-export default function HomePage({ completedLevels, currentWorldIdx, onSelectLevel, onRestart, levelKey }) {
-  // Show the current world (or last world if all done)
-  const worldIdx = Math.min(currentWorldIdx, allWorlds.length - 1);
+export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const worldIdx = activeWorldIdx;
   const world = allWorlds[worldIdx];
-  const allWorldsDone = currentWorldIdx >= allWorlds.length;
 
-  // Check if current world is fully complete
   const worldComplete = world.levels.every((_, i) => completedLevels.has(levelKey(worldIdx, i)));
-
-  // Find first incomplete level in this world
   const currentLevelIdx = world.levels.findIndex((_, i) => !completedLevels.has(levelKey(worldIdx, i)));
+  const isLastWorld = worldIdx >= allWorlds.length - 1;
+
+  const handleTreasure = () => {
+    window.open(TREASURE_URL, '_blank');
+    if (!isLastWorld) {
+      onAdvanceWorld();
+    }
+  };
 
   // Build snaking rows
   const items = [
@@ -26,25 +32,54 @@ export default function HomePage({ completedLevels, currentWorldIdx, onSelectLev
   }
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 overflow-auto">
+    <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 overflow-auto relative">
+      {/* Parent menu toggle — small, subtle */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="absolute top-3 right-3 z-30 w-10 h-10 rounded-full bg-gray-400/40 hover:bg-gray-400/70 text-white text-xl flex items-center justify-center shadow transition-all"
+        title="Parent menu"
+      >
+        ☰
+      </button>
+
+      {/* Collapsible parent menu */}
+      {menuOpen && (
+        <div className="absolute top-14 right-3 z-30 bg-white rounded-xl shadow-xl p-4 w-56">
+          <p className="text-sm font-bold text-gray-500 mb-2">Choose Word Set</p>
+          {allWorlds.map((w, i) => {
+            const done = w.levels.every((_, l) => completedLevels.has(levelKey(i, l)));
+            return (
+              <button
+                key={i}
+                onClick={() => { onSelectWorld(i); setMenuOpen(false); }}
+                className={`block w-full text-left px-3 py-2 rounded-lg mb-1 text-base font-bold transition-all ${
+                  i === worldIdx
+                    ? 'bg-indigo-100 text-indigo-700'
+                    : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                {done ? '⭐ ' : ''}{w.name}
+              </button>
+            );
+          })}
+          <hr className="my-2" />
+          <button
+            onClick={() => { onRestart(); setMenuOpen(false); }}
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-bold text-red-500 hover:bg-red-50 transition-all"
+          >
+            Restart this set
+          </button>
+        </div>
+      )}
+
       <h1 className="text-center pt-6 pb-2 text-5xl font-extrabold text-indigo-700 drop-shadow-md">
         Dragon Reading Quest
       </h1>
-      <div className="flex items-center justify-center gap-4 mb-2">
-        <p className="text-3xl font-bold text-indigo-400">
-          {world.name}
-        </p>
-        {completedLevels.size > 0 && (
-          <button
-            onClick={onRestart}
-            className="bg-white/80 hover:bg-white text-red-500 font-extrabold rounded-full px-5 py-2 text-lg shadow-md transition-all hover:scale-105 active:scale-95"
-          >
-            Restart
-          </button>
-        )}
-      </div>
+      <p className="text-center text-3xl font-bold text-indigo-400 mb-4">
+        {world.name}
+      </p>
 
-      <div className="flex flex-col items-center gap-0 pb-16 px-4 pt-4">
+      <div className="flex flex-col items-center gap-0 pb-16 px-4 pt-2">
         {rows.map((row, rowIdx) => {
           const reversed = rowIdx % 2 === 1;
           const displayRow = reversed ? [...row].reverse() : row;
@@ -55,7 +90,7 @@ export default function HomePage({ completedLevels, currentWorldIdx, onSelectLev
                 <div className="flex justify-center">
                   <div
                     className={`w-1.5 h-10 rounded-full ${
-                      isConnectorLit(rows, rowIdx, reversed, worldIdx, completedLevels, levelKey, worldComplete)
+                      isConnectorLit(rows, rowIdx, worldIdx, completedLevels, levelKey, worldComplete)
                         ? 'bg-amber-400'
                         : 'bg-gray-300'
                     }`}
@@ -93,7 +128,7 @@ export default function HomePage({ completedLevels, currentWorldIdx, onSelectLev
                           onSelect={() => onSelectLevel(worldIdx, item.index)}
                         />
                       ) : (
-                        <TreasureNode complete={worldComplete} allDone={allWorldsDone} />
+                        <TreasureNode complete={worldComplete} onTreasure={handleTreasure} />
                       )}
                     </div>
                   );
@@ -136,11 +171,11 @@ function LevelNode({ level, index, done, isCurrent, onSelect }) {
   );
 }
 
-function TreasureNode({ complete, allDone }) {
+function TreasureNode({ complete, onTreasure }) {
   return (
     <button
       disabled={!complete}
-      onClick={() => complete && window.open(TREASURE_URL, '_blank')}
+      onClick={() => complete && onTreasure()}
       className={`
         w-32 h-32 sm:w-36 sm:h-36 rounded-2xl flex flex-col items-center justify-center
         transition-all duration-300 border-4 shrink-0
@@ -163,7 +198,7 @@ function itemDone(item, worldIdx, completedLevels, levelKey, worldComplete) {
   return completedLevels.has(levelKey(worldIdx, item.index));
 }
 
-function isConnectorLit(rows, rowIdx, reversed, worldIdx, completedLevels, levelKey, worldComplete) {
+function isConnectorLit(rows, rowIdx, worldIdx, completedLevels, levelKey, worldComplete) {
   const prevRow = rows[rowIdx - 1];
   const lastItem = prevRow[prevRow.length - 1];
   return itemDone(lastItem, worldIdx, completedLevels, levelKey, worldComplete);
