@@ -87,6 +87,40 @@ const worlds = [
       ['wag', 'wig'],
     ],
   },
+  {
+    name: 'h words set 1',
+    pairs: [
+      ['had', 'ham'],
+      ['has', 'hat'],
+      ['hid', 'him'],
+      ['hip', 'his'],
+      ['hit', 'hag'],
+      ['had', 'hid'],
+      ['ham', 'hit'],
+    ],
+  },
+  {
+    name: 'h words set 2',
+    pairs: [
+      ['had', 'hat'],
+      ['ham', 'has'],
+      ['hid', 'hit'],
+      ['him', 'hip'],
+      ['his', 'hag'],
+      ['hat', 'hip'],
+      ['ham', 'him'],
+    ],
+  },
+  {
+    name: 'h / n',
+    pairs: [
+      ['hit', 'nit'],
+      ['hip', 'nip'],
+      ['hag', 'nag'],
+      ['hot', 'not'],
+      ['hut', 'nut'],
+    ],
+  },
 ];
 
 // Flatten worlds into levels: each level = { wordA, wordB, icon, theme, worldName }
