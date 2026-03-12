@@ -255,6 +255,18 @@ const SCENES = {
   'cat-bit-cake': CatBitCakeScene,
   'rat-bit-cheese': RatBitCheeseScene,
   'bat-bit-apple': BatBitAppleScene,
+  'fat-cat': FatCatScene,
+  'fat-bat': FatBatScene,
+  'fat-rat': FatRatScene,
+  'fat-cat-sat': FatCatSatScene,
+  'fat-bat-sat': FatBatSatScene,
+  'fat-rat-sat': FatRatSatScene,
+  'cat-on-rat': CatOnRatScene,
+  'cat-on-mat': CatOnMatScene,
+  'rat-on-cat': RatOnCatScene,
+  'rat-on-mat': RatOnMatScene,
+  'bat-on-cat': BatOnCatScene,
+  'bat-on-mat': BatOnMatScene,
 };
 
 /* -------------------------------------------------------
@@ -572,6 +584,356 @@ function RatBitCheeseScene() {
       {/* Nibble bits */}
       <div style={{ position: 'absolute', bottom: 60, right: 90, width: 5, height: 5, background: '#fbbf24', borderRadius: 2, animation: 'nibble-bit 2s ease-out infinite' }} />
       <div style={{ position: 'absolute', bottom: 50, right: 80, width: 4, height: 4, background: '#f59e0b', borderRadius: 2, animation: 'nibble-bit 2s ease-out infinite 0.3s' }} />
+    </div>
+  );
+}
+
+/* -------------------------------------------------------
+   LEVEL 3/4/6 SCENES — fat versions of the animals
+   ------------------------------------------------------- */
+
+function FatCatScene() {
+  return (
+    <div style={{ position: 'relative', width: 220, height: 210 }}>
+      <style>{`
+        @keyframes fat-cat-blink { 0%,90%,100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+        @keyframes fat-cat-tail { 0%,100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+        @keyframes fat-cat-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes fat-cat-belly { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.03); } }
+      `}</style>
+      <div style={{ animation: 'fat-cat-bob 2.5s ease-in-out infinite', position: 'relative', width: 220, height: 210 }}>
+        {/* Big round body */}
+        <div style={{ position: 'absolute', bottom: 15, left: 25, width: 160, height: 120, background: '#f97316', borderRadius: '50%', animation: 'fat-cat-belly 2s ease-in-out infinite' }} />
+        {/* Belly */}
+        <div style={{ position: 'absolute', bottom: 20, left: 65, width: 80, height: 70, background: '#fed7aa', borderRadius: '50%' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 110, left: 60, width: 90, height: 80, background: '#f97316', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -15, left: 5, width: 0, height: 0, borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderBottom: '22px solid #f97316' }} />
+          <div style={{ position: 'absolute', top: -15, right: 5, width: 0, height: 0, borderLeft: '12px solid transparent', borderRight: '12px solid transparent', borderBottom: '22px solid #f97316' }} />
+          <div style={{ position: 'absolute', top: 25, left: 18, width: 14, height: 16, background: '#1e293b', borderRadius: '50%', animation: 'fat-cat-blink 3s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', top: 25, right: 18, width: 14, height: 16, background: '#1e293b', borderRadius: '50%', animation: 'fat-cat-blink 3s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', top: 27, left: 24, width: 5, height: 5, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 27, right: 24, width: 5, height: 5, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 42, left: '50%', marginLeft: -5, width: 10, height: 7, background: '#ec4899', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 48, left: '50%', marginLeft: -8, width: 16, height: 8, borderBottom: '2px solid #92400e', borderRadius: '0 0 50% 50%' }} />
+        </div>
+        {/* Tail */}
+        <div style={{ position: 'absolute', bottom: 60, right: 5, width: 14, height: 55, background: '#f97316', borderRadius: 10, transformOrigin: 'bottom center', animation: 'fat-cat-tail 1.5s ease-in-out infinite' }} />
+        {/* Stubby paws */}
+        <div style={{ position: 'absolute', bottom: 5, left: 55, width: 30, height: 16, background: '#f97316', borderRadius: '0 0 50% 50%' }} />
+        <div style={{ position: 'absolute', bottom: 5, right: 55, width: 30, height: 16, background: '#f97316', borderRadius: '0 0 50% 50%' }} />
+      </div>
+    </div>
+  );
+}
+
+function FatBatScene() {
+  return (
+    <div style={{ position: 'relative', width: 240, height: 200 }}>
+      <style>{`
+        @keyframes fat-bat-wings { 0%,100% { transform: scaleX(1) rotate(0deg); } 50% { transform: scaleX(0.7) rotate(8deg); } }
+        @keyframes fat-bat-wings-r { 0%,100% { transform: scaleX(1) rotate(0deg); } 50% { transform: scaleX(0.7) rotate(-8deg); } }
+        @keyframes fat-bat-hover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes fat-bat-blink { 0%,92%,100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+      `}</style>
+      <div style={{ animation: 'fat-bat-hover 2s ease-in-out infinite', position: 'relative', width: 240, height: 200 }}>
+        {/* Big round body */}
+        <div style={{ position: 'absolute', top: 50, left: '50%', marginLeft: -50, width: 100, height: 90, background: '#7c3aed', borderRadius: '50%' }} />
+        {/* Belly */}
+        <div style={{ position: 'absolute', top: 70, left: '50%', marginLeft: -30, width: 60, height: 50, background: '#a78bfa', borderRadius: '50%' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', top: 15, left: '50%', marginLeft: -28, width: 56, height: 45, background: '#7c3aed', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -10, left: 3, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid #7c3aed' }} />
+          <div style={{ position: 'absolute', top: -10, right: 3, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid #7c3aed' }} />
+          <div style={{ position: 'absolute', top: 14, left: 10, width: 10, height: 10, background: '#fbbf24', borderRadius: '50%', animation: 'fat-bat-blink 4s ease-in-out infinite' }}>
+            <div style={{ position: 'absolute', top: 3, left: 3, width: 4, height: 4, background: '#1e293b', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 14, right: 10, width: 10, height: 10, background: '#fbbf24', borderRadius: '50%', animation: 'fat-bat-blink 4s ease-in-out infinite' }}>
+            <div style={{ position: 'absolute', top: 3, left: 3, width: 4, height: 4, background: '#1e293b', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 28, left: '50%', marginLeft: -5, width: 10, height: 5, borderTop: '2px solid #4c1d95', borderRadius: '50% 50% 0 0' }} />
+        </div>
+        {/* Wings */}
+        <div style={{ position: 'absolute', top: 45, right: '50%', marginRight: 45, width: 60, height: 55, background: '#8b5cf6', borderRadius: '5% 50% 50% 50%', transformOrigin: 'right center', animation: 'fat-bat-wings 2s ease-in-out infinite', opacity: 0.9 }} />
+        <div style={{ position: 'absolute', top: 45, left: '50%', marginLeft: 45, width: 60, height: 55, background: '#8b5cf6', borderRadius: '50% 5% 50% 50%', transformOrigin: 'left center', animation: 'fat-bat-wings-r 2s ease-in-out infinite', opacity: 0.9 }} />
+      </div>
+    </div>
+  );
+}
+
+function FatRatScene() {
+  return (
+    <div style={{ position: 'relative', width: 220, height: 200 }}>
+      <style>{`
+        @keyframes fat-rat-nose { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+        @keyframes fat-rat-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        @keyframes fat-rat-tail { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(12deg); } }
+      `}</style>
+      <div style={{ animation: 'fat-rat-bob 2s ease-in-out infinite', position: 'relative', width: 220, height: 200 }}>
+        {/* Big round body */}
+        <div style={{ position: 'absolute', bottom: 15, left: 25, width: 150, height: 110, background: '#9ca3af', borderRadius: '50%' }} />
+        {/* Belly */}
+        <div style={{ position: 'absolute', bottom: 20, left: 60, width: 80, height: 65, background: '#e5e7eb', borderRadius: '50%' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 95, left: 55, width: 80, height: 70, background: '#9ca3af', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -8, left: 2, width: 28, height: 28, background: '#9ca3af', borderRadius: '50%', border: '3px solid #6b7280' }}>
+            <div style={{ position: 'absolute', top: 5, left: 5, width: 16, height: 16, background: '#fda4af', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: -8, right: 2, width: 28, height: 28, background: '#9ca3af', borderRadius: '50%', border: '3px solid #6b7280' }}>
+            <div style={{ position: 'absolute', top: 5, left: 5, width: 16, height: 16, background: '#fda4af', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 25, left: 15, width: 10, height: 12, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 25, right: 15, width: 10, height: 12, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 27, left: 19, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 27, right: 19, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 40, left: '50%', marginLeft: -6, width: 12, height: 9, background: '#f472b6', borderRadius: '50%', animation: 'fat-rat-nose 0.6s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', top: 40, left: -12, width: 22, height: 1.5, background: '#6b7280', transform: 'rotate(-8deg)' }} />
+          <div style={{ position: 'absolute', top: 45, left: -12, width: 22, height: 1.5, background: '#6b7280', transform: 'rotate(8deg)' }} />
+          <div style={{ position: 'absolute', top: 40, right: -12, width: 22, height: 1.5, background: '#6b7280', transform: 'rotate(8deg)' }} />
+          <div style={{ position: 'absolute', top: 45, right: -12, width: 22, height: 1.5, background: '#6b7280', transform: 'rotate(-8deg)' }} />
+        </div>
+        {/* Tail */}
+        <div style={{ position: 'absolute', bottom: 50, right: 10, width: 7, height: 60, background: '#d1d5db', borderRadius: 6, transformOrigin: 'bottom center', animation: 'fat-rat-tail 1.2s ease-in-out infinite' }} />
+        {/* Stubby paws */}
+        <div style={{ position: 'absolute', bottom: 5, left: 55, width: 25, height: 14, background: '#fda4af', borderRadius: '0 0 50% 50%' }} />
+        <div style={{ position: 'absolute', bottom: 5, right: 55, width: 25, height: 14, background: '#fda4af', borderRadius: '0 0 50% 50%' }} />
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------
+   LEVEL 5 SCENES — fat animals sitting
+   ------------------------------------------------------- */
+
+function FatCatSatScene() {
+  return (
+    <div style={{ position: 'relative', width: 220, height: 180 }}>
+      <style>{`
+        @keyframes sat-cat-blink { 0%,90%,100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+        @keyframes sat-cat-tail { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+        @keyframes sat-cat-purr { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(1.02); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 220, height: 180 }}>
+        {/* Flat bottom (sitting) */}
+        <div style={{ position: 'absolute', bottom: 8, left: 30, width: 150, height: 100, background: '#f97316', borderRadius: '50% 50% 20% 20%', animation: 'sat-cat-purr 2s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: 12, left: 60, width: 80, height: 55, background: '#fed7aa', borderRadius: '50% 50% 30% 30%' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 85, left: 55, width: 85, height: 75, background: '#f97316', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -14, left: 5, width: 0, height: 0, borderLeft: '11px solid transparent', borderRight: '11px solid transparent', borderBottom: '20px solid #f97316' }} />
+          <div style={{ position: 'absolute', top: -14, right: 5, width: 0, height: 0, borderLeft: '11px solid transparent', borderRight: '11px solid transparent', borderBottom: '20px solid #f97316' }} />
+          <div style={{ position: 'absolute', top: 22, left: 16, width: 13, height: 15, background: '#1e293b', borderRadius: '50%', animation: 'sat-cat-blink 3.5s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', top: 22, right: 16, width: 13, height: 15, background: '#1e293b', borderRadius: '50%', animation: 'sat-cat-blink 3.5s ease-in-out infinite' }} />
+          <div style={{ position: 'absolute', top: 24, left: 22, width: 5, height: 5, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 24, right: 22, width: 5, height: 5, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 38, left: '50%', marginLeft: -5, width: 10, height: 7, background: '#ec4899', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 44, left: '50%', marginLeft: -7, width: 14, height: 7, borderBottom: '2px solid #92400e', borderRadius: '0 0 50% 50%' }} />
+        </div>
+        <div style={{ position: 'absolute', bottom: 50, right: 10, width: 12, height: 50, background: '#f97316', borderRadius: 10, transformOrigin: 'bottom center', animation: 'sat-cat-tail 2s ease-in-out infinite' }} />
+      </div>
+    </div>
+  );
+}
+
+function FatBatSatScene() {
+  return (
+    <div style={{ position: 'relative', width: 220, height: 180 }}>
+      <style>{`
+        @keyframes sat-bat-blink { 0%,92%,100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+        @keyframes sat-bat-fold { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(0.85); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 220, height: 180 }}>
+        {/* Sitting body */}
+        <div style={{ position: 'absolute', bottom: 8, left: '50%', marginLeft: -50, width: 100, height: 80, background: '#7c3aed', borderRadius: '50% 50% 25% 25%' }} />
+        <div style={{ position: 'absolute', bottom: 15, left: '50%', marginLeft: -28, width: 56, height: 40, background: '#a78bfa', borderRadius: '50% 50% 30% 30%' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 75, left: '50%', marginLeft: -28, width: 56, height: 45, background: '#7c3aed', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -10, left: 3, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid #7c3aed' }} />
+          <div style={{ position: 'absolute', top: -10, right: 3, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid #7c3aed' }} />
+          <div style={{ position: 'absolute', top: 14, left: 10, width: 10, height: 10, background: '#fbbf24', borderRadius: '50%', animation: 'sat-bat-blink 4s ease-in-out infinite' }}>
+            <div style={{ position: 'absolute', top: 3, left: 3, width: 4, height: 4, background: '#1e293b', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 14, right: 10, width: 10, height: 10, background: '#fbbf24', borderRadius: '50%', animation: 'sat-bat-blink 4s ease-in-out infinite' }}>
+            <div style={{ position: 'absolute', top: 3, left: 3, width: 4, height: 4, background: '#1e293b', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 28, left: '50%', marginLeft: -5, width: 10, height: 5, borderTop: '2px solid #4c1d95', borderRadius: '50% 50% 0 0' }} />
+        </div>
+        {/* Folded wings */}
+        <div style={{ position: 'absolute', bottom: 30, right: '50%', marginRight: 40, width: 30, height: 50, background: '#8b5cf6', borderRadius: '50% 5% 50% 50%', transformOrigin: 'right center', animation: 'sat-bat-fold 3s ease-in-out infinite', opacity: 0.9 }} />
+        <div style={{ position: 'absolute', bottom: 30, left: '50%', marginLeft: 40, width: 30, height: 50, background: '#8b5cf6', borderRadius: '5% 50% 50% 50%', transformOrigin: 'left center', animation: 'sat-bat-fold 3s ease-in-out infinite', opacity: 0.9 }} />
+      </div>
+    </div>
+  );
+}
+
+function FatRatSatScene() {
+  return (
+    <div style={{ position: 'relative', width: 220, height: 180 }}>
+      <style>{`
+        @keyframes sat-rat-nose { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+        @keyframes sat-rat-tail { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 220, height: 180 }}>
+        {/* Sitting body */}
+        <div style={{ position: 'absolute', bottom: 8, left: 30, width: 140, height: 95, background: '#9ca3af', borderRadius: '50% 50% 20% 20%' }} />
+        <div style={{ position: 'absolute', bottom: 12, left: 55, width: 75, height: 50, background: '#e5e7eb', borderRadius: '50% 50% 30% 30%' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 80, left: 50, width: 78, height: 65, background: '#9ca3af', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -6, left: 2, width: 26, height: 26, background: '#9ca3af', borderRadius: '50%', border: '3px solid #6b7280' }}>
+            <div style={{ position: 'absolute', top: 4, left: 4, width: 14, height: 14, background: '#fda4af', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: -6, right: 2, width: 26, height: 26, background: '#9ca3af', borderRadius: '50%', border: '3px solid #6b7280' }}>
+            <div style={{ position: 'absolute', top: 4, left: 4, width: 14, height: 14, background: '#fda4af', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 22, left: 14, width: 10, height: 11, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 22, right: 14, width: 10, height: 11, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 24, left: 18, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 24, right: 18, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 36, left: '50%', marginLeft: -5, width: 10, height: 8, background: '#f472b6', borderRadius: '50%', animation: 'sat-rat-nose 0.6s ease-in-out infinite' }} />
+        </div>
+        <div style={{ position: 'absolute', bottom: 40, right: 15, width: 6, height: 55, background: '#d1d5db', borderRadius: 6, transformOrigin: 'bottom center', animation: 'sat-rat-tail 1.5s ease-in-out infinite' }} />
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------
+   LEVEL 7 SCENES — one animal sitting on another / on mat
+   Uses a simple stacking approach
+   ------------------------------------------------------- */
+
+function SmallCat({ style }) {
+  return (
+    <div style={{ position: 'absolute', width: 80, height: 70, ...style }}>
+      <div style={{ position: 'absolute', bottom: 0, left: 10, width: 60, height: 45, background: '#f97316', borderRadius: '50% 50% 30% 30%' }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 18, width: 40, height: 25, background: '#fed7aa', borderRadius: '50% 50% 30% 30%' }} />
+      <div style={{ position: 'absolute', bottom: 35, left: 15, width: 48, height: 40, background: '#f97316', borderRadius: '50%' }}>
+        <div style={{ position: 'absolute', top: -8, left: 3, width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '14px solid #f97316' }} />
+        <div style={{ position: 'absolute', top: -8, right: 3, width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '14px solid #f97316' }} />
+        <div style={{ position: 'absolute', top: 13, left: 9, width: 8, height: 9, background: '#1e293b', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: 13, right: 9, width: 8, height: 9, background: '#1e293b', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: 23, left: '50%', marginLeft: -4, width: 8, height: 5, background: '#ec4899', borderRadius: '50%' }} />
+      </div>
+    </div>
+  );
+}
+
+function SmallRat({ style }) {
+  return (
+    <div style={{ position: 'absolute', width: 80, height: 65, ...style }}>
+      <div style={{ position: 'absolute', bottom: 0, left: 10, width: 55, height: 38, background: '#9ca3af', borderRadius: '50% 50% 30% 30%' }} />
+      <div style={{ position: 'absolute', bottom: 3, left: 20, width: 35, height: 20, background: '#e5e7eb', borderRadius: '50%' }} />
+      <div style={{ position: 'absolute', bottom: 30, left: 12, width: 48, height: 38, background: '#9ca3af', borderRadius: '50%' }}>
+        <div style={{ position: 'absolute', top: -4, left: 2, width: 16, height: 16, background: '#9ca3af', borderRadius: '50%', border: '2px solid #6b7280' }}>
+          <div style={{ position: 'absolute', top: 3, left: 3, width: 8, height: 8, background: '#fda4af', borderRadius: '50%' }} />
+        </div>
+        <div style={{ position: 'absolute', top: -4, right: 2, width: 16, height: 16, background: '#9ca3af', borderRadius: '50%', border: '2px solid #6b7280' }}>
+          <div style={{ position: 'absolute', top: 3, left: 3, width: 8, height: 8, background: '#fda4af', borderRadius: '50%' }} />
+        </div>
+        <div style={{ position: 'absolute', top: 15, left: 10, width: 7, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: 15, right: 10, width: 7, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: 24, left: '50%', marginLeft: -4, width: 8, height: 6, background: '#f472b6', borderRadius: '50%' }} />
+      </div>
+      <div style={{ position: 'absolute', bottom: 20, right: 0, width: 4, height: 35, background: '#d1d5db', borderRadius: 4, transform: 'rotate(-15deg)' }} />
+    </div>
+  );
+}
+
+function SmallBat({ style }) {
+  return (
+    <div style={{ position: 'absolute', width: 90, height: 60, ...style }}>
+      <style>{`
+        @keyframes sm-bat-w { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(0.75); } }
+      `}</style>
+      <div style={{ position: 'absolute', bottom: 0, left: 25, width: 40, height: 35, background: '#7c3aed', borderRadius: '40% 40% 50% 50%' }} />
+      <div style={{ position: 'absolute', bottom: 28, left: 28, width: 34, height: 28, background: '#7c3aed', borderRadius: '50%' }}>
+        <div style={{ position: 'absolute', top: -6, left: 2, width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '10px solid #7c3aed' }} />
+        <div style={{ position: 'absolute', top: -6, right: 2, width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '10px solid #7c3aed' }} />
+        <div style={{ position: 'absolute', top: 9, left: 6, width: 7, height: 7, background: '#fbbf24', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: 9, right: 6, width: 7, height: 7, background: '#fbbf24', borderRadius: '50%' }} />
+      </div>
+      <div style={{ position: 'absolute', bottom: 15, left: 0, width: 28, height: 30, background: '#8b5cf6', borderRadius: '5% 50% 50% 50%', transformOrigin: 'right center', animation: 'sm-bat-w 2s ease-in-out infinite', opacity: 0.9 }} />
+      <div style={{ position: 'absolute', bottom: 15, right: 0, width: 28, height: 30, background: '#8b5cf6', borderRadius: '50% 5% 50% 50%', transformOrigin: 'left center', animation: 'sm-bat-w 2s ease-in-out infinite', opacity: 0.9 }} />
+    </div>
+  );
+}
+
+function SmallMat({ style }) {
+  return (
+    <div style={{ position: 'absolute', width: 120, height: 35, ...style }}>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, width: 120, height: 30, background: 'linear-gradient(135deg, #92400e, #b45309)', borderRadius: 8, border: '3px solid #78350f' }}>
+        <div style={{ position: 'absolute', top: 6, left: 10, right: 10, height: 3, background: '#fbbf24', borderRadius: 2 }} />
+        <div style={{ position: 'absolute', top: 14, left: 10, right: 10, height: 3, background: '#fbbf24', borderRadius: 2 }} />
+      </div>
+    </div>
+  );
+}
+
+function CatOnRatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200 }}>
+      <style>{`
+        @keyframes stack-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      `}</style>
+      <div style={{ animation: 'stack-bob 2.5s ease-in-out infinite', position: 'relative', width: 200, height: 200 }}>
+        <SmallRat style={{ bottom: 10, left: 55 }} />
+        <SmallCat style={{ bottom: 75, left: 55 }} />
+      </div>
+    </div>
+  );
+}
+
+function CatOnMatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180 }}>
+      <SmallMat style={{ bottom: 10, left: 40 }} />
+      <SmallCat style={{ bottom: 40, left: 60 }} />
+    </div>
+  );
+}
+
+function RatOnCatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200 }}>
+      <style>{`
+        @keyframes stack-bob2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      `}</style>
+      <div style={{ animation: 'stack-bob2 2.5s ease-in-out infinite', position: 'relative', width: 200, height: 200 }}>
+        <SmallCat style={{ bottom: 10, left: 55 }} />
+        <SmallRat style={{ bottom: 80, left: 55 }} />
+      </div>
+    </div>
+  );
+}
+
+function RatOnMatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180 }}>
+      <SmallMat style={{ bottom: 10, left: 40 }} />
+      <SmallRat style={{ bottom: 40, left: 60 }} />
+    </div>
+  );
+}
+
+function BatOnCatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200 }}>
+      <style>{`
+        @keyframes stack-bob3 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      `}</style>
+      <div style={{ animation: 'stack-bob3 2.5s ease-in-out infinite', position: 'relative', width: 200, height: 200 }}>
+        <SmallCat style={{ bottom: 10, left: 55 }} />
+        <SmallBat style={{ bottom: 80, left: 50 }} />
+      </div>
+    </div>
+  );
+}
+
+function BatOnMatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180 }}>
+      <SmallMat style={{ bottom: 10, left: 40 }} />
+      <SmallBat style={{ bottom: 40, left: 55 }} />
     </div>
   );
 }
