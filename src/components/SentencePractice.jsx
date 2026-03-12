@@ -1,5 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SENTENCE_LEVELS } from '../data/sentences';
+
+const REWARD_GIFS = [
+  'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzk3bXFwOWJleTVnaWVscGZwazEyb2Q0bzFnamRrNXM1NHUzN3U0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zsbYm28afpsPJxrzHS/giphy.gif',
+  'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnN6NGJ1cmtzaXV1YXhsbXZxNG9jbm52ZTNtMjI5Y3EzOWg0OW95MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fnmsu2lTw3r1e/giphy.gif',
+  'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXJkZjB0bmhqdDY4emVrOXZqeWhsd3Zwbjg2a2RiaDFjZ3UwcTAzdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lFHtqqh6orvAhbiGmy/giphy.gif',
+  'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExY3hnY2wydWpsNjFrYmNnc3dvaG9ydDViem8yenJjdHhjd2YzZzE0eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kBZBlLVlfECvOQAVno/giphy.gif',
+  'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExajRoZW5kMGYxcGcwN2M2NmswOTFoeTBnbjEyaGR2c2J1bXN6OGpubSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TVNmNzfL8ibYUyeQo8/giphy.gif',
+];
 
 export default function SentencePractice({ onBack }) {
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -50,20 +58,7 @@ export default function SentencePractice({ onBack }) {
   // Celebration screen
   if (finished) {
     return (
-      <div className="w-screen h-screen bg-gradient-to-br from-yellow-200 via-amber-100 to-orange-200 flex flex-col items-center justify-center">
-        <div className="text-8xl mb-6">🎉</div>
-        <h1 className="text-5xl font-extrabold text-indigo-700 mb-4">Great job!</h1>
-        <p className="text-2xl text-indigo-400 mb-8">You read them all!</p>
-        <button
-          onClick={() => {
-            setSelectedLevel(null);
-            setFinished(false);
-          }}
-          className="py-4 px-10 rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-500 text-white text-2xl font-extrabold shadow-lg hover:scale-105 active:scale-95 transition-all"
-        >
-          Back to Levels
-        </button>
-      </div>
+      <RewardScreen onDone={() => { setSelectedLevel(null); setFinished(false); }} />
     );
   }
 
@@ -159,6 +154,83 @@ export default function SentencePractice({ onBack }) {
           next →
         </button>
       </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   REWARD SCREEN — treasure chest opens to reveal a GIF
+   ============================================================ */
+
+function RewardScreen({ onDone }) {
+  const [phase, setPhase] = useState('chest'); // 'chest' | 'gif'
+  const [gif] = useState(() => REWARD_GIFS[Math.floor(Math.random() * REWARD_GIFS.length)]);
+  const [countdown, setCountdown] = useState(15);
+
+  const handleOpen = useCallback(() => {
+    setPhase('gif');
+  }, []);
+
+  // Auto-redirect after 15 seconds once GIF is showing
+  useEffect(() => {
+    if (phase !== 'gif') return;
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onDone();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [phase, onDone]);
+
+  if (phase === 'chest') {
+    return (
+      <div className="w-screen h-screen bg-gradient-to-br from-yellow-200 via-amber-100 to-orange-200 flex flex-col items-center justify-center">
+        <style>{`
+          @keyframes chest-wobble { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+          @keyframes chest-glow {
+            0%,100% { box-shadow: 0 0 20px 5px rgba(251,191,36,0.4); }
+            50% { box-shadow: 0 0 40px 15px rgba(251,191,36,0.8); }
+          }
+        `}</style>
+        <h1 className="text-5xl font-extrabold text-indigo-700 mb-6 drop-shadow-md">Great job!</h1>
+        <p className="text-2xl text-indigo-400 mb-8">You earned a treasure!</p>
+        <button
+          onClick={handleOpen}
+          className="text-[10rem] leading-none transition-all hover:scale-110 active:scale-95"
+          style={{ animation: 'chest-wobble 1s ease-in-out infinite', filter: 'drop-shadow(0 0 20px rgba(251,191,36,0.6))' }}
+        >
+          🎁
+        </button>
+        <p className="text-xl text-amber-600 mt-6 font-bold animate-pulse">Tap to open!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-screen h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-sky-300 flex flex-col items-center justify-center p-4">
+      <h1 className="text-4xl font-extrabold text-indigo-700 mb-4 drop-shadow-md">🎉 Your Reward! 🎉</h1>
+      <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-yellow-400 max-w-lg w-full">
+        <img
+          src={gif}
+          alt="Reward!"
+          className="w-full"
+          style={{ display: 'block' }}
+        />
+      </div>
+      <p className="text-lg text-indigo-400 mt-4 font-bold">
+        Back to levels in {countdown}s...
+      </p>
+      <button
+        onClick={onDone}
+        className="mt-3 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-5 py-2 text-lg shadow-md transition-all hover:scale-105 active:scale-95"
+      >
+        Skip
+      </button>
     </div>
   );
 }
