@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import HomePage from './components/HomePage';
 import GameScreen from './components/GameScreen';
+import SentencePractice from './components/SentencePractice';
 import allWorlds from './data/wordSets';
 
 function loadCompleted() {
@@ -101,6 +102,10 @@ export default function App() {
     });
   }, [activeWorldIdx]);
 
+  if (page === 'sentences') {
+    return <SentencePractice onBack={() => setPage('home')} />;
+  }
+
   if (page === 'home' || !selectedLevel) {
     return (
       <HomePage
@@ -113,6 +118,7 @@ export default function App() {
         levelKey={levelKey}
         testMode={testMode}
         onToggleTestMode={() => setTestMode(prev => !prev)}
+        onSentencePractice={() => setPage('sentences')}
       />
     );
   }

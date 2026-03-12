@@ -4,7 +4,7 @@ import allWorlds from '../data/wordSets';
 const TREASURE_URL = 'https://www.youtube.com/watch?v=1qN72LEQnaU';
 const COLS = 3;
 
-export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey, testMode, onToggleTestMode }) {
+export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey, testMode, onToggleTestMode, onSentencePractice }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const worldIdx = activeWorldIdx;
@@ -88,9 +88,19 @@ export default function HomePage({ completedLevels, activeWorldIdx, onSelectLeve
           TEST MODE
         </p>
       )}
-      <p className="text-center text-3xl font-bold text-indigo-400 mb-4">
+      <p className="text-center text-3xl font-bold text-indigo-400 mb-3">
         {world.name}
       </p>
+
+      {/* Sentence Practice button */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={onSentencePractice}
+          className="bg-gradient-to-br from-emerald-400 to-teal-500 text-white font-extrabold rounded-2xl px-6 py-3 text-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
+        >
+          📖 Sentence Practice
+        </button>
+      </div>
 
       <div className="flex flex-col items-center gap-0 pb-16 px-4 pt-2">
         {rows.map((row, rowIdx) => {

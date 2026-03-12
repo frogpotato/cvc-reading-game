@@ -1,0 +1,223 @@
+DRAGON READING QUEST — COMPREHENSIVE GUIDE
+============================================
+
+A React-based CVC (Consonant-Vowel-Consonant) reading game for young children.
+The child drags word bubbles to matching characters to practice distinguishing
+minimal pair words (e.g., "sat" vs "sit").
+
+Live URL: https://frogpotato.github.io/cvc-reading-game/
+
+
+================================================================================
+PART 1: USER GUIDE (How to Play)
+================================================================================
+
+OVERVIEW
+--------
+The game is structured as a map with levels. Each level focuses on one word pair
+(e.g., "sat" / "sit"). The child works through all the pairs in a word set
+(e.g., all the "at/it" words) and earns a treasure at the end.
+
+HOME PAGE
+---------
+- A snaking path of circular nodes, each representing one word pair.
+- The current (next playable) node pulses with a glow.
+- Completed nodes show a gold star and green checkmark.
+- Locked nodes are greyed out and cannot be pressed.
+- A treasure chest sits at the end of the path. It unlocks when all levels in
+  the current word set are complete. Pressing it opens a reward YouTube video
+  and auto-advances to the next word set.
+
+PARENT MENU (top-right corner, small hamburger icon)
+- Choose Word Set: Jump to any word set (at/it, an/in, am/im, ap/ip, ad/id, ag/ig).
+- Test Mode: Toggle on to get a "Skip" button in-game that instantly completes
+  levels. Useful for previewing the full experience without playing.
+- Restart this set: Clears progress for the currently displayed word set only.
+
+GAME FLOW (after tapping a level node)
+1. INTRO — Left character appears centered with its word (e.g., dragon + "sat").
+   The child reads the word aloud. The parent taps the small checkmark button
+   (bottom-right corner) to confirm the child read it correctly.
+2. The character slides to its side position.
+3. INTRO — Right character appears centered with its word (e.g., knight + "sit").
+   Same process — child reads, parent confirms.
+4. Character slides to its side. Bubbles appear in the center.
+5. GAMEPLAY — Six word bubbles (3x wordA, 3x wordB) appear on a snaking path.
+   The child drags each bubble to the correct character's side.
+   - Correct: chime sound, bubble disappears, character wiggles.
+   - Wrong: buzz sound, bubble shakes red and snaps back.
+6. VICTORY — When all 6 bubbles are placed, a fight animation plays
+   (characters charge, fire effects, then confetti + bouncing victory).
+7. Returns to the home page map. The completed level shows a star.
+   Next level unlocks.
+
+WORD SETS (6 total, progressing through these in order)
+- at / it: at, sat, pat, nat, hat, bat, fat, mat
+- an / in: an, ban, fan, man, pan, ran, tan, van
+- am / im: am, bam, dam, ham, jam, ram
+- ap / ip: ap, lap, nap, rap, sap, tap, yap, zap
+- ad / id: ad, bad, dad, had, lad, pad, sad, mad
+- ag / ig: ag, bag, rag, tag, wag
+
+THEMES (cycle per level within each word set)
+Each level gets a different character pair so the game feels fresh:
+  1. Dragon vs Elf/Knight       (amber / teal)
+  2. Dinosaur vs Superhero      (green / blue)
+  3. Ghost vs Fencer            (purple / sky)
+  4. Vampire vs Shield          (red / indigo)
+  5. Monster vs Swords          (orange / cyan)
+  6. Unicorn vs Star            (pink / violet)
+  7. Alien vs Rocket            (lime / blue)
+  8. Robot vs Lightning         (slate / amber)
+
+
+================================================================================
+PART 2: CODE GUIDE (Architecture & Structure)
+================================================================================
+
+TECH STACK
+----------
+- React 19 (hooks only, no class components)
+- Vite 7 (dev server + bundler)
+- Tailwind CSS 4 (utility-first styling, via Vite plugin)
+- Framer Motion 12 (animations: drag, spring physics, transitions)
+- Web Audio API (procedural sound synthesis, no audio files)
+- localStorage (progress persistence)
+- GitHub Pages (deployed via GitHub Actions on push to main)
+
+FILE STRUCTURE
+--------------
+cvc-reading-game/
+  index.html              — Entry HTML. Loads Nunito font. Disables zoom.
+  vite.config.js          — Vite config. Sets base path for GitHub Pages.
+  package.json            — Dependencies and scripts (dev, build, lint, preview).
+  .github/workflows/
+    deploy.yml            — GitHub Actions: build + deploy to Pages on push.
+  src/
+    main.jsx              — React entry point. Renders <App /> into #root.
+    index.css             — Tailwind import + global styles + pulse-glow keyframes.
+    App.jsx               — Root component. Manages navigation, progress, test mode.
+    data/
+      wordSets.js         — All game content: themes, worlds, pairs, level builder.
+    hooks/
+      useGameState.js     — Game logic for a single level (bubbles, drops, scoring).
+      useSounds.js        — Web Audio synthesis (correct chime, wrong buzz, fanfare).
+    components/
+      HomePage.jsx        — Map screen with snaking level path + parent menu.
+      GameScreen.jsx      — Game screen with intro sequence + gameplay + fight trigger.
+      Character.jsx       — Character display (emoji, word label, collected dots).
+      BubbleField.jsx     — Manages 6 bubble positions on a snaking path with SVG lines.
+      Bubble.jsx          — Single draggable bubble with pointer-based drag-drop.
+      FightAnimation.jsx  — Victory animation (fight phase + confetti + bouncing).
+      ProgressIndicator.jsx — (Currently unused) Debug display for set/pair progress.
+
+DATA MODEL
+----------
+wordSets.js exports `allWorlds`, an array of world objects:
+
+  allWorlds = [
+    {
+      name: "at / it",
+      levels: [
+        { wordA: "at", wordB: "it", icon: "dragon-emoji", theme: {...} },
+        { wordA: "sat", wordB: "sit", icon: "dinosaur-emoji", theme: {...} },
+        ...
+      ]
+    },
+    ...
+  ]
+
+Each theme object:
+  { left: "emoji", right: "emoji", leftColor: "tailwind-color", rightColor: "tailwind-color" }
+
+Themes cycle through an 8-item array so each level in a world gets a different look.
+
+STATE MANAGEMENT
+----------------
+All state lives in React hooks (no external state library).
+
+App.jsx holds top-level state:
+  - page: "home" | "game"
+  - selectedLevel: { worldIdx, levelIdx } | null
+  - completedLevels: Set of "worldIdx-levelIdx" strings (persisted in localStorage)
+  - activeWorldIdx: Which word set the home page displays (persisted in localStorage)
+  - testMode: Boolean
+
+useGameState.js holds per-level game state:
+  - bubbles: Array of 6 objects { id, word, placed, placedOn }
+  - dragonCollected / knightCollected: Counts (0-3 each)
+  - totalAttempts / totalCorrect: Accuracy tracking
+  - handleDrop(bubbleId, target): Validates drop, returns { result, isRoundComplete }
+
+GAME SCREEN PHASES
+------------------
+GameScreen.jsx manages a phase state machine:
+
+  "show-left"   — Left character + word displayed center-screen. Waiting for parent confirm.
+  "slide-left"  — Animates left character to its side position (700ms).
+  "show-right"  — Right character + word displayed center-screen. Waiting for parent confirm.
+  "slide-right" — Animates right character to its side position (700ms).
+  "playing"     — Bubbles visible, drag-drop active.
+
+After all bubbles placed -> FightAnimation overlay (5 seconds) -> onLevelComplete callback.
+
+DRAG-DROP IMPLEMENTATION (Bubble.jsx)
+-------------------------------------
+Uses pointer events (not HTML5 drag API) for mobile/touch compatibility:
+  - onPointerDown: Captures pointer, records start position.
+  - onPointerMove: Updates bubble position via CSS transform.
+  - onPointerUp: Checks if bubble overlaps dragon/knight drop zones (with 40px buffer).
+    - Over correct zone: Calls onDrop, animates bubble out (scale 0, opacity 0).
+    - Over wrong zone: Calls onDrop, shakes red, returns to start.
+    - Over nothing: Springs back to start position.
+
+SOUND SYNTHESIS (useSounds.js)
+------------------------------
+No audio files. All sounds are generated via Web Audio API OscillatorNodes:
+  - playCorrect(): C major triad (C5, E5, G5), sine waves, staggered 60ms.
+  - playWrong(): Low thud, 150->80Hz frequency sweep, 250ms.
+  - playFanfare(): 8-note ascending arpeggio (C5->G6), triangle waves, ~1.5s total.
+
+STYLING
+-------
+Tailwind CSS utility classes throughout. Key patterns:
+  - Gradient backgrounds: bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200
+  - Character colors: 14-color map in Character.jsx (amber through slate)
+  - Responsive: sm: breakpoints for circle sizes
+  - Animations: Tailwind animate-bounce, animate-[pulse-glow_...], Framer Motion for everything else
+
+DEPLOYMENT
+----------
+Automatic via GitHub Actions (.github/workflows/deploy.yml):
+  1. Push to main triggers workflow.
+  2. Installs Node 20, runs npm ci, npm run build.
+  3. Uploads dist/ as GitHub Pages artifact.
+  4. Deploys to https://frogpotato.github.io/cvc-reading-game/
+
+LOCALSTORAGE KEYS
+-----------------
+  - "cvc-completed-levels": JSON array of "worldIdx-levelIdx" strings.
+  - "cvc-selected-world": Integer index of the active word set.
+
+ADDING NEW WORD SETS
+--------------------
+1. Add a new object to the `worlds` array in src/data/wordSets.js:
+   { name: "new / words", pairs: [["new", "words"], ["bnew", "bwords"], ...] }
+2. Themes auto-cycle from the existing 8-theme array.
+3. No other changes needed — the home page and game screen adapt automatically.
+
+ADDING NEW THEMES
+-----------------
+1. Add a new entry to the `themes` array in src/data/wordSets.js.
+2. Add matching color entries to the `colorMap` in src/components/Character.jsx
+   if using a Tailwind color not already listed.
+
+KEY DEPENDENCIES BETWEEN FILES
+-------------------------------
+App.jsx imports: HomePage, GameScreen, wordSets
+HomePage imports: wordSets
+GameScreen imports: Character, BubbleField, FightAnimation, useGameState, useSounds
+BubbleField imports: Bubble
+Character, Bubble, FightAnimation import: framer-motion
+useGameState imports: (standalone, receives level as argument)
+useSounds imports: (standalone, Web Audio API only)
