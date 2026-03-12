@@ -4,7 +4,7 @@ import allWorlds from '../data/wordSets';
 const TREASURE_URL = 'https://www.youtube.com/watch?v=1qN72LEQnaU';
 const COLS = 3;
 
-export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey, testMode, onToggleTestMode, onSentencePractice }) {
+export default function HomePage({ completedLevels, activeWorldIdx, onSelectLevel, onSelectWorld, onRestart, onAdvanceWorld, levelKey, testMode, onToggleTestMode, onBack }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const worldIdx = activeWorldIdx;
@@ -33,6 +33,14 @@ export default function HomePage({ completedLevels, activeWorldIdx, onSelectLeve
 
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 overflow-auto relative">
+      {/* Back to main menu */}
+      <button
+        onClick={onBack}
+        className="absolute top-3 left-3 z-20 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-5 py-2 text-xl shadow-md transition-all hover:scale-105 active:scale-95"
+      >
+        ← Home
+      </button>
+
       {/* Parent menu toggle — small, subtle */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
@@ -88,19 +96,9 @@ export default function HomePage({ completedLevels, activeWorldIdx, onSelectLeve
           TEST MODE
         </p>
       )}
-      <p className="text-center text-3xl font-bold text-indigo-400 mb-3">
+      <p className="text-center text-3xl font-bold text-indigo-400 mb-4">
         {world.name}
       </p>
-
-      {/* Sentence Practice button */}
-      <div className="flex justify-center mb-4">
-        <button
-          onClick={onSentencePractice}
-          className="bg-gradient-to-br from-emerald-400 to-teal-500 text-white font-extrabold rounded-2xl px-6 py-3 text-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
-        >
-          📖 Sentence Practice
-        </button>
-      </div>
 
       <div className="flex flex-col items-center gap-0 pb-16 px-4 pt-2">
         {rows.map((row, rowIdx) => {

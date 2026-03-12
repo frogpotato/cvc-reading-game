@@ -96,15 +96,10 @@ export default function SentencePractice({ onBack }) {
 
       {/* Sentence display */}
       <div className="flex-shrink-0 pt-14 pb-4 px-6 flex items-center justify-center">
-        <div className="flex flex-wrap justify-center gap-3">
-          {current.sentence.split(' ').map((word, i) => (
-            <span
-              key={i}
-              className="bg-white/80 rounded-xl px-5 py-3 shadow-md text-5xl font-extrabold text-gray-800"
-            >
-              {word}
-            </span>
-          ))}
+        <div className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg">
+          <span className="text-5xl font-extrabold text-gray-800">
+            {current.sentence}
+          </span>
         </div>
       </div>
 

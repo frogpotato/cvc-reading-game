@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import MainMenu from './components/MainMenu';
 import HomePage from './components/HomePage';
 import GameScreen from './components/GameScreen';
 import SentencePractice from './components/SentencePractice';
@@ -44,6 +45,7 @@ function findFirstIncompleteWorld(completedLevels) {
 }
 
 export default function App() {
+  // pages: 'home' | 'dragon' | 'game' | 'sentences'
   const [page, setPage] = useState('home');
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [completedLevels, setCompletedLevels] = useState(loadCompleted);
@@ -68,17 +70,9 @@ export default function App() {
       const next = new Set(prev);
       next.add(levelKey(worldIdx, levelIdx));
       saveCompleted(next);
-
-      // If this world is now complete, auto-advance to next world
-      const world = allWorlds[worldIdx];
-      const worldDone = world.levels.every((_, i) => next.has(levelKey(worldIdx, i)));
-      if (worldDone && worldIdx < allWorlds.length - 1) {
-        // Will advance after treasure is clicked, but set up next world
-      }
-
       return next;
     });
-    setPage('home');
+    setPage('dragon');
   }, []);
 
   const handleAdvanceWorld = useCallback(() => {
@@ -87,12 +81,7 @@ export default function App() {
     saveSelectedWorld(next);
   }, [activeWorldIdx]);
 
-  const handleBackToHome = useCallback(() => {
-    setPage('home');
-  }, []);
-
   const handleRestart = useCallback(() => {
-    // Reset only the current world's levels
     setCompletedLevels(prev => {
       const next = new Set(prev);
       const world = allWorlds[activeWorldIdx];
@@ -102,11 +91,20 @@ export default function App() {
     });
   }, [activeWorldIdx]);
 
+  if (page === 'home') {
+    return (
+      <MainMenu
+        onDragonQuest={() => setPage('dragon')}
+        onSentencePractice={() => setPage('sentences')}
+      />
+    );
+  }
+
   if (page === 'sentences') {
     return <SentencePractice onBack={() => setPage('home')} />;
   }
 
-  if (page === 'home' || !selectedLevel) {
+  if (page === 'dragon' || (page === 'game' && !selectedLevel)) {
     return (
       <HomePage
         completedLevels={completedLevels}
@@ -118,7 +116,7 @@ export default function App() {
         levelKey={levelKey}
         testMode={testMode}
         onToggleTestMode={() => setTestMode(prev => !prev)}
-        onSentencePractice={() => setPage('sentences')}
+        onBack={() => setPage('home')}
       />
     );
   }
@@ -133,7 +131,7 @@ export default function App() {
       worldIdx={selectedLevel.worldIdx}
       levelIdx={selectedLevel.levelIdx}
       onLevelComplete={handleLevelComplete}
-      onBack={handleBackToHome}
+      onBack={() => setPage('dragon')}
       testMode={testMode}
     />
   );
