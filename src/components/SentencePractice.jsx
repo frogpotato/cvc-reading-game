@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SENTENCE_LEVELS } from '../data/sentences';
 
 const REWARD_GIFS = [
@@ -89,13 +89,9 @@ export default function SentencePractice({ onBack }) {
         ))}
       </div>
 
-      {/* Sentence display */}
-      <div className="flex-shrink-0 pt-14 pb-4 px-6 flex items-center justify-center">
-        <div className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg">
-          <span className="text-5xl font-extrabold text-gray-800">
-            {current.sentence}
-          </span>
-        </div>
+      {/* Sentence display with reading tracker */}
+      <div className="flex-shrink-0 pt-14 pb-2 px-6 flex items-center justify-center">
+        <ReadingTracker key={`${selectedLevel}-${sentenceIdx}`} sentence={current.sentence} />
       </div>
 
       {/* Scene area */}
@@ -153,6 +149,104 @@ export default function SentencePractice({ onBack }) {
         >
           next →
         </button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   READING TRACKER — draggable guide under the sentence
+   ============================================================ */
+
+function ReadingTracker({ sentence }) {
+  const trackRef = useRef(null);
+  const [progress, setProgress] = useState(0); // 0 to 1
+  const dragging = useRef(false);
+
+  const updateProgress = useCallback((clientX) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const rect = track.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    setProgress(x / rect.width);
+  }, []);
+
+  const onPointerDown = useCallback((e) => {
+    dragging.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    updateProgress(e.clientX);
+  }, [updateProgress]);
+
+  const onPointerMove = useCallback((e) => {
+    if (!dragging.current) return;
+    updateProgress(e.clientX);
+  }, [updateProgress]);
+
+  const onPointerUp = useCallback(() => {
+    dragging.current = false;
+  }, []);
+
+  // Split sentence into words and calculate which are "read"
+  const words = sentence.split(' ');
+
+  return (
+    <div className="w-full max-w-2xl">
+      {/* Sentence with word highlighting */}
+      <div className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg mb-3">
+        <span className="text-5xl font-extrabold leading-snug">
+          {words.map((word, i) => {
+            // Calculate rough threshold for this word
+            const wordEnd = (i + 1) / words.length;
+            const wordStart = i / words.length;
+            const midpoint = (wordStart + wordEnd) / 2;
+            const isRead = progress >= midpoint;
+
+            return (
+              <span key={i}>
+                <span
+                  className="transition-colors duration-150"
+                  style={{ color: isRead ? '#1e293b' : '#cbd5e1' }}
+                >
+                  {word}
+                </span>
+                {i < words.length - 1 && ' '}
+              </span>
+            );
+          })}
+        </span>
+      </div>
+
+      {/* Slider track — large touch target */}
+      <div
+        ref={trackRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        className="relative mx-4 cursor-pointer"
+        style={{ height: 56, touchAction: 'none' }}
+      >
+        {/* Track background */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 left-0 right-0 rounded-full bg-gray-200"
+          style={{ height: 12 }}
+        />
+        {/* Filled portion */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 left-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400"
+          style={{ height: 12, width: `${progress * 100}%` }}
+        />
+        {/* Thumb — big and friendly */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg border-4 border-white flex items-center justify-center"
+          style={{
+            width: 52,
+            height: 52,
+            left: `calc(${progress * 100}% - 26px)`,
+            transition: dragging.current ? 'none' : 'left 0.1s ease-out',
+          }}
+        >
+          <span className="text-2xl select-none">👆</span>
+        </div>
       </div>
     </div>
   );
