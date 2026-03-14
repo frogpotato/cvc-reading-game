@@ -160,8 +160,32 @@ export default function SentencePractice({ onBack }) {
 
 function ReadingTracker({ sentence }) {
   const trackRef = useRef(null);
+  const sentenceRef = useRef(null);
+  const wordRefs = useRef([]);
   const [progress, setProgress] = useState(0); // 0 to 1
+  const [wordPositions, setWordPositions] = useState([]); // { start, mid, end } as 0-1 fractions
   const dragging = useRef(false);
+
+  const words = sentence.split(' ');
+
+  // Measure actual word positions relative to the sentence container
+  useEffect(() => {
+    const container = sentenceRef.current;
+    if (!container) return;
+    const containerRect = container.getBoundingClientRect();
+    const containerLeft = containerRect.left;
+    const containerWidth = containerRect.width;
+    if (containerWidth === 0) return;
+
+    const positions = wordRefs.current.map((el) => {
+      if (!el) return { start: 0, mid: 0, end: 1 };
+      const r = el.getBoundingClientRect();
+      const start = (r.left - containerLeft) / containerWidth;
+      const end = (r.right - containerLeft) / containerWidth;
+      return { start, mid: (start + end) / 2, end };
+    });
+    setWordPositions(positions);
+  }, [sentence]);
 
   const updateProgress = useCallback((clientX) => {
     const track = trackRef.current;
@@ -186,24 +210,19 @@ function ReadingTracker({ sentence }) {
     dragging.current = false;
   }, []);
 
-  // Split sentence into words and calculate which are "read"
-  const words = sentence.split(' ');
-
   return (
     <div className="w-full max-w-2xl">
       {/* Sentence with word highlighting */}
-      <div className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg mb-3">
+      <div ref={sentenceRef} className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg mb-3">
         <span className="text-5xl font-extrabold leading-snug">
           {words.map((word, i) => {
-            // Calculate rough threshold for this word
-            const wordEnd = (i + 1) / words.length;
-            const wordStart = i / words.length;
-            const midpoint = (wordStart + wordEnd) / 2;
-            const isRead = progress >= midpoint;
+            const pos = wordPositions[i];
+            const isRead = pos ? progress >= pos.mid : false;
 
             return (
               <span key={i}>
                 <span
+                  ref={(el) => { wordRefs.current[i] = el; }}
                   className="transition-colors duration-150"
                   style={{ color: isRead ? '#1e293b' : '#cbd5e1' }}
                 >
@@ -222,7 +241,7 @@ function ReadingTracker({ sentence }) {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        className="relative mx-4 cursor-pointer"
+        className="relative mx-8 cursor-pointer"
         style={{ height: 56, touchAction: 'none' }}
       >
         {/* Track background */}
