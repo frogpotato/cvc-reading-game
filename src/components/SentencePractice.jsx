@@ -159,40 +159,39 @@ export default function SentencePractice({ onBack }) {
    ============================================================ */
 
 function ReadingTracker({ sentence }) {
-  const trackRef = useRef(null);
-  const sentenceRef = useRef(null);
-  const wordRefs = useRef([]);
-  const [progress, setProgress] = useState(0); // 0 to 1
-  const [wordPositions, setWordPositions] = useState([]); // { start, mid, end } as 0-1 fractions
+  const containerRef = useRef(null);
+  const charRefs = useRef([]);
+  const [progress, setProgress] = useState(0); // pixel offset from container left
+  const [charPositions, setCharPositions] = useState([]); // { mid } in px relative to container
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [trackLeft, setTrackLeft] = useState(0);
   const dragging = useRef(false);
 
-  const words = sentence.split(' ');
+  const chars = sentence.split('');
 
-  // Measure actual word positions relative to the sentence container
+  // Measure actual character positions relative to the text container
   useEffect(() => {
-    const container = sentenceRef.current;
+    const container = containerRef.current;
     if (!container) return;
     const containerRect = container.getBoundingClientRect();
-    const containerLeft = containerRect.left;
-    const containerWidth = containerRect.width;
-    if (containerWidth === 0) return;
+    const cLeft = containerRect.left;
 
-    const positions = wordRefs.current.map((el) => {
-      if (!el) return { start: 0, mid: 0, end: 1 };
+    const positions = charRefs.current.map((el) => {
+      if (!el) return { mid: 0 };
       const r = el.getBoundingClientRect();
-      const start = (r.left - containerLeft) / containerWidth;
-      const end = (r.right - containerLeft) / containerWidth;
-      return { start, mid: (start + end) / 2, end };
+      return { mid: (r.left + r.right) / 2 - cLeft };
     });
-    setWordPositions(positions);
+    setCharPositions(positions);
+    setTrackWidth(containerRect.width);
+    setTrackLeft(0);
   }, [sentence]);
 
   const updateProgress = useCallback((clientX) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const rect = track.getBoundingClientRect();
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    setProgress(x / rect.width);
+    setProgress(x);
   }, []);
 
   const onPointerDown = useCallback((e) => {
@@ -210,34 +209,33 @@ function ReadingTracker({ sentence }) {
     dragging.current = false;
   }, []);
 
+  const progressFraction = trackWidth > 0 ? progress / trackWidth : 0;
+
   return (
     <div className="w-full max-w-2xl">
-      {/* Sentence with word highlighting */}
-      <div ref={sentenceRef} className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg mb-3">
+      {/* Sentence with per-character highlighting */}
+      <div ref={containerRef} className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg mb-3">
         <span className="text-5xl font-extrabold leading-snug">
-          {words.map((word, i) => {
-            const pos = wordPositions[i];
+          {chars.map((ch, i) => {
+            const pos = charPositions[i];
             const isRead = pos ? progress >= pos.mid : false;
 
             return (
-              <span key={i}>
-                <span
-                  ref={(el) => { wordRefs.current[i] = el; }}
-                  className="transition-colors duration-150"
-                  style={{ color: isRead ? '#1e293b' : '#cbd5e1' }}
-                >
-                  {word}
-                </span>
-                {i < words.length - 1 && ' '}
+              <span
+                key={i}
+                ref={(el) => { charRefs.current[i] = el; }}
+                className="transition-colors duration-150"
+                style={{ color: isRead ? '#1e293b' : '#cbd5e1' }}
+              >
+                {ch}
               </span>
             );
           })}
         </span>
       </div>
 
-      {/* Slider track — large touch target */}
+      {/* Slider track — large touch target, same width as sentence container */}
       <div
-        ref={trackRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -252,7 +250,7 @@ function ReadingTracker({ sentence }) {
         {/* Filled portion */}
         <div
           className="absolute top-1/2 -translate-y-1/2 left-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400"
-          style={{ height: 12, width: `${progress * 100}%` }}
+          style={{ height: 12, width: `${progressFraction * 100}%` }}
         />
         {/* Thumb — big and friendly */}
         <div
@@ -260,7 +258,7 @@ function ReadingTracker({ sentence }) {
           style={{
             width: 52,
             height: 52,
-            left: `calc(${progress * 100}% - 26px)`,
+            left: `calc(${progressFraction * 100}% - 26px)`,
             transition: dragging.current ? 'none' : 'left 0.1s ease-out',
           }}
         >
