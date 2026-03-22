@@ -1,13 +1,17 @@
 import Bubble from './Bubble';
 
-// Snaking pathway positions (percentage-based) — top-left to bottom-right
+// Snaking pathway positions (percentage-based) — 10 bubbles in a snaking grid
 const PATHWAY_POSITIONS = [
-  { x: 25, y: 12 },
-  { x: 65, y: 12 },
-  { x: 75, y: 38 },
-  { x: 35, y: 38 },
-  { x: 25, y: 64 },
-  { x: 65, y: 64 },
+  { x: 20, y: 10 },
+  { x: 50, y: 10 },
+  { x: 80, y: 10 },
+  { x: 80, y: 30 },
+  { x: 50, y: 30 },
+  { x: 20, y: 30 },
+  { x: 20, y: 50 },
+  { x: 50, y: 50 },
+  { x: 80, y: 50 },
+  { x: 50, y: 70 },
 ];
 
 export default function BubbleField({ bubbles, onDrop, dropZoneRefs }) {
@@ -37,7 +41,7 @@ export default function BubbleField({ bubbles, onDrop, dropZoneRefs }) {
         })}
       </svg>
 
-      {/* Render all 6 bubbles */}
+      {/* Render all 10 bubbles */}
       {bubbles.map((bubble, i) => {
         const pos = PATHWAY_POSITIONS[i];
         let state;

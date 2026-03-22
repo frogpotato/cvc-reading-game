@@ -10,7 +10,7 @@ function shuffle(arr) {
 }
 
 function generateBubbles(wordA, wordB) {
-  const words = [wordA, wordA, wordA, wordB, wordB, wordB];
+  const words = [wordA, wordA, wordA, wordA, wordA, wordB, wordB, wordB, wordB, wordB];
   const shuffled = shuffle(words);
 
   return shuffled.map((word, i) => ({
@@ -55,7 +55,7 @@ export default function useGameState(level) {
     setDragonCollected(newDragon);
     setKnightCollected(newKnight);
 
-    const complete = newDragon + newKnight === 6;
+    const complete = newDragon + newKnight === 10;
     return { result: 'correct', isRoundComplete: complete };
   }, [bubbles, wordA, wordB, dragonCollected, knightCollected]);
 
