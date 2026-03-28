@@ -36,11 +36,17 @@ export const SENTENCE_LEVELS = [
     label: "Level 3",
     sentences: [
       { sentence: "the fat cat sat on the rat", scene: "cat-on-rat" },
+      { sentence: "the fat rat is sad.", scene: "sad-rat" },
       { sentence: "the fat cat sat on the mat", scene: "cat-on-mat" },
+      { sentence: "the fat mat is mad.", scene: "mad-mat" },
       { sentence: "the fat rat sat on the cat", scene: "rat-on-cat" },
+      { sentence: "the fat cat is mad.", scene: "mad-cat" },
       { sentence: "the fat rat sat on the mat", scene: "rat-on-mat" },
+      { sentence: "the fat mat is sad.", scene: "sad-mat" },
       { sentence: "the fat bat sat on the cat", scene: "bat-on-cat" },
+      { sentence: "the fat cat is sad.", scene: "sad-cat" },
       { sentence: "the fat bat sat on the mat", scene: "bat-on-mat" },
+      { sentence: "the fat mat is mad.", scene: "mad-mat" },
     ],
   },
   {

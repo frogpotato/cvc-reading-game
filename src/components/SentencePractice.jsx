@@ -413,6 +413,12 @@ const SCENES = {
   'rat-on-mat': RatOnMatScene,
   'bat-on-cat': BatOnCatScene,
   'bat-on-mat': BatOnMatScene,
+  'sad-cat': SadCatScene,
+  'sad-rat': SadRatScene,
+  'sad-mat': SadMatScene,
+  'mad-cat': MadCatScene,
+  'mad-rat': MadRatScene,
+  'mad-mat': MadMatScene,
   dog: DogScene,
   dad: DadScene,
   mum: MumScene,
@@ -1326,6 +1332,73 @@ function SunScene() {
     </div>
   );
 }
+
+/* -------------------------------------------------------
+   SAD / MAD SCENES
+   ------------------------------------------------------- */
+
+function SadAnimalScene({ Animal }) {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes sad-droop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+      `}</style>
+      <div style={{ animation: 'sad-droop 2s ease-in-out infinite' }}>
+        <Animal style={{}} />
+      </div>
+      {/* Tear drops */}
+      <div style={{ position: 'absolute', top: 25, left: '42%', fontSize: 24, animation: 'sad-droop 1.5s ease-in-out infinite' }}>😢</div>
+    </div>
+  );
+}
+
+function MadAnimalScene({ Animal }) {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes mad-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+      `}</style>
+      <div style={{ animation: 'mad-shake 0.5s ease-in-out infinite' }}>
+        <Animal style={{}} />
+      </div>
+      {/* Angry symbol */}
+      <div style={{ position: 'absolute', top: 20, right: '30%', fontSize: 24, animation: 'mad-shake 0.4s ease-in-out infinite' }}>😡</div>
+    </div>
+  );
+}
+
+function SadMatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes sad-droop-mat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+      `}</style>
+      <div style={{ animation: 'sad-droop-mat 2s ease-in-out infinite' }}>
+        <SmallMat style={{ position: 'relative' }} />
+      </div>
+      <div style={{ position: 'absolute', top: 5, left: '50%', marginLeft: -12, fontSize: 24 }}>😢</div>
+    </div>
+  );
+}
+
+function MadMatScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes mad-shake-mat { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+      `}</style>
+      <div style={{ animation: 'mad-shake-mat 0.5s ease-in-out infinite' }}>
+        <SmallMat style={{ position: 'relative' }} />
+      </div>
+      <div style={{ position: 'absolute', top: 5, left: '50%', marginLeft: -12, fontSize: 24 }}>😡</div>
+    </div>
+  );
+}
+
+function SadCatScene() { return <SadAnimalScene Animal={SmallCat} />; }
+function SadRatScene() { return <SadAnimalScene Animal={SmallRat} />; }
+function MadCatScene() { return <MadAnimalScene Animal={SmallCat} />; }
+function MadRatScene() { return <MadAnimalScene Animal={SmallRat} />; }
 
 /* -------------------------------------------------------
    LEVEL 5 SCENES — hit and hid
