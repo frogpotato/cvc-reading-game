@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const ALL_LETTERS = ['d', 'b', 'u', 'e', 'j', 'v', 'w'];
-const FOCUS_LETTERS = ['d', 'u'];
+const ALL_LETTERS = ['d', 'b', 'u', 'e', 'j', 'v'];
 
 const SOUNDS = {
   d: 'duh',
@@ -10,7 +9,6 @@ const SOUNDS = {
   e: 'eh, eh, egg',
   j: 'juh',
   v: 'vvv',
-  w: 'wuh',
 };
 
 const DISPLAY_SOUNDS = {
@@ -20,10 +18,20 @@ const DISPLAY_SOUNDS = {
   e: 'eh',
   j: 'juh',
   v: 'vvv',
-  w: 'wuh',
 };
 
-const LEVEL_COUNTS = [2, 3, 4, 7];
+// Level 1: d vs u (2 letters)
+// Level 2: b vs d focus (2 letters — the tricky pair)
+// Level 3: 3 letters (always includes b and d)
+// Level 4: 4 letters
+// Level 5: all 6
+const LEVELS = [
+  { count: 2, pool: ['d', 'u'] },
+  { count: 2, pool: ['b', 'd'] },
+  { count: 3, pool: ['b', 'd'], fill: ALL_LETTERS },
+  { count: 4, pool: ['b', 'd'], fill: ALL_LETTERS },
+  { count: 6, pool: ALL_LETTERS },
+];
 const STREAK_TO_ADVANCE = 15;
 const CONFETTI_COLORS = ['#f59e0b', '#10b981', '#6366f1', '#ec4899', '#06b6d4', '#f97316'];
 
@@ -127,16 +135,12 @@ export default function LetterPractice({ onBack }) {
   const roundInProgress = useRef(false);
 
   const startRound = useCallback((currentLevel) => {
-    const count = LEVEL_COUNTS[Math.min(currentLevel, LEVEL_COUNTS.length - 1)];
-    // In early levels, bias toward focus letters
-    let pool = ALL_LETTERS;
-    let targetLetter;
-    if (currentLevel <= 1) {
-      targetLetter = FOCUS_LETTERS[Math.floor(Math.random() * FOCUS_LETTERS.length)];
-    } else {
-      targetLetter = ALL_LETTERS[Math.floor(Math.random() * ALL_LETTERS.length)];
-    }
-    const distractors = pickDistractors(targetLetter, count - 1, pool);
+    const lvl = LEVELS[Math.min(currentLevel, LEVELS.length - 1)];
+    const targetLetter = lvl.pool[Math.floor(Math.random() * lvl.pool.length)];
+    // Build distractor pool: prefer lvl.fill if present, else lvl.pool
+    const distractorPool = lvl.fill || lvl.pool;
+    const distractors = pickDistractors(targetLetter, lvl.count - 1, distractorPool);
+    // Ensure b and d are always among choices when the level calls for it
     const allChoices = shuffle([targetLetter, ...distractors]);
     setTarget(targetLetter);
     setChoices(allChoices);
@@ -174,7 +178,7 @@ export default function LetterPractice({ onBack }) {
       setStreak(newStreak);
 
       // Check level up
-      if (newStreak >= STREAK_TO_ADVANCE && level < LEVEL_COUNTS.length - 1) {
+      if (newStreak >= STREAK_TO_ADVANCE && level < LEVELS.length - 1) {
         setTimeout(() => {
           setShowLevelUp(true);
           const newLevel = level + 1;
