@@ -21,12 +21,6 @@ export const SENTENCE_LEVELS = [
       { sentence: "the fat cat", scene: "fat-cat" },
       { sentence: "the fat bat", scene: "fat-bat" },
       { sentence: "the fat rat", scene: "fat-rat" },
-    ],
-  },
-  {
-    label: "Level 3",
-    shuffle: true,
-    sentences: [
       { sentence: "the cat is fat", scene: "fat-cat" },
       { sentence: "the bat is fat", scene: "fat-bat" },
       { sentence: "the rat is fat", scene: "fat-rat" },
@@ -39,7 +33,7 @@ export const SENTENCE_LEVELS = [
     ],
   },
   {
-    label: "Level 4",
+    label: "Level 3",
     sentences: [
       { sentence: "the fat cat sat on the rat", scene: "cat-on-rat" },
       { sentence: "the fat cat sat on the mat", scene: "cat-on-mat" },
@@ -50,7 +44,7 @@ export const SENTENCE_LEVELS = [
     ],
   },
   {
-    label: "Level 5",
+    label: "Level 4",
     sentences: [
       { sentence: "the rat hit the cat", scene: "rat-hit-cat" },
       { sentence: "the cat hit the rat", scene: "cat-hit-rat" },

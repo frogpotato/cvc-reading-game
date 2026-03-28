@@ -10,10 +10,33 @@ const REWARD_GIFS = [
 ];
 
 function shuffleArray(arr) {
+  // Fisher-Yates shuffle, then try to avoid consecutive sentences with the same scene
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
+  }
+  // Spread out sentences that share a scene — retry swaps to break clusters
+  for (let pass = 0; pass < 3; pass++) {
+    for (let i = 1; i < a.length; i++) {
+      if (a[i].scene === a[i - 1].scene) {
+        // Find a non-adjacent item with a different scene to swap with
+        const candidates = [];
+        for (let k = 0; k < a.length; k++) {
+          if (Math.abs(k - i) <= 1) continue;
+          if (a[k].scene !== a[i - 1].scene &&
+              (i + 1 >= a.length || a[k].scene !== a[i + 1]?.scene) &&
+              (k === 0 || a[k - 1]?.scene !== a[i].scene) &&
+              (k === a.length - 1 || a[k + 1]?.scene !== a[i].scene)) {
+            candidates.push(k);
+          }
+        }
+        if (candidates.length > 0) {
+          const swap = candidates[Math.floor(Math.random() * candidates.length)];
+          [a[i], a[swap]] = [a[swap], a[i]];
+        }
+      }
+    }
   }
   return a;
 }
