@@ -1,21 +1,30 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const ALL_LETTERS = ['d', 'b', 'u', 'e', 'j', 'v', 'w', 'x'];
+const ALL_LETTERS = ['d', 'b', 'u', 'e', 'j', 'v', 'w'];
 const FOCUS_LETTERS = ['d', 'u'];
 
 const SOUNDS = {
   d: 'duh',
   b: 'buh',
   u: 'uh',
-  e: 'eh',
+  e: 'eh, eh, egg',
   j: 'juh',
-  v: 'vuh',
+  v: 'vvv',
   w: 'wuh',
-  x: 'ks',
 };
 
-const LEVEL_COUNTS = [2, 3, 4, 8];
-const STREAK_TO_ADVANCE = 3;
+const DISPLAY_SOUNDS = {
+  d: 'duh',
+  b: 'buh',
+  u: 'uh',
+  e: 'eh',
+  j: 'juh',
+  v: 'vvv',
+  w: 'wuh',
+};
+
+const LEVEL_COUNTS = [2, 3, 4, 7];
+const STREAK_TO_ADVANCE = 15;
 const CONFETTI_COLORS = ['#f59e0b', '#10b981', '#6366f1', '#ec4899', '#06b6d4', '#f97316'];
 
 // Pre-generate confetti particle data so it's stable across renders
@@ -44,10 +53,29 @@ function pickDistractors(target, count, pool) {
   return shuffled.slice(0, count);
 }
 
+let cachedVoice = null;
+let voiceSearchDone = false;
+
+function findBritishFemaleVoice() {
+  if (voiceSearchDone) return cachedVoice;
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return null;
+  voiceSearchDone = true;
+  // Prefer British female
+  cachedVoice =
+    voices.find(v => /en.GB/i.test(v.lang) && /female|fiona|kate|serena/i.test(v.name)) ||
+    voices.find(v => /en.GB/i.test(v.lang)) ||
+    voices.find(v => /en/i.test(v.lang) && /female|samantha|karen|moira|tessa/i.test(v.name)) ||
+    null;
+  return cachedVoice;
+}
+
 function speakSound(letter) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(SOUNDS[letter]);
+  const voice = findBritishFemaleVoice();
+  if (voice) utter.voice = voice;
   utter.rate = 0.75;
   utter.pitch = 1.2;
   window.speechSynthesis.speak(utter);
@@ -122,7 +150,16 @@ export default function LetterPractice({ onBack }) {
   }, []);
 
   useEffect(() => {
-    startRound(level);
+    // Ensure voices are loaded before first round
+    const voices = window.speechSynthesis?.getVoices();
+    if (voices && voices.length > 0) {
+      startRound(level);
+    } else {
+      const handler = () => { startRound(level); };
+      window.speechSynthesis?.addEventListener('voiceschanged', handler, { once: true });
+      // Fallback in case event never fires
+      setTimeout(() => startRound(level), 500);
+    }
   }, []);
 
   const handleTap = useCallback((letter) => {
@@ -201,7 +238,7 @@ export default function LetterPractice({ onBack }) {
 
       {/* Prompt */}
       <p className="text-2xl font-extrabold text-indigo-800 mb-2">
-        Tap the letter that says <span className="text-amber-600">"{target ? SOUNDS[target] : ''}"</span>
+        Tap the letter that says <span className="text-amber-600">"{target ? DISPLAY_SOUNDS[target] : ''}"</span>
       </p>
 
       {/* Hear again button */}
