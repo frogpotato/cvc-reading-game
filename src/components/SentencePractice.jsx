@@ -9,8 +9,18 @@ const REWARD_GIFS = [
   'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExajRoZW5kMGYxcGcwN2M2NmswOTFoeTBnbjEyaGR2c2J1bXN6OGpubSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TVNmNzfL8ibYUyeQo8/giphy.gif',
 ];
 
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default function SentencePractice({ onBack }) {
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [sentences, setSentences] = useState([]);
   const [sentenceIdx, setSentenceIdx] = useState(0);
   const [confirmed, setConfirmed] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -35,7 +45,9 @@ export default function SentencePractice({ onBack }) {
               <button
                 key={i}
                 onClick={() => {
+                  const lvl = SENTENCE_LEVELS[i];
                   setSelectedLevel(i);
+                  setSentences(lvl.shuffle ? shuffleArray(lvl.sentences) : lvl.sentences);
                   setSentenceIdx(0);
                   setConfirmed(false);
                   setFinished(false);
@@ -52,8 +64,8 @@ export default function SentencePractice({ onBack }) {
   }
 
   const level = SENTENCE_LEVELS[selectedLevel];
-  const current = level.sentences[sentenceIdx];
-  const isLast = sentenceIdx === level.sentences.length - 1;
+  const current = sentences[sentenceIdx];
+  const isLast = sentenceIdx === sentences.length - 1;
 
   // Celebration screen
   if (finished) {
@@ -79,7 +91,7 @@ export default function SentencePractice({ onBack }) {
 
       {/* Progress dots */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-        {level.sentences.map((_, i) => (
+        {sentences.map((_, i) => (
           <div
             key={i}
             className={`w-3 h-3 rounded-full transition-all ${
@@ -378,6 +390,19 @@ const SCENES = {
   'rat-on-mat': RatOnMatScene,
   'bat-on-cat': BatOnCatScene,
   'bat-on-mat': BatOnMatScene,
+  dog: DogScene,
+  dad: DadScene,
+  mum: MumScene,
+  fox: FoxScene,
+  pig: PigScene,
+  sun: SunScene,
+  'rat-hit-cat': RatHitCatScene,
+  'cat-hit-rat': CatHitRatScene,
+  'bat-hit-cat': BatHitCatScene,
+  'cat-hit-bat': CatHitBatScene,
+  'cat-hid-box': CatHidBoxScene,
+  'rat-hid-box': RatHidBoxScene,
+  'bat-hid-box': BatHidBoxScene,
 };
 
 /* -------------------------------------------------------
@@ -1101,3 +1126,253 @@ function BatBitAppleScene() {
     </div>
   );
 }
+
+/* -------------------------------------------------------
+   NEW LEVEL 1 SCENES — dog, dad, mum, fox, pig, sun
+   ------------------------------------------------------- */
+
+function DogScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes dog-tail { 0%,100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+        @keyframes dog-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+      `}</style>
+      <div style={{ animation: 'dog-bounce 1.5s ease-in-out infinite' }}>
+        <div style={{ position: 'relative', width: 120, height: 80 }}>
+          {/* Body */}
+          <div style={{ position: 'absolute', bottom: 0, left: 15, width: 90, height: 55, background: '#92400e', borderRadius: '50% 50% 30% 30%' }} />
+          <div style={{ position: 'absolute', bottom: 3, left: 30, width: 55, height: 30, background: '#d4a574', borderRadius: '50%' }} />
+          {/* Legs */}
+          <div style={{ position: 'absolute', bottom: -15, left: 25, width: 14, height: 20, background: '#92400e', borderRadius: '0 0 5px 5px' }} />
+          <div style={{ position: 'absolute', bottom: -15, right: 25, width: 14, height: 20, background: '#92400e', borderRadius: '0 0 5px 5px' }} />
+          {/* Head */}
+          <div style={{ position: 'absolute', bottom: 40, left: 20, width: 55, height: 48, background: '#92400e', borderRadius: '50%' }}>
+            <div style={{ position: 'absolute', top: -2, left: -5, width: 20, height: 25, background: '#7c2d12', borderRadius: '50% 50% 30% 30%', transform: 'rotate(-20deg)' }} />
+            <div style={{ position: 'absolute', top: -2, right: -5, width: 20, height: 25, background: '#7c2d12', borderRadius: '50% 50% 30% 30%', transform: 'rotate(20deg)' }} />
+            <div style={{ position: 'absolute', top: 15, left: 10, width: 10, height: 10, background: '#1e293b', borderRadius: '50%' }}>
+              <div style={{ position: 'absolute', top: 2, left: 3, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+            </div>
+            <div style={{ position: 'absolute', top: 15, right: 10, width: 10, height: 10, background: '#1e293b', borderRadius: '50%' }}>
+              <div style={{ position: 'absolute', top: 2, left: 3, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+            </div>
+            <div style={{ position: 'absolute', top: 28, left: '50%', marginLeft: -6, width: 12, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', bottom: -5, left: '50%', marginLeft: -4, width: 8, height: 10, background: '#f472b6', borderRadius: '0 0 50% 50%' }} />
+          </div>
+          {/* Tail */}
+          <div style={{ position: 'absolute', bottom: 30, right: -5, width: 8, height: 30, background: '#92400e', borderRadius: 10, transformOrigin: 'bottom center', animation: 'dog-tail 0.4s ease-in-out infinite' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DadScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes dad-wave { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-20deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 100, height: 160 }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 15, width: 70, height: 80, background: '#3b82f6', borderRadius: '20px 20px 10px 10px' }} />
+        <div style={{ position: 'absolute', bottom: -20, left: 20, width: 22, height: 25, background: '#1e3a5f', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', bottom: -20, right: 20, width: 22, height: 25, background: '#1e3a5f', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', top: 85, left: -8, width: 18, height: 40, background: '#3b82f6', borderRadius: 10 }} />
+        <div style={{ position: 'absolute', top: 75, right: -12, width: 18, height: 45, background: '#3b82f6', borderRadius: 10, transformOrigin: 'top center', animation: 'dad-wave 1s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: 75, left: 18, width: 60, height: 60, background: '#fcd9b6', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: 20, left: 12, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 20, right: 12, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 35, left: '50%', marginLeft: -10, width: 20, height: 10, borderBottom: '3px solid #1e293b', borderRadius: '0 0 50% 50%' }} />
+          <div style={{ position: 'absolute', top: -3, left: 5, right: 5, height: 20, background: '#78350f', borderRadius: '20px 20px 0 0' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MumScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes mum-sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 100, height: 160, animation: 'mum-sway 2s ease-in-out infinite' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 10, width: 80, height: 90, background: '#e879f9', borderRadius: '20px 20px 35px 35px' }} />
+        <div style={{ position: 'absolute', bottom: -18, left: 25, width: 18, height: 22, background: '#fcd9b6', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', bottom: -18, right: 25, width: 18, height: 22, background: '#fcd9b6', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', top: 75, left: -5, width: 16, height: 38, background: '#fcd9b6', borderRadius: 10 }} />
+        <div style={{ position: 'absolute', top: 75, right: -5, width: 16, height: 38, background: '#fcd9b6', borderRadius: 10 }} />
+        <div style={{ position: 'absolute', bottom: 85, left: 18, width: 60, height: 60, background: '#fcd9b6', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: 20, left: 12, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 20, right: 12, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 35, left: '50%', marginLeft: -10, width: 20, height: 10, borderBottom: '3px solid #e11d48', borderRadius: '0 0 50% 50%' }} />
+          <div style={{ position: 'absolute', top: -5, left: -5, right: -5, height: 35, background: '#7c2d12', borderRadius: '30px 30px 0 0' }} />
+          <div style={{ position: 'absolute', top: 15, left: -10, width: 15, height: 35, background: '#7c2d12', borderRadius: '0 0 0 15px' }} />
+          <div style={{ position: 'absolute', top: 15, right: -10, width: 15, height: 35, background: '#7c2d12', borderRadius: '0 0 15px 0' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FoxScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes fox-tail { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+        @keyframes fox-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+      `}</style>
+      <div style={{ animation: 'fox-bounce 2s ease-in-out infinite' }}>
+        <div style={{ position: 'relative', width: 130, height: 90 }}>
+          <div style={{ position: 'absolute', bottom: 0, left: 20, width: 80, height: 50, background: '#ea580c', borderRadius: '50% 50% 30% 30%' }} />
+          <div style={{ position: 'absolute', bottom: 3, left: 35, width: 45, height: 25, background: 'white', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', bottom: -12, left: 30, width: 12, height: 16, background: '#1e293b', borderRadius: '0 0 4px 4px' }} />
+          <div style={{ position: 'absolute', bottom: -12, right: 30, width: 12, height: 16, background: '#1e293b', borderRadius: '0 0 4px 4px' }} />
+          <div style={{ position: 'absolute', bottom: 38, left: 25, width: 50, height: 42, background: '#ea580c', borderRadius: '45%' }}>
+            <div style={{ position: 'absolute', top: -10, left: 2, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid #ea580c' }} />
+            <div style={{ position: 'absolute', top: -10, right: 2, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid #ea580c' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -12, width: 24, height: 20, background: 'white', borderRadius: '40% 40% 50% 50%' }} />
+            <div style={{ position: 'absolute', top: 14, left: 8, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', top: 14, right: 8, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', bottom: 8, left: '50%', marginLeft: -4, width: 8, height: 6, background: '#1e293b', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', bottom: 15, right: -15, width: 35, height: 18, background: '#ea580c', borderRadius: '50% 50% 50% 20%', transformOrigin: 'left center', animation: 'fox-tail 1s ease-in-out infinite' }}>
+            <div style={{ position: 'absolute', right: 0, bottom: 0, width: 12, height: 18, background: 'white', borderRadius: '0 50% 50% 0' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PigScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes pig-tail { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
+        @keyframes pig-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+      `}</style>
+      <div style={{ animation: 'pig-bounce 1.8s ease-in-out infinite' }}>
+        <div style={{ position: 'relative', width: 120, height: 90 }}>
+          <div style={{ position: 'absolute', bottom: 0, left: 15, width: 85, height: 55, background: '#f9a8d4', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', bottom: -12, left: 25, width: 14, height: 16, background: '#ec4899', borderRadius: '0 0 5px 5px' }} />
+          <div style={{ position: 'absolute', bottom: -12, right: 25, width: 14, height: 16, background: '#ec4899', borderRadius: '0 0 5px 5px' }} />
+          <div style={{ position: 'absolute', bottom: 35, left: 22, width: 55, height: 48, background: '#f9a8d4', borderRadius: '50%' }}>
+            <div style={{ position: 'absolute', top: -5, left: 5, width: 18, height: 18, background: '#ec4899', borderRadius: '50% 50% 20% 50%', transform: 'rotate(-20deg)' }} />
+            <div style={{ position: 'absolute', top: -5, right: 5, width: 18, height: 18, background: '#ec4899', borderRadius: '50% 50% 50% 20%', transform: 'rotate(20deg)' }} />
+            <div style={{ position: 'absolute', top: 14, left: 10, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', top: 14, right: 10, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+            <div style={{ position: 'absolute', bottom: 6, left: '50%', marginLeft: -12, width: 24, height: 16, background: '#ec4899', borderRadius: '50%' }}>
+              <div style={{ position: 'absolute', top: 5, left: 4, width: 5, height: 5, background: '#be185d', borderRadius: '50%' }} />
+              <div style={{ position: 'absolute', top: 5, right: 4, width: 5, height: 5, background: '#be185d', borderRadius: '50%' }} />
+            </div>
+          </div>
+          <div style={{ position: 'absolute', bottom: 30, right: 5, width: 20, height: 20, border: '3px solid #ec4899', borderRadius: '50%', borderBottom: 'none', borderLeft: 'none', transformOrigin: 'bottom left', animation: 'pig-tail 1s ease-in-out infinite' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SunScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes sun-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes sun-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 140, height: 140 }}>
+        <div style={{ position: 'absolute', inset: 0, animation: 'sun-spin 20s linear infinite' }}>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} style={{
+              position: 'absolute', top: '50%', left: '50%', width: 6, height: 30, background: '#fbbf24',
+              borderRadius: 3, transformOrigin: '50% 0%', transform: `rotate(${i * 30}deg) translateY(-55px)`,
+            }} />
+          ))}
+        </div>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', marginTop: -45, marginLeft: -45, width: 90, height: 90, background: '#fbbf24', borderRadius: '50%', animation: 'sun-pulse 3s ease-in-out infinite' }}>
+          <div style={{ position: 'absolute', top: 28, left: 18, width: 10, height: 10, background: '#1e293b', borderRadius: '50%' }}>
+            <div style={{ position: 'absolute', top: 2, left: 3, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 28, right: 18, width: 10, height: 10, background: '#1e293b', borderRadius: '50%' }}>
+            <div style={{ position: 'absolute', top: 2, left: 3, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+          </div>
+          <div style={{ position: 'absolute', top: 50, left: '50%', marginLeft: -14, width: 28, height: 14, borderBottom: '4px solid #92400e', borderRadius: '0 0 50% 50%' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------
+   LEVEL 5 SCENES — hit and hid
+   ------------------------------------------------------- */
+
+function HitScene({ attacker: Attacker, victim: Victim }) {
+  return (
+    <div style={{ position: 'relative', width: 250, height: 180 }}>
+      <style>{`
+        @keyframes hit-smack {
+          0%,100% { transform: translateX(0); }
+          30% { transform: translateX(40px); }
+          50% { transform: translateX(35px); }
+        }
+        @keyframes hit-recoil {
+          0%,100% { transform: translateX(0) rotate(0deg); }
+          30% { transform: translateX(0); }
+          50% { transform: translateX(15px) rotate(8deg); }
+        }
+        @keyframes hit-stars {
+          0% { opacity: 0; transform: scale(0); }
+          40% { opacity: 1; transform: scale(1.2); }
+          100% { opacity: 0; transform: scale(0.5) translateY(-20px); }
+        }
+      `}</style>
+      <div style={{ position: 'absolute', bottom: 20, left: 10, animation: 'hit-smack 1.5s ease-in-out infinite' }}>
+        <Attacker style={{}} />
+      </div>
+      <div style={{ position: 'absolute', bottom: 20, right: 10, animation: 'hit-recoil 1.5s ease-in-out infinite' }}>
+        <Victim style={{}} />
+      </div>
+      <div style={{ position: 'absolute', top: 30, left: '50%', marginLeft: -10, fontSize: 28, animation: 'hit-stars 1.5s ease-in-out infinite' }}>💥</div>
+    </div>
+  );
+}
+
+function RatHitCatScene() { return <HitScene attacker={SmallRat} victim={SmallCat} />; }
+function CatHitRatScene() { return <HitScene attacker={SmallCat} victim={SmallRat} />; }
+function BatHitCatScene() { return <HitScene attacker={SmallBat} victim={SmallCat} />; }
+function CatHitBatScene() { return <HitScene attacker={SmallCat} victim={SmallBat} />; }
+
+function HidInBoxScene({ Animal }) {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180 }}>
+      <style>{`
+        @keyframes hid-peek {
+          0%,70% { transform: translateY(0); }
+          80% { transform: translateY(-20px); }
+          90% { transform: translateY(-18px); }
+          100% { transform: translateY(0); }
+        }
+        @keyframes box-lid {
+          0%,70% { transform: rotate(0deg); }
+          80% { transform: rotate(-15deg); }
+          90% { transform: rotate(-12deg); }
+          100% { transform: rotate(0deg); }
+        }
+      `}</style>
+      <div style={{ position: 'absolute', bottom: 55, left: '50%', marginLeft: -40, animation: 'hid-peek 3s ease-in-out infinite', zIndex: 1 }}>
+        <Animal style={{}} />
+      </div>
+      <div style={{ position: 'absolute', bottom: 10, left: '50%', marginLeft: -55, width: 110, height: 70, background: '#92400e', borderRadius: 8, border: '3px solid #78350f', zIndex: 2 }}>
+        <div style={{ position: 'absolute', top: 25, left: 15, right: 15, height: 3, background: '#78350f', borderRadius: 2 }} />
+        <div style={{ position: 'absolute', top: 40, left: 15, right: 15, height: 3, background: '#78350f', borderRadius: 2 }} />
+      </div>
+      <div style={{ position: 'absolute', bottom: 73, left: '50%', marginLeft: -60, width: 120, height: 16, background: '#b45309', borderRadius: 4, border: '2px solid #78350f', zIndex: 3, transformOrigin: 'left bottom', animation: 'box-lid 3s ease-in-out infinite' }} />
+    </div>
+  );
+}
+
+function CatHidBoxScene() { return <HidInBoxScene Animal={SmallCat} />; }
+function RatHidBoxScene() { return <HidInBoxScene Animal={SmallRat} />; }
+function BatHidBoxScene() { return <HidInBoxScene Animal={SmallBat} />; }
