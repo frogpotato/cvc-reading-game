@@ -406,6 +406,7 @@ const SCENES = {
   bat: BatScene,
   lip: LipScene,
   hat: HatScene,
+  hip: HipScene,
   mat: MatScene,
   'cat-bit-cake': CatBitCakeScene,
   'rat-bit-cheese': RatBitCheeseScene,
@@ -624,6 +625,37 @@ function HatScene() {
         <div style={{ position: 'absolute', top: 15, right: 25, width: 16, height: 16, color: '#fbbf24', fontSize: 16, animation: 'hat-sparkle 1.5s ease-in-out infinite' }}>✦</div>
         <div style={{ position: 'absolute', top: 40, left: 30, width: 12, height: 12, color: '#fbbf24', fontSize: 12, animation: 'hat-sparkle 1.5s ease-in-out infinite 0.5s' }}>✦</div>
         <div style={{ position: 'absolute', top: 5, left: 60, width: 14, height: 14, color: '#fbbf24', fontSize: 14, animation: 'hat-sparkle 1.5s ease-in-out infinite 1s' }}>✦</div>
+      </div>
+    </div>
+  );
+}
+
+function HipScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes hip-sway {
+          0%,100% { transform: rotate(-5deg); }
+          50% { transform: rotate(5deg); }
+        }
+        @keyframes hip-sparkle {
+          0%,100% { opacity: 0; transform: scale(0.5); }
+          50% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+      <div style={{ position: 'relative', width: 120, height: 160, animation: 'hip-sway 1.5s ease-in-out infinite' }}>
+        {/* Torso */}
+        <div style={{ position: 'absolute', top: 0, left: 25, width: 70, height: 80, background: '#60a5fa', borderRadius: '30px 30px 10px 10px' }} />
+        {/* Hips - highlighted */}
+        <div style={{ position: 'absolute', top: 70, left: 10, width: 100, height: 50, background: '#f472b6', borderRadius: '50%', border: '4px solid #ec4899' }} />
+        {/* Arrow pointing at hip */}
+        <div style={{ position: 'absolute', top: 80, right: -30, fontSize: 28 }}>👈</div>
+        {/* Legs */}
+        <div style={{ position: 'absolute', bottom: 0, left: 22, width: 25, height: 50, background: '#1e3a5f', borderRadius: '0 0 10px 10px' }} />
+        <div style={{ position: 'absolute', bottom: 0, right: 22, width: 25, height: 50, background: '#1e3a5f', borderRadius: '0 0 10px 10px' }} />
+        {/* Sparkles */}
+        <div style={{ position: 'absolute', top: 65, left: -10, fontSize: 14, animation: 'hip-sparkle 1.2s ease-in-out infinite' }}>✦</div>
+        <div style={{ position: 'absolute', top: 85, left: -15, fontSize: 10, animation: 'hip-sparkle 1.2s ease-in-out infinite 0.4s' }}>✦</div>
       </div>
     </div>
   );
