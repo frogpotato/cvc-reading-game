@@ -130,14 +130,8 @@ export default function SentencePractice({ onBack }) {
       </div>
 
       {/* Scene area */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden gap-4">
-        {confirmed && (
-          Array.isArray(current.scene) ? (
-            current.scene.map((s, i) => <SceneRenderer key={i} sceneKey={s} />)
-          ) : (
-            <SceneRenderer sceneKey={current.scene} />
-          )
-        )}
+      <div className="flex-1 flex items-center justify-center overflow-hidden">
+        {confirmed && <SceneRenderer sceneKey={current.scene} />}
       </div>
 
       {/* Bottom controls */}
