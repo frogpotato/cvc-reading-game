@@ -413,6 +413,10 @@ const SCENES = {
   bin: BinScene,
   pin: PinScene,
   nan: NanScene,
+  fan: FanScene,
+  pit: PitScene,
+  mit: MitScene,
+  pan: PanScene,
   mat: MatScene,
   'cat-bit-cake': CatBitCakeScene,
   'rat-bit-cheese': RatBitCheeseScene,
@@ -819,6 +823,144 @@ function NanScene() {
           <div style={{ position: 'absolute', top: -5, left: 0, right: 0, height: 30, background: '#d1d5db', borderRadius: '30px 30px 0 0' }} />
           <div style={{ position: 'absolute', top: -15, left: '50%', marginLeft: -14, width: 28, height: 28, background: '#d1d5db', borderRadius: '50%' }} />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function FanScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes fan-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes fan-breeze {
+          0%,100% { transform: translateX(0) scaleX(1); opacity: 0.3; }
+          50% { transform: translateX(30px) scaleX(1.5); opacity: 0; }
+        }
+      `}</style>
+      <div style={{ position: 'relative', width: 140, height: 160 }}>
+        {/* Stand */}
+        <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -20, width: 40, height: 8, background: '#6b7280', borderRadius: 4 }} />
+        <div style={{ position: 'absolute', bottom: 8, left: '50%', marginLeft: -4, width: 8, height: 70, background: '#9ca3af', borderRadius: 4 }} />
+        {/* Fan cage */}
+        <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -55, width: 110, height: 110, borderRadius: '50%', border: '4px solid #d1d5db', background: 'rgba(255,255,255,0.3)' }}>
+          {/* Spinning blades */}
+          <div style={{ position: 'absolute', inset: 8, animation: 'fan-spin 0.6s linear infinite' }}>
+            {[0, 90, 180, 270].map(deg => (
+              <div key={deg} style={{
+                position: 'absolute', top: '50%', left: '50%',
+                width: 38, height: 14, marginTop: -7, marginLeft: -2,
+                background: 'linear-gradient(90deg, #60a5fa, #3b82f6)',
+                borderRadius: '0 50% 50% 0',
+                transformOrigin: 'left center',
+                transform: `rotate(${deg}deg)`,
+              }} />
+            ))}
+            {/* Center hub */}
+            <div style={{ position: 'absolute', top: '50%', left: '50%', marginTop: -8, marginLeft: -8, width: 16, height: 16, background: '#1e3a5f', borderRadius: '50%' }} />
+          </div>
+        </div>
+        {/* Breeze lines */}
+        {[0, 1, 2].map(i => (
+          <div key={i} style={{
+            position: 'absolute', top: 25 + i * 20, right: -10,
+            width: 30, height: 3, background: '#93c5fd', borderRadius: 3,
+            animation: `fan-breeze 0.8s ease-out ${i * 0.15}s infinite`,
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PitScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes pit-dust {
+          0%,100% { opacity: 0; transform: translateY(0) scale(0.5); }
+          50% { opacity: 0.4; transform: translateY(-10px) scale(1); }
+        }
+      `}</style>
+      <div style={{ position: 'relative', width: 160, height: 120 }}>
+        {/* Ground surface */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 20, background: '#65a30d', borderRadius: '4px 4px 0 0' }} />
+        {/* Pit hole */}
+        <div style={{ position: 'absolute', top: 15, left: 20, right: 20, height: 90, background: 'linear-gradient(180deg, #78350f, #451a03)', borderRadius: '0 0 20px 20px', border: '3px solid #92400e', borderTop: 'none' }}>
+          {/* Depth shading */}
+          <div style={{ position: 'absolute', top: 10, left: 5, right: 5, height: 15, background: 'rgba(0,0,0,0.2)', borderRadius: 4 }} />
+          <div style={{ position: 'absolute', top: 30, left: 10, right: 10, height: 10, background: 'rgba(0,0,0,0.15)', borderRadius: 4 }} />
+          {/* Rocks at bottom */}
+          <div style={{ position: 'absolute', bottom: 8, left: 15, width: 14, height: 10, background: '#78716c', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', bottom: 5, left: 35, width: 18, height: 12, background: '#a8a29e', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', bottom: 10, right: 20, width: 12, height: 8, background: '#78716c', borderRadius: '50%' }} />
+        </div>
+        {/* Dirt edges */}
+        <div style={{ position: 'absolute', top: 12, left: 10, width: 20, height: 12, background: '#92400e', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: 10, right: 10, width: 18, height: 10, background: '#92400e', borderRadius: '50%' }} />
+        {/* Dust particles */}
+        <div style={{ position: 'absolute', top: 20, left: 30, width: 6, height: 6, background: '#d4a574', borderRadius: '50%', animation: 'pit-dust 3s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', top: 25, right: 35, width: 4, height: 4, background: '#d4a574', borderRadius: '50%', animation: 'pit-dust 3s ease-in-out 1s infinite' }} />
+      </div>
+    </div>
+  );
+}
+
+function MitScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes mit-wave { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(10deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 100, height: 130, animation: 'mit-wave 1.5s ease-in-out infinite' }}>
+        {/* Mitten body */}
+        <div style={{ position: 'absolute', bottom: 0, left: 10, width: 70, height: 90, background: 'linear-gradient(135deg, #f87171, #ef4444)', borderRadius: '30px 30px 35px 35px', border: '3px solid #dc2626' }} />
+        {/* Thumb */}
+        <div style={{ position: 'absolute', bottom: 40, left: -10, width: 35, height: 45, background: 'linear-gradient(135deg, #f87171, #ef4444)', borderRadius: '20px 10px 10px 20px', border: '3px solid #dc2626', transform: 'rotate(-20deg)' }} />
+        {/* Cuff */}
+        <div style={{ position: 'absolute', bottom: -5, left: 5, width: 80, height: 25, background: '#fbbf24', borderRadius: '0 0 15px 15px', border: '2px solid #f59e0b' }}>
+          {/* Cuff pattern */}
+          <div style={{ position: 'absolute', top: 5, left: 8, right: 8, height: 3, background: '#f59e0b', borderRadius: 2 }} />
+          <div style={{ position: 'absolute', top: 12, left: 8, right: 8, height: 3, background: '#f59e0b', borderRadius: 2 }} />
+        </div>
+        {/* Snowflake decoration */}
+        <div style={{ position: 'absolute', top: 30, left: '50%', marginLeft: -8, fontSize: 20, color: 'white', opacity: 0.7 }}>❄</div>
+      </div>
+    </div>
+  );
+}
+
+function PanScene() {
+  return (
+    <div style={{ position: 'relative', width: 220, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes pan-sizzle {
+          0% { opacity: 0; transform: translateY(0) scale(0.5); }
+          50% { opacity: 0.6; transform: translateY(-15px) scale(1); }
+          100% { opacity: 0; transform: translateY(-30px) scale(0.3); }
+        }
+        @keyframes pan-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 200, height: 100, animation: 'pan-bounce 2s ease-in-out infinite' }}>
+        {/* Handle */}
+        <div style={{ position: 'absolute', top: 25, right: -40, width: 60, height: 16, background: 'linear-gradient(180deg, #78716c, #57534e)', borderRadius: '0 8px 8px 0', border: '2px solid #44403c' }}>
+          <div style={{ position: 'absolute', top: 3, right: 5, width: 8, height: 8, background: '#ef4444', borderRadius: '50%' }} />
+        </div>
+        {/* Pan body */}
+        <div style={{ position: 'absolute', top: 10, left: 0, width: 140, height: 50, background: 'linear-gradient(180deg, #4b5563, #374151)', borderRadius: '10px 10px 20px 20px', border: '3px solid #1f2937' }}>
+          {/* Inner surface */}
+          <div style={{ position: 'absolute', top: 5, left: 8, right: 8, height: 35, background: 'linear-gradient(180deg, #6b7280, #4b5563)', borderRadius: '6px 6px 15px 15px' }} />
+          {/* Shine */}
+          <div style={{ position: 'absolute', top: 8, left: 15, width: 30, height: 8, background: 'rgba(255,255,255,0.15)', borderRadius: '50%' }} />
+        </div>
+        {/* Steam/sizzle */}
+        {[0, 1, 2].map(i => (
+          <div key={i} style={{
+            position: 'absolute', top: 0, left: 25 + i * 30,
+            width: 8, height: 8, background: 'rgba(200,200,200,0.5)', borderRadius: '50%',
+            animation: `pan-sizzle 1.5s ease-out ${i * 0.4}s infinite`,
+          }} />
+        ))}
       </div>
     </div>
   );
