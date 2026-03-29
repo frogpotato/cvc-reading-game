@@ -2,8 +2,6 @@ export const SENTENCE_LEVELS = [
   {
     label: "Level 1",
     sentences: [
-      { sentence: "a dog", scene: "dog" },
-      { sentence: "a dad", scene: "dad" },
       { sentence: "a pig", scene: "pig" },
       { sentence: "a lip", scene: "lip" },
       { sentence: "a hat", scene: "hat" },
