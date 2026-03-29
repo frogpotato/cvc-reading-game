@@ -407,6 +407,12 @@ const SCENES = {
   lip: LipScene,
   hat: HatScene,
   hip: HipScene,
+  man: ManScene,
+  can: CanScene,
+  tin: TinScene,
+  bin: BinScene,
+  pin: PinScene,
+  nan: NanScene,
   mat: MatScene,
   'cat-bit-cake': CatBitCakeScene,
   'rat-bit-cheese': RatBitCheeseScene,
@@ -656,6 +662,163 @@ function HipScene() {
         {/* Sparkles */}
         <div style={{ position: 'absolute', top: 65, left: -10, fontSize: 14, animation: 'hip-sparkle 1.2s ease-in-out infinite' }}>✦</div>
         <div style={{ position: 'absolute', top: 85, left: -15, fontSize: 10, animation: 'hip-sparkle 1.2s ease-in-out infinite 0.4s' }}>✦</div>
+      </div>
+    </div>
+  );
+}
+
+function ManScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes man-wave { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-25deg); } }
+        @keyframes man-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 100, height: 160, animation: 'man-bounce 2s ease-in-out infinite' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 15, width: 70, height: 80, background: '#22c55e', borderRadius: '20px 20px 10px 10px' }} />
+        <div style={{ position: 'absolute', bottom: -20, left: 20, width: 22, height: 25, background: '#1e3a5f', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', bottom: -20, right: 20, width: 22, height: 25, background: '#1e3a5f', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', top: 85, left: -8, width: 18, height: 40, background: '#22c55e', borderRadius: 10 }} />
+        <div style={{ position: 'absolute', top: 75, right: -12, width: 18, height: 45, background: '#22c55e', borderRadius: 10, transformOrigin: 'top center', animation: 'man-wave 1.2s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: 75, left: 18, width: 60, height: 60, background: '#fcd9b6', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: 20, left: 12, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 20, right: 12, width: 8, height: 8, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 35, left: '50%', marginLeft: -10, width: 20, height: 10, borderBottom: '3px solid #1e293b', borderRadius: '0 0 50% 50%' }} />
+          <div style={{ position: 'absolute', top: -3, left: 5, right: 5, height: 18, background: '#1e293b', borderRadius: '20px 20px 0 0' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CanScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes can-shine { 0%,100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+        @keyframes can-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 90, height: 120, animation: 'can-bounce 2s ease-in-out infinite' }}>
+        {/* Can body */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: 90, height: 110, background: 'linear-gradient(135deg, #ef4444, #dc2626)', borderRadius: '8px 8px 12px 12px', border: '2px solid #b91c1c' }} />
+        {/* Top rim */}
+        <div style={{ position: 'absolute', top: 0, left: -3, width: 96, height: 14, background: '#a8a29e', borderRadius: '4px 4px 2px 2px', border: '2px solid #78716c' }} />
+        {/* Label */}
+        <div style={{ position: 'absolute', top: 25, left: 8, right: 8, height: 50, background: '#fef3c7', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 24, fontWeight: 'bold', color: '#dc2626' }}>🍅</span>
+        </div>
+        {/* Shine */}
+        <div style={{ position: 'absolute', top: 5, left: 10, width: 12, height: 80, background: 'rgba(255,255,255,0.25)', borderRadius: 10, animation: 'can-shine 2s ease-in-out infinite' }} />
+      </div>
+    </div>
+  );
+}
+
+function TinScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes tin-shine { 0%,100% { opacity: 0.2; } 50% { opacity: 0.6; } }
+        @keyframes tin-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 80, height: 100, animation: 'tin-bounce 2.2s ease-in-out infinite' }}>
+        {/* Tin body */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, width: 80, height: 95, background: 'linear-gradient(135deg, #d4d4d8, #a1a1aa)', borderRadius: '6px 6px 10px 10px', border: '2px solid #71717a' }} />
+        {/* Top rim */}
+        <div style={{ position: 'absolute', top: 0, left: -3, width: 86, height: 12, background: '#a8a29e', borderRadius: '3px 3px 1px 1px', border: '2px solid #78716c' }} />
+        {/* Label */}
+        <div style={{ position: 'absolute', top: 20, left: 6, right: 6, height: 45, background: '#bfdbfe', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 22, fontWeight: 'bold', color: '#2563eb' }}>🐟</span>
+        </div>
+        {/* Shine */}
+        <div style={{ position: 'absolute', top: 5, left: 8, width: 10, height: 70, background: 'rgba(255,255,255,0.3)', borderRadius: 8, animation: 'tin-shine 2s ease-in-out infinite' }} />
+      </div>
+    </div>
+  );
+}
+
+function BinScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes bin-wobble { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 100, height: 140, animation: 'bin-wobble 2s ease-in-out infinite' }}>
+        {/* Bin body — tapered */}
+        <div style={{ position: 'absolute', bottom: 0, left: 10, width: 80, height: 110, background: 'linear-gradient(180deg, #6b7280, #4b5563)', borderRadius: '5px 5px 12px 12px', border: '2px solid #374151' }} />
+        {/* Lid */}
+        <div style={{ position: 'absolute', top: 0, left: 5, width: 90, height: 18, background: '#4b5563', borderRadius: '8px 8px 2px 2px', border: '2px solid #374151' }}>
+          <div style={{ position: 'absolute', top: -8, left: '50%', marginLeft: -10, width: 20, height: 10, background: '#6b7280', borderRadius: '6px 6px 0 0', border: '2px solid #374151' }} />
+        </div>
+        {/* Horizontal lines */}
+        <div style={{ position: 'absolute', top: 40, left: 15, right: 15, height: 2, background: '#374151', borderRadius: 1 }} />
+        <div style={{ position: 'absolute', top: 65, left: 15, right: 15, height: 2, background: '#374151', borderRadius: 1 }} />
+        <div style={{ position: 'absolute', top: 90, left: 15, right: 15, height: 2, background: '#374151', borderRadius: 1 }} />
+        {/* Rubbish peeking out */}
+        <div style={{ position: 'absolute', top: 10, left: 20, fontSize: 16, transform: 'rotate(-15deg)' }}>🍌</div>
+        <div style={{ position: 'absolute', top: 5, right: 20, fontSize: 14, transform: 'rotate(10deg)' }}>📄</div>
+      </div>
+    </div>
+  );
+}
+
+function PinScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes pin-bounce { 0%,100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(-8px) rotate(-5deg); } }
+        @keyframes pin-sparkle {
+          0%,100% { opacity: 0; transform: scale(0.5); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+      `}</style>
+      <div style={{ position: 'relative', width: 50, height: 150, animation: 'pin-bounce 1.8s ease-in-out infinite' }}>
+        {/* Pin head */}
+        <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -18, width: 36, height: 36, background: 'linear-gradient(135deg, #ef4444, #dc2626)', borderRadius: '50%', border: '2px solid #b91c1c', boxShadow: '0 2px 8px rgba(239,68,68,0.4)' }}>
+          <div style={{ position: 'absolute', top: 6, left: 8, width: 8, height: 8, background: 'rgba(255,255,255,0.4)', borderRadius: '50%' }} />
+        </div>
+        {/* Pin shaft */}
+        <div style={{ position: 'absolute', top: 34, left: '50%', marginLeft: -3, width: 6, height: 100, background: 'linear-gradient(180deg, #d4d4d8, #a1a1aa)', borderRadius: '2px 2px 0 0' }} />
+        {/* Pin point */}
+        <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -4, width: 0, height: 0, borderLeft: '4px solid transparent', borderRight: '4px solid transparent', borderTop: '12px solid #a1a1aa' }} />
+        {/* Sparkles */}
+        <div style={{ position: 'absolute', top: 5, right: -20, fontSize: 12, animation: 'pin-sparkle 1.5s ease-in-out infinite' }}>✨</div>
+        <div style={{ position: 'absolute', top: 15, left: -18, fontSize: 10, animation: 'pin-sparkle 1.5s ease-in-out infinite 0.5s' }}>✨</div>
+      </div>
+    </div>
+  );
+}
+
+function NanScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes nan-sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 100, height: 160, animation: 'nan-sway 2.5s ease-in-out infinite' }}>
+        {/* Dress */}
+        <div style={{ position: 'absolute', bottom: 0, left: 8, width: 84, height: 90, background: '#c084fc', borderRadius: '15px 15px 35px 35px' }} />
+        {/* Legs */}
+        <div style={{ position: 'absolute', bottom: -18, left: 22, width: 18, height: 22, background: '#fcd9b6', borderRadius: '0 0 8px 8px' }} />
+        <div style={{ position: 'absolute', bottom: -18, right: 22, width: 18, height: 22, background: '#fcd9b6', borderRadius: '0 0 8px 8px' }} />
+        {/* Arms */}
+        <div style={{ position: 'absolute', top: 75, left: -5, width: 16, height: 35, background: '#fcd9b6', borderRadius: 10 }} />
+        <div style={{ position: 'absolute', top: 75, right: -5, width: 16, height: 35, background: '#fcd9b6', borderRadius: 10 }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 85, left: 18, width: 60, height: 60, background: '#fcd9b6', borderRadius: '50%' }}>
+          {/* Glasses */}
+          <div style={{ position: 'absolute', top: 18, left: 6, width: 18, height: 16, border: '2px solid #78716c', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 18, right: 6, width: 18, height: 16, border: '2px solid #78716c', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 24, left: 24, width: 8, height: 2, background: '#78716c' }} />
+          {/* Eyes behind glasses */}
+          <div style={{ position: 'absolute', top: 23, left: 11, width: 6, height: 6, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 23, right: 11, width: 6, height: 6, background: '#1e293b', borderRadius: '50%' }} />
+          {/* Smile */}
+          <div style={{ position: 'absolute', top: 38, left: '50%', marginLeft: -8, width: 16, height: 8, borderBottom: '3px solid #e11d48', borderRadius: '0 0 50% 50%' }} />
+          {/* Grey hair in a bun */}
+          <div style={{ position: 'absolute', top: -5, left: 0, right: 0, height: 30, background: '#d1d5db', borderRadius: '30px 30px 0 0' }} />
+          <div style={{ position: 'absolute', top: -15, left: '50%', marginLeft: -14, width: 28, height: 28, background: '#d1d5db', borderRadius: '50%' }} />
+        </div>
       </div>
     </div>
   );
