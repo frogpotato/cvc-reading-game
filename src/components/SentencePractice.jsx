@@ -417,6 +417,10 @@ const SCENES = {
   pit: PitScene,
   mit: MitScene,
   pan: PanScene,
+  pen: PenScene,
+  hen: HenScene,
+  net: NetScene,
+  pet: PetScene,
   mat: MatScene,
   'cat-bit-cake': CatBitCakeScene,
   'rat-bit-cheese': RatBitCheeseScene,
@@ -961,6 +965,138 @@ function PanScene() {
             animation: `pan-sizzle 1.5s ease-out ${i * 0.4}s infinite`,
           }} />
         ))}
+      </div>
+    </div>
+  );
+}
+
+function PenScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes pen-write {
+          0%,100% { transform: rotate(15deg) translateX(0); }
+          25% { transform: rotate(15deg) translateX(10px); }
+          50% { transform: rotate(15deg) translateX(5px); }
+          75% { transform: rotate(15deg) translateX(12px); }
+        }
+      `}</style>
+      <div style={{ position: 'relative', width: 30, height: 150, animation: 'pen-write 2s ease-in-out infinite' }}>
+        {/* Cap */}
+        <div style={{ position: 'absolute', top: 0, left: 3, width: 24, height: 20, background: '#1e40af', borderRadius: '6px 6px 2px 2px' }}>
+          <div style={{ position: 'absolute', top: -6, left: '50%', marginLeft: -3, width: 6, height: 8, background: '#1e40af', borderRadius: '3px 3px 0 0' }} />
+        </div>
+        {/* Body */}
+        <div style={{ position: 'absolute', top: 18, left: 3, width: 24, height: 100, background: 'linear-gradient(180deg, #3b82f6, #2563eb)', borderRadius: 3 }}>
+          <div style={{ position: 'absolute', top: 5, left: 3, width: 4, height: 80, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
+        </div>
+        {/* Tip */}
+        <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -8, width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: '20px solid #fbbf24' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -3, width: 0, height: 0, borderLeft: '3px solid transparent', borderRight: '3px solid transparent', borderTop: '8px solid #1e293b' }} />
+      </div>
+    </div>
+  );
+}
+
+function HenScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes hen-peck { 0%,100% { transform: translateY(0) rotate(0deg); } 40% { transform: translateY(8px) rotate(10deg); } 50% { transform: translateY(0) rotate(0deg); } }
+        @keyframes hen-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      `}</style>
+      <div style={{ animation: 'hen-bob 1.5s ease-in-out infinite' }}>
+        <div style={{ position: 'relative', width: 120, height: 100 }}>
+          {/* Body */}
+          <div style={{ position: 'absolute', bottom: 0, left: 15, width: 80, height: 55, background: '#92400e', borderRadius: '50% 50% 40% 40%' }} />
+          <div style={{ position: 'absolute', bottom: 3, left: 25, width: 55, height: 30, background: '#fcd9b6', borderRadius: '50%' }} />
+          {/* Tail feathers */}
+          <div style={{ position: 'absolute', bottom: 25, right: 5, width: 25, height: 35, background: '#78350f', borderRadius: '0 50% 10% 50%', transform: 'rotate(20deg)' }} />
+          {/* Legs */}
+          <div style={{ position: 'absolute', bottom: -12, left: 35, width: 4, height: 15, background: '#f59e0b' }} />
+          <div style={{ position: 'absolute', bottom: -12, right: 35, width: 4, height: 15, background: '#f59e0b' }} />
+          {/* Head */}
+          <div style={{ position: 'absolute', bottom: 40, left: 10, width: 40, height: 35, background: '#92400e', borderRadius: '50%', animation: 'hen-peck 2s ease-in-out infinite' }}>
+            {/* Comb */}
+            <div style={{ position: 'absolute', top: -8, left: 10, width: 20, height: 12, background: '#ef4444', borderRadius: '50% 50% 20% 20%' }} />
+            {/* Eye */}
+            <div style={{ position: 'absolute', top: 10, left: 8, width: 7, height: 7, background: '#1e293b', borderRadius: '50%' }} />
+            {/* Beak */}
+            <div style={{ position: 'absolute', top: 16, left: -8, width: 14, height: 8, background: '#f59e0b', borderRadius: '50% 0 0 50%' }} />
+            {/* Wattle */}
+            <div style={{ position: 'absolute', bottom: 2, left: 8, width: 8, height: 10, background: '#ef4444', borderRadius: '0 0 50% 50%' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NetScene() {
+  return (
+    <div style={{ position: 'relative', width: 180, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes net-sway { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 120, height: 160, animation: 'net-sway 2s ease-in-out infinite' }}>
+        {/* Handle */}
+        <div style={{ position: 'absolute', bottom: 0, left: '50%', marginLeft: -5, width: 10, height: 90, background: 'linear-gradient(180deg, #92400e, #78350f)', borderRadius: 4 }} />
+        {/* Hoop */}
+        <div style={{ position: 'absolute', top: 0, left: '50%', marginLeft: -45, width: 90, height: 80, border: '4px solid #92400e', borderRadius: '50% 50% 0 0', borderBottom: 'none' }} />
+        {/* Net mesh */}
+        <svg style={{ position: 'absolute', top: 35, left: '50%', marginLeft: -40, width: 80, height: 55 }} viewBox="0 0 80 55">
+          {/* Diagonal lines one way */}
+          {[0, 1, 2, 3, 4, 5].map(i => (
+            <line key={`a${i}`} x1={i * 16} y1="0" x2={i * 16 - 20} y2="55" stroke="#d1d5db" strokeWidth="1.5" />
+          ))}
+          {/* Diagonal lines other way */}
+          {[0, 1, 2, 3, 4, 5].map(i => (
+            <line key={`b${i}`} x1={i * 16} y1="0" x2={i * 16 + 20} y2="55" stroke="#d1d5db" strokeWidth="1.5" />
+          ))}
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function PetScene() {
+  return (
+    <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes pet-wag { 0%,100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+        @keyframes pet-hand {
+          0%,100% { transform: translateY(0) rotate(0deg); }
+          30% { transform: translateY(5px) rotate(5deg); }
+          60% { transform: translateY(-2px) rotate(-3deg); }
+        }
+        @keyframes pet-happy { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+      `}</style>
+      <div style={{ position: 'relative', width: 140, height: 130 }}>
+        {/* Dog body */}
+        <div style={{ position: 'absolute', bottom: 0, left: 20, width: 80, height: 50, background: '#d4a574', borderRadius: '50% 50% 30% 30%', animation: 'pet-happy 1s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: -12, left: 30, width: 12, height: 16, background: '#d4a574', borderRadius: '0 0 4px 4px' }} />
+        <div style={{ position: 'absolute', bottom: -12, right: 30, width: 12, height: 16, background: '#d4a574', borderRadius: '0 0 4px 4px' }} />
+        {/* Head */}
+        <div style={{ position: 'absolute', bottom: 38, left: 25, width: 45, height: 40, background: '#d4a574', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: -2, left: -4, width: 16, height: 20, background: '#b8860b', borderRadius: '50% 50% 30% 30%', transform: 'rotate(-15deg)' }} />
+          <div style={{ position: 'absolute', top: -2, right: -4, width: 16, height: 20, background: '#b8860b', borderRadius: '50% 50% 30% 30%', transform: 'rotate(15deg)' }} />
+          <div style={{ position: 'absolute', top: 13, left: 8, width: 7, height: 7, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 13, right: 8, width: 7, height: 7, background: '#1e293b', borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: 22, left: '50%', marginLeft: -5, width: 10, height: 6, background: '#1e293b', borderRadius: '50%' }} />
+          {/* Happy tongue */}
+          <div style={{ position: 'absolute', bottom: -4, left: '50%', marginLeft: -3, width: 6, height: 8, background: '#f472b6', borderRadius: '0 0 50% 50%' }} />
+        </div>
+        {/* Wagging tail */}
+        <div style={{ position: 'absolute', bottom: 28, right: 10, width: 6, height: 25, background: '#d4a574', borderRadius: 8, transformOrigin: 'bottom center', animation: 'pet-wag 0.3s ease-in-out infinite' }} />
+        {/* Hand petting */}
+        <div style={{ position: 'absolute', top: -5, right: 10, animation: 'pet-hand 1.5s ease-in-out infinite' }}>
+          <div style={{ width: 40, height: 25, background: '#fcd9b6', borderRadius: '12px 12px 8px 8px', border: '2px solid #e8c9a0' }} />
+          <div style={{ position: 'absolute', bottom: -4, left: 5, width: 7, height: 10, background: '#fcd9b6', borderRadius: '0 0 4px 4px', border: '1px solid #e8c9a0' }} />
+          <div style={{ position: 'absolute', bottom: -5, left: 14, width: 7, height: 12, background: '#fcd9b6', borderRadius: '0 0 4px 4px', border: '1px solid #e8c9a0' }} />
+          <div style={{ position: 'absolute', bottom: -5, left: 23, width: 7, height: 11, background: '#fcd9b6', borderRadius: '0 0 4px 4px', border: '1px solid #e8c9a0' }} />
+        </div>
+        {/* Hearts */}
+        <div style={{ position: 'absolute', top: 5, left: 5, fontSize: 16, animation: 'pet-happy 1.2s ease-in-out infinite' }}>❤️</div>
       </div>
     </div>
   );

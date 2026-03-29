@@ -16,6 +16,10 @@ export const SENTENCE_LEVELS = [
       { sentence: "a pit", scene: "pit" },
       { sentence: "a mit", scene: "mit" },
       { sentence: "a pan", scene: "pan" },
+      { sentence: "a pen", scene: "pen" },
+      { sentence: "a hen", scene: "hen" },
+      { sentence: "a net", scene: "net" },
+      { sentence: "a pet", scene: "pet" },
     ],
   },
   {
