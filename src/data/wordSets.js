@@ -132,6 +132,8 @@ const worlds = [
       ['red', 'pet'],
       ['net', 'get'],
       ['set', 'hen'],
+      ['and', 'ant'],
+      ['hit', 'hid'],
     ],
   },
   {
