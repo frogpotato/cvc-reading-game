@@ -125,14 +125,8 @@ export default function SentencePractice({ onBack }) {
       </div>
 
       {/* Sentence display with reading tracker */}
-      <div className="flex-shrink-0 pt-14 pb-2 px-6 flex flex-col items-center justify-center gap-1">
-        {Array.isArray(current.sentence) ? (
-          current.sentence.map((s, i) => (
-            <ReadingTracker key={`${selectedLevel}-${sentenceIdx}-${i}`} sentence={s} />
-          ))
-        ) : (
-          <ReadingTracker key={`${selectedLevel}-${sentenceIdx}`} sentence={current.sentence} />
-        )}
+      <div className="flex-shrink-0 pt-14 pb-2 px-6 flex items-center justify-center">
+        <ReadingTracker key={`${selectedLevel}-${sentenceIdx}`} sentence={current.sentence} />
       </div>
 
       {/* Scene area */}
