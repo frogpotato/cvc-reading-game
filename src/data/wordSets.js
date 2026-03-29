@@ -124,6 +124,8 @@ const worlds = [
   {
     name: 'e words set 1',
     pairs: [
+      ['and', 'ant'],
+      ['hit', 'hid'],
       ['red', 'net'],
       ['pet', 'set'],
       ['get', 'ten'],
@@ -132,8 +134,6 @@ const worlds = [
       ['red', 'pet'],
       ['net', 'get'],
       ['set', 'hen'],
-      ['and', 'ant'],
-      ['hit', 'hid'],
     ],
   },
   {
