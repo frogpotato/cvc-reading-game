@@ -1447,31 +1447,108 @@ function MadRatScene() { return <MadAnimalScene Animal={SmallRat} />; }
 
 function HitScene({ attacker: Attacker, victim: Victim }) {
   return (
-    <div style={{ position: 'relative', width: 250, height: 180 }}>
+    <div style={{ position: 'relative', width: 300, height: 220 }}>
       <style>{`
-        @keyframes hit-smack {
-          0%,100% { transform: translateX(0); }
-          30% { transform: translateX(40px); }
-          50% { transform: translateX(35px); }
+        @keyframes hit-windup {
+          0% { transform: translateX(0) rotate(0deg) scale(1); }
+          15% { transform: translateX(-20px) rotate(-8deg) scale(1.05); }
+          35% { transform: translateX(70px) rotate(5deg) scale(1.1); }
+          45% { transform: translateX(60px) rotate(0deg) scale(1); }
+          60% { transform: translateX(55px) rotate(-2deg) scale(1); }
+          100% { transform: translateX(0) rotate(0deg) scale(1); }
         }
-        @keyframes hit-recoil {
-          0%,100% { transform: translateX(0) rotate(0deg); }
-          30% { transform: translateX(0); }
-          50% { transform: translateX(15px) rotate(8deg); }
+        @keyframes hit-victim {
+          0%,35% { transform: translateX(0) rotate(0deg) scale(1); }
+          40% { transform: translateX(8px) rotate(-3deg) scale(0.95); }
+          45% { transform: translateX(35px) rotate(15deg) scale(0.9); }
+          55% { transform: translateX(30px) rotate(12deg) scale(0.95); }
+          65% { transform: translateX(15px) rotate(5deg) scale(1); }
+          80% { transform: translateX(5px) rotate(0deg) scale(1); }
+          100% { transform: translateX(0) rotate(0deg) scale(1); }
         }
-        @keyframes hit-stars {
-          0% { opacity: 0; transform: scale(0); }
-          40% { opacity: 1; transform: scale(1.2); }
-          100% { opacity: 0; transform: scale(0.5) translateY(-20px); }
+        @keyframes hit-impact {
+          0%,30% { opacity: 0; transform: scale(0) rotate(0deg); }
+          38% { opacity: 1; transform: scale(1.8) rotate(-10deg); }
+          50% { opacity: 1; transform: scale(1.3) rotate(5deg); }
+          65% { opacity: 0.5; transform: scale(1) rotate(0deg); }
+          75%,100% { opacity: 0; transform: scale(0.5); }
+        }
+        @keyframes hit-spark {
+          0%,30% { opacity: 0; transform: translate(0,0) scale(0); }
+          40% { opacity: 1; transform: translate(var(--sx), var(--sy)) scale(1); }
+          70% { opacity: 0.5; transform: translate(calc(var(--sx) * 1.8), calc(var(--sy) * 1.8)) scale(0.5); }
+          100% { opacity: 0; transform: translate(calc(var(--sx) * 2.2), calc(var(--sy) * 2.2)) scale(0); }
+        }
+        @keyframes hit-shake {
+          0%,30%,100% { transform: translateX(0); }
+          38% { transform: translateX(-4px); }
+          42% { transform: translateX(4px); }
+          46% { transform: translateX(-3px); }
+          50% { transform: translateX(3px); }
+          54% { transform: translateX(-1px); }
+          58% { transform: translateX(0); }
+        }
+        @keyframes hit-dust {
+          0%,35% { opacity: 0; transform: translateY(0) scale(0); }
+          45% { opacity: 0.6; transform: translateY(-5px) scale(1); }
+          70% { opacity: 0.2; transform: translateY(-20px) scale(1.5); }
+          100% { opacity: 0; transform: translateY(-35px) scale(2); }
         }
       `}</style>
-      <div style={{ position: 'absolute', bottom: 20, left: 10, animation: 'hit-smack 1.5s ease-in-out infinite' }}>
-        <Attacker style={{}} />
+      {/* Screen shake container */}
+      <div style={{ position: 'relative', width: '100%', height: '100%', animation: 'hit-shake 2.5s ease-in-out infinite' }}>
+        {/* Ground shadow */}
+        <div style={{ position: 'absolute', bottom: 12, left: 30, right: 30, height: 14, background: 'radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+
+        {/* Attacker */}
+        <div style={{ position: 'absolute', bottom: 25, left: 20, animation: 'hit-windup 2.5s ease-in-out infinite', zIndex: 3 }}>
+          <Attacker style={{}} />
+        </div>
+
+        {/* Victim */}
+        <div style={{ position: 'absolute', bottom: 25, right: 20, animation: 'hit-victim 2.5s ease-in-out infinite', zIndex: 2 }}>
+          <Victim style={{}} />
+        </div>
+
+        {/* Impact burst */}
+        <div style={{ position: 'absolute', top: 50, left: '50%', marginLeft: -20, fontSize: 40, animation: 'hit-impact 2.5s ease-in-out infinite', zIndex: 5 }}>💥</div>
+
+        {/* Flying sparks */}
+        {[
+          { sx: '-30px', sy: '-25px', color: '#fbbf24', delay: '0s' },
+          { sx: '25px', sy: '-35px', color: '#f97316', delay: '0.05s' },
+          { sx: '-20px', sy: '15px', color: '#ef4444', delay: '0.1s' },
+          { sx: '35px', sy: '-10px', color: '#fbbf24', delay: '0.08s' },
+          { sx: '-35px', sy: '-5px', color: '#f97316', delay: '0.12s' },
+          { sx: '15px', sy: '20px', color: '#ef4444', delay: '0.06s' },
+        ].map((spark, i) => (
+          <div key={i} style={{
+            position: 'absolute', top: 75, left: '48%',
+            width: 8, height: 8, borderRadius: '50%',
+            background: spark.color,
+            '--sx': spark.sx, '--sy': spark.sy,
+            animation: `hit-spark 2.5s ease-out ${spark.delay} infinite`,
+            zIndex: 4,
+          }} />
+        ))}
+
+        {/* Dust clouds */}
+        <div style={{ position: 'absolute', bottom: 20, left: '45%', width: 25, height: 25, background: 'radial-gradient(circle, rgba(200,180,150,0.5), transparent)', borderRadius: '50%', animation: 'hit-dust 2.5s ease-out infinite', zIndex: 1 }} />
+        <div style={{ position: 'absolute', bottom: 22, left: '55%', width: 20, height: 20, background: 'radial-gradient(circle, rgba(200,180,150,0.4), transparent)', borderRadius: '50%', animation: 'hit-dust 2.5s ease-out 0.1s infinite', zIndex: 1 }} />
+
+        {/* Comic action lines */}
+        {[0, 1, 2, 3, 4].map(i => (
+          <div key={`line-${i}`} style={{
+            position: 'absolute', top: 55 + i * 12, left: '52%',
+            width: 30 + i * 5, height: 2,
+            background: `rgba(239,68,68,${0.4 - i * 0.06})`,
+            borderRadius: 2,
+            transform: `rotate(${-20 + i * 10}deg)`,
+            animation: `hit-impact 2.5s ease-in-out infinite`,
+            zIndex: 4,
+          }} />
+        ))}
       </div>
-      <div style={{ position: 'absolute', bottom: 20, right: 10, animation: 'hit-recoil 1.5s ease-in-out infinite' }}>
-        <Victim style={{}} />
-      </div>
-      <div style={{ position: 'absolute', top: 30, left: '50%', marginLeft: -10, fontSize: 28, animation: 'hit-stars 1.5s ease-in-out infinite' }}>💥</div>
     </div>
   );
 }
@@ -1483,29 +1560,113 @@ function CatHitBatScene() { return <HitScene attacker={SmallCat} victim={SmallBa
 
 function HidInBoxScene({ Animal }) {
   return (
-    <div style={{ position: 'relative', width: 200, height: 180 }}>
+    <div style={{ position: 'relative', width: 240, height: 220 }}>
       <style>{`
-        @keyframes hid-peek {
-          0%,70% { transform: translateY(0); }
-          80% { transform: translateY(-20px); }
-          90% { transform: translateY(-18px); }
-          100% { transform: translateY(0); }
+        @keyframes hid-animal {
+          0% { transform: translateY(0) scale(1); opacity: 1; }
+          15% { transform: translateY(-10px) scale(1.05); opacity: 1; }
+          30% { transform: translateY(5px) scale(0.95); opacity: 1; }
+          45% { transform: translateY(20px) scale(0.9); opacity: 0.9; }
+          55% { transform: translateY(45px) scale(0.8); opacity: 0.6; }
+          65%,85% { transform: translateY(55px) scale(0.75); opacity: 0; }
+          88% { transform: translateY(40px) scale(0.8); opacity: 0.3; }
+          92% { transform: translateY(30px) scale(0.85); opacity: 0.8; }
+          95% { transform: translateY(35px) scale(0.82); opacity: 0.5; }
+          100% { transform: translateY(55px) scale(0.75); opacity: 0; }
         }
-        @keyframes box-lid {
-          0%,70% { transform: rotate(0deg); }
-          80% { transform: rotate(-15deg); }
-          90% { transform: rotate(-12deg); }
-          100% { transform: rotate(0deg); }
+        @keyframes hid-eyes {
+          0%,55% { opacity: 0; }
+          70%,82% { opacity: 1; }
+          85% { opacity: 0; }
+          90%,93% { opacity: 1; }
+          96%,100% { opacity: 0; }
+        }
+        @keyframes hid-lid-close {
+          0%,25% { transform: rotate(0deg); }
+          35% { transform: rotate(-35deg); }
+          50% { transform: rotate(-30deg); }
+          60%,82% { transform: rotate(0deg); }
+          86% { transform: rotate(-20deg); }
+          92% { transform: rotate(-15deg); }
+          96%,100% { transform: rotate(0deg); }
+        }
+        @keyframes hid-box-bounce {
+          0%,40% { transform: translateY(0); }
+          48% { transform: translateY(-3px); }
+          55%,100% { transform: translateY(0); }
+        }
+        @keyframes hid-question {
+          0%,60% { opacity: 0; transform: translateY(0) scale(0); }
+          70% { opacity: 1; transform: translateY(-10px) scale(1.2); }
+          80% { opacity: 1; transform: translateY(-15px) scale(1); }
+          90% { opacity: 0.5; transform: translateY(-25px) scale(0.8); }
+          100% { opacity: 0; transform: translateY(-35px) scale(0.5); }
+        }
+        @keyframes hid-dust-puff {
+          0%,50% { opacity: 0; transform: scale(0); }
+          60% { opacity: 0.4; transform: scale(1); }
+          80% { opacity: 0.15; transform: scale(2); }
+          100% { opacity: 0; transform: scale(2.5); }
         }
       `}</style>
-      <div style={{ position: 'absolute', bottom: 55, left: '50%', marginLeft: -40, animation: 'hid-peek 3s ease-in-out infinite', zIndex: 1 }}>
+
+      {/* Animal dropping into box */}
+      <div style={{ position: 'absolute', bottom: 80, left: '50%', marginLeft: -40, animation: 'hid-animal 4s ease-in-out infinite', zIndex: 4 }}>
         <Animal style={{}} />
       </div>
-      <div style={{ position: 'absolute', bottom: 10, left: '50%', marginLeft: -55, width: 110, height: 70, background: '#92400e', borderRadius: 8, border: '3px solid #78350f', zIndex: 2 }}>
-        <div style={{ position: 'absolute', top: 25, left: 15, right: 15, height: 3, background: '#78350f', borderRadius: 2 }} />
-        <div style={{ position: 'absolute', top: 40, left: 15, right: 15, height: 3, background: '#78350f', borderRadius: 2 }} />
+
+      {/* Peeking eyes inside box */}
+      <div style={{ position: 'absolute', bottom: 50, left: '50%', marginLeft: -15, width: 30, height: 15, zIndex: 3, animation: 'hid-eyes 4s ease-in-out infinite' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, width: 10, height: 10, background: '#1e293b', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: 2, left: 3, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+        </div>
+        <div style={{ position: 'absolute', right: 0, top: 0, width: 10, height: 10, background: '#1e293b', borderRadius: '50%' }}>
+          <div style={{ position: 'absolute', top: 2, left: 3, width: 4, height: 4, background: 'white', borderRadius: '50%' }} />
+        </div>
       </div>
-      <div style={{ position: 'absolute', bottom: 73, left: '50%', marginLeft: -60, width: 120, height: 16, background: '#b45309', borderRadius: 4, border: '2px solid #78350f', zIndex: 3, transformOrigin: 'left bottom', animation: 'box-lid 3s ease-in-out infinite' }} />
+
+      {/* Box body */}
+      <div style={{ position: 'absolute', bottom: 15, left: '50%', marginLeft: -60, width: 120, height: 75, animation: 'hid-box-bounce 4s ease-in-out infinite', zIndex: 5 }}>
+        <div style={{
+          width: '100%', height: '100%',
+          background: 'linear-gradient(180deg, #b45309, #92400e)',
+          borderRadius: 10, border: '3px solid #78350f',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        }}>
+          {/* Wood grain lines */}
+          <div style={{ position: 'absolute', top: 18, left: 12, right: 12, height: 3, background: '#78350f', borderRadius: 2, opacity: 0.6 }} />
+          <div style={{ position: 'absolute', top: 35, left: 12, right: 12, height: 3, background: '#78350f', borderRadius: 2, opacity: 0.6 }} />
+          <div style={{ position: 'absolute', top: 52, left: 12, right: 12, height: 3, background: '#78350f', borderRadius: 2, opacity: 0.6 }} />
+          {/* Metal corners */}
+          <div style={{ position: 'absolute', top: 3, left: 3, width: 14, height: 14, border: '2px solid #a8a29e', borderRight: 'none', borderBottom: 'none', borderRadius: '4px 0 0 0' }} />
+          <div style={{ position: 'absolute', top: 3, right: 3, width: 14, height: 14, border: '2px solid #a8a29e', borderLeft: 'none', borderBottom: 'none', borderRadius: '0 4px 0 0' }} />
+          <div style={{ position: 'absolute', bottom: 3, left: 3, width: 14, height: 14, border: '2px solid #a8a29e', borderRight: 'none', borderTop: 'none', borderRadius: '0 0 0 4px' }} />
+          <div style={{ position: 'absolute', bottom: 3, right: 3, width: 14, height: 14, border: '2px solid #a8a29e', borderLeft: 'none', borderTop: 'none', borderRadius: '0 0 4px 0' }} />
+        </div>
+      </div>
+
+      {/* Lid */}
+      <div style={{
+        position: 'absolute', bottom: 83, left: '50%', marginLeft: -65,
+        width: 130, height: 18,
+        background: 'linear-gradient(180deg, #d97706, #b45309)',
+        borderRadius: 5, border: '2px solid #78350f',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+        transformOrigin: 'left bottom',
+        animation: 'hid-lid-close 4s ease-in-out infinite',
+        zIndex: 6,
+      }}>
+        {/* Handle */}
+        <div style={{ position: 'absolute', top: -6, left: '50%', marginLeft: -10, width: 20, height: 8, background: '#a8a29e', borderRadius: '4px 4px 0 0', border: '2px solid #78716c' }} />
+      </div>
+
+      {/* Dust puffs when landing in box */}
+      <div style={{ position: 'absolute', bottom: 80, left: '30%', width: 20, height: 20, background: 'radial-gradient(circle, rgba(200,180,150,0.5), transparent)', borderRadius: '50%', animation: 'hid-dust-puff 4s ease-out infinite', zIndex: 3 }} />
+      <div style={{ position: 'absolute', bottom: 82, right: '30%', width: 18, height: 18, background: 'radial-gradient(circle, rgba(200,180,150,0.4), transparent)', borderRadius: '50%', animation: 'hid-dust-puff 4s ease-out 0.15s infinite', zIndex: 3 }} />
+
+      {/* Question marks */}
+      <div style={{ position: 'absolute', top: 10, right: 30, fontSize: 22, color: '#6366f1', fontWeight: 'bold', animation: 'hid-question 4s ease-out infinite' }}>?</div>
+      <div style={{ position: 'absolute', top: 20, right: 55, fontSize: 16, color: '#818cf8', fontWeight: 'bold', animation: 'hid-question 4s ease-out 0.3s infinite' }}>?</div>
     </div>
   );
 }
