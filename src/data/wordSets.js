@@ -121,6 +121,32 @@ const worlds = [
       ['hut', 'nut'],
     ],
   },
+  {
+    name: 'e words set 1',
+    pairs: [
+      ['red', 'net'],
+      ['pet', 'set'],
+      ['get', 'ten'],
+      ['hen', 'fed'],
+      ['peg', 'met'],
+      ['red', 'pet'],
+      ['net', 'get'],
+      ['set', 'hen'],
+    ],
+  },
+  {
+    name: 'e words set 2',
+    pairs: [
+      ['fed', 'red'],
+      ['ten', 'hen'],
+      ['met', 'net'],
+      ['peg', 'get'],
+      ['pet', 'fed'],
+      ['set', 'met'],
+      ['red', 'ten'],
+      ['hen', 'peg'],
+    ],
+  },
 ];
 
 // Flatten worlds into levels: each level = { wordA, wordB, icon, theme, worldName }
