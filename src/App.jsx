@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import GameScreen from './components/GameScreen';
 import SentencePractice from './components/SentencePractice';
 import LetterPractice from './components/LetterPractice';
+import SentencePractice2 from './components/SentencePractice2';
 import allWorlds from './data/wordSets';
 
 function loadCompleted() {
@@ -46,7 +47,7 @@ function findFirstIncompleteWorld(completedLevels) {
 }
 
 export default function App() {
-  // pages: 'home' | 'dragon' | 'game' | 'sentences' | 'letters'
+  // pages: 'home' | 'dragon' | 'game' | 'sentences' | 'sentences2' | 'letters'
   const [page, setPage] = useState('home');
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [completedLevels, setCompletedLevels] = useState(loadCompleted);
@@ -97,6 +98,7 @@ export default function App() {
       <MainMenu
         onDragonQuest={() => setPage('dragon')}
         onSentencePractice={() => setPage('sentences')}
+        onSentencePractice2={() => setPage('sentences2')}
         onLetterPractice={() => setPage('letters')}
       />
     );
@@ -104,6 +106,10 @@ export default function App() {
 
   if (page === 'sentences') {
     return <SentencePractice onBack={() => setPage('home')} />;
+  }
+
+  if (page === 'sentences2') {
+    return <SentencePractice2 onBack={() => setPage('home')} />;
   }
 
   if (page === 'letters') {

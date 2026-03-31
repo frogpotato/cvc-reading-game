@@ -8,7 +8,9 @@
       "Bash(git:*)",
       "Bash(/opt/homebrew/bin/gh repo:*)",
       "Bash(/opt/homebrew/bin/gh api:*)",
-      "Bash(/opt/homebrew/bin/gh run:*)"
+      "Bash(/opt/homebrew/bin/gh run:*)",
+      "Bash(gh run:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
