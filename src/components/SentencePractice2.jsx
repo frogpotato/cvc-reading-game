@@ -52,6 +52,35 @@ function generateSentences(patterns, count) {
   return result;
 }
 
+// Collect ALL patterns across all levels
+const allPatterns = levels.flatMap(l => l.patterns);
+
+// Generate a "Random 20" — at least 1 from every pattern type, rest weighted random
+function generateRandom20() {
+  const result = [];
+  // 1 random sentence from each pattern type
+  for (const pattern of allPatterns) {
+    const idx = Math.floor(Math.random() * pattern.sentences.length);
+    result.push(pattern.sentences[idx]);
+  }
+  // Fill remaining slots with weighted picks across all patterns
+  while (result.length < SENTENCES_PER_LEVEL) {
+    let sentence;
+    let attempts = 0;
+    do {
+      sentence = weightedPick(allPatterns);
+      attempts++;
+    } while (result.length > 0 && sentence === result[result.length - 1] && attempts < 20);
+    result.push(sentence);
+  }
+  // Shuffle so the guaranteed ones aren't always first
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
 /* ============================================================
    READING TRACKER
    ============================================================ */
@@ -245,6 +274,21 @@ export default function SentencePractice2({ onBack }) {
           </h1>
           <p className="text-2xl text-indigo-400 mb-8">Choose a level!</p>
           <div className="flex flex-col gap-4 w-full max-w-sm">
+            <button
+              onClick={() => {
+                setSelectedLevel('random');
+                setSentences(generateRandom20());
+                setSentenceIdx(0);
+                setConfirmed(false);
+                setFinished(false);
+              }}
+              className="w-full py-6 rounded-2xl bg-gradient-to-br from-violet-200 to-purple-300 border-4 border-violet-400 shadow-lg text-2xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all"
+            >
+              <span className="text-4xl">🎲</span>
+              <br />
+              Random 20
+            </button>
+
             {levels.map((level, i) => (
               <button
                 key={level.key}
