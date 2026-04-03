@@ -181,35 +181,69 @@ function Confetti() {
 }
 
 /* ============================================================
-   VICTORY SCREEN
+   VICTORY SCREEN — present that opens to reveal a GIF
    ============================================================ */
+const REWARD_GIFS = [
+  'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTBjczlhbTR0MDl6OXJza3UyMzE2NzBreG0zcXRuZDY1b2cyZm5sMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iviU5Hwac8f04/giphy.gif',
+  'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzg1cHNvcmxvYjFhMmVsaDk2OTl6cmlpOW52d2JtNmJwcHQyMTU5YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MOWPkhRAUbR7i/giphy.gif',
+  'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2wzZTU2eWc3a3I2aXJxYmczZ3pja2s1cjRqM2U3bmZtOG9xMmlzMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wCykTNtEJonzlUZAra/giphy.gif',
+  'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExczR3YmtrazZldWo5ZTk1NDhiNXUxN3B6dXdvZWs0YnQ4MWN0eGJwNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/x7ne0scFlQMGTjYgvf/giphy.gif',
+];
+
 function VictoryScreen({ onComplete }) {
+  const [phase, setPhase] = useState('present'); // 'present' | 'gif'
+  const [gif] = useState(() => REWARD_GIFS[Math.floor(Math.random() * REWARD_GIFS.length)]);
+  const [countdown, setCountdown] = useState(15);
+
   useEffect(() => {
-    const t = setTimeout(onComplete, 4000);
-    return () => clearTimeout(t);
-  }, [onComplete]);
+    if (phase !== 'gif') return;
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) { clearInterval(timer); onComplete(); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [phase, onComplete]);
+
+  if (phase === 'present') {
+    return (
+      <motion.div className="absolute inset-0 z-40 flex flex-col items-center justify-center"
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-sm" />
+        <Confetti />
+        <motion.div className="z-50 text-center"
+          initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ duration: 0.5 }}>
+          <h2 className="text-5xl font-extrabold text-indigo-700 drop-shadow-md mb-4">Amazing!</h2>
+          <p className="text-2xl text-amber-600 font-bold mb-6">You earned a present!</p>
+        </motion.div>
+        <motion.button onClick={() => setPhase('gif')}
+          className="z-50 text-[10rem] leading-none transition-all hover:scale-110 active:scale-95"
+          initial={{ scale: 0, rotate: -10 }}
+          animate={{ scale: [0, 1.2, 1], rotate: [-10, 5, -3, 3, 0] }}
+          transition={{ duration: 0.8 }}
+          style={{ filter: 'drop-shadow(0 0 20px rgba(251,191,36,0.6))' }}>
+          🎁
+        </motion.button>
+        <p className="z-50 text-xl text-amber-600 mt-4 font-bold animate-pulse">Tap to open!</p>
+      </motion.div>
+    );
+  }
 
   return (
-    <motion.div className="absolute inset-0 z-40 flex flex-col items-center justify-center"
+    <motion.div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-4"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className="absolute inset-0 bg-white/30 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-300 via-indigo-200 to-sky-300" />
       <Confetti />
-      <motion.div className="z-50 text-center"
-        initial={{ scale: 0 }} animate={{ scale: [0, 1.3, 1] }} transition={{ duration: 0.5 }}>
-        <div className="text-8xl mb-4">🎉</div>
-        <h2 className="text-5xl font-extrabold text-indigo-700 drop-shadow-md">Amazing!</h2>
-        <p className="text-2xl text-amber-600 font-bold mt-2">All words matched!</p>
-      </motion.div>
-      <div className="z-50 flex gap-4 mt-6">
-        {ZONE_EMOJIS.map((e, i) => (
-          <motion.div key={i} className="text-6xl"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: [0, -20, 0], opacity: 1 }}
-            transition={{ delay: 0.3 + i * 0.15, y: { repeat: Infinity, duration: 0.6, delay: 0.3 + i * 0.15 } }}>
-            {e}
-          </motion.div>
-        ))}
+      <h1 className="z-50 text-4xl font-extrabold text-indigo-700 mb-4 drop-shadow-md">🎉 Your Reward! 🎉</h1>
+      <div className="z-50 rounded-3xl overflow-hidden shadow-2xl border-4 border-yellow-400 max-w-lg w-full">
+        <img src={gif} alt="Reward!" className="w-full" style={{ display: 'block' }} />
       </div>
+      <p className="z-50 text-lg text-indigo-400 mt-4 font-bold">Back to levels in {countdown}s...</p>
+      <button onClick={onComplete}
+        className="z-50 mt-3 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-5 py-2 text-lg shadow-md transition-all hover:scale-105 active:scale-95">
+        Skip
+      </button>
     </motion.div>
   );
 }
