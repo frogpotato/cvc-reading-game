@@ -203,6 +203,86 @@ const sentenceSets = {
       },
     ],
   },
+  level7: {
+    name: "Mud Mishaps",
+    patterns: [
+      {
+        type: "got_mud_on",
+        weight: 2,
+        sentences: [
+          "the hen got mud on his hip",
+          "the pig got mud on his lip",
+          "the cat got mud on his hat",
+          "the rat got mud on his pen",
+          "the fox got mud on his pup",
+          "the bat got mud on his bin",
+          "the hen got mud on his net",
+          "the pig got mud on his pan",
+          "the pup got mud on his bed",
+          "the ant got mud on his leg",
+        ],
+      },
+      {
+        type: "big_hop_in_mud",
+        weight: 2,
+        sentences: [
+          "sam did a big hop in the mud",
+          "the pup did a big hop in the mud",
+          "the pig did a big hop in the mud",
+          "the hen did a big hop in the mud",
+          "the rat did a big hop in the mud",
+          "the fox did a big hop in the mud",
+          "the cat did a big hop in the mud",
+        ],
+      },
+    ],
+  },
+
+  level8: {
+    name: "Ran and Fell",
+    patterns: [
+      {
+        type: "ran_and_fell",
+        weight: 2,
+        sentences: [
+          "the pup ran and ran and ran and fell in the mud",
+          "the pig ran and ran and ran and fell in the mud",
+          "the hen ran and ran and ran and fell in the mud",
+          "the cat ran and ran and ran and fell in the mud",
+          "the rat ran and ran and ran and fell in the mud",
+          "the fox ran and ran and ran and fell in the mud",
+          "sam ran and ran and ran and fell in the mud",
+          "the bat ran and ran and ran and fell in the bin",
+          "the ant ran and ran and ran and fell in the box",
+        ],
+      },
+      {
+        type: "pat_and_pet",
+        weight: 2,
+        sentences: [
+          "sam pat the hen and pet the pup",
+          "sam pat the pig and pet the cat",
+          "sam pat the fox and pet the rat",
+          "sam pat the bat and pet the hen",
+          "sam pat the pup and pet the pig",
+          "sam pat the cat and pet the fox",
+          "sam pat the rat and pet the bat",
+        ],
+      },
+      {
+        type: "ran_and_hid",
+        weight: 1.5,
+        sentences: [
+          "the pup ran and hid in the mud",
+          "the pig ran and hid in the bin",
+          "the hen ran and hid in the box",
+          "the cat ran and hid in the mud",
+          "the fox ran and hid in the bin",
+          "sam ran and hid in the box",
+        ],
+      },
+    ],
+  },
 };
 
 export default sentenceSets;

@@ -53,10 +53,13 @@ function generateSentences(patterns, count) {
 // Collect ALL patterns across all levels
 const allPatterns = levels.flatMap(l => l.patterns);
 
-// Generate a "Random 20" — at least 1 from every pattern type, rest weighted random
+// Hard patterns only (level6+) for Random 20
+const hardPatterns = levels.filter(l => ['level6', 'level7', 'level8'].includes(l.key)).flatMap(l => l.patterns);
+
+// Generate a "Random 20" — only from hard levels (6+), at least 1 from each pattern type
 function generateRandom20() {
   const result = [];
-  for (const pattern of allPatterns) {
+  for (const pattern of hardPatterns) {
     const idx = Math.floor(Math.random() * pattern.sentences.length);
     result.push(pattern.sentences[idx]);
   }
@@ -64,7 +67,7 @@ function generateRandom20() {
     let sentence;
     let attempts = 0;
     do {
-      sentence = weightedPick(allPatterns);
+      sentence = weightedPick(hardPatterns);
       attempts++;
     } while (result.length > 0 && sentence === result[result.length - 1] && attempts < 20);
     result.push(sentence);
@@ -80,9 +83,10 @@ function generateRandom20() {
    EMOJI MAPS & SENTENCE PARSER
    ============================================================ */
 const E = {
-  cat: '🐱', bat: '🦇', rat: '🐀', hen: '🐔', fox: '🦊', pig: '🐷', ant: '🐜',
+  cat: '🐱', bat: '🦇', rat: '🐀', hen: '🐔', fox: '🦊', pig: '🐷', ant: '🐜', pup: '🐶',
   sam: '👦', nan: '👵',
   pen: '🖊️', net: '🥅', pan: '🍳', bin: '🗑️', box: '📦', hat: '🎩',
+  mud: '🟤', bed: '🛏️', leg: '🦵', hip: '💃', lip: '👄',
 };
 
 const NOUNS = Object.keys(E);
@@ -99,6 +103,37 @@ function parseSentence(sentence) {
   const s = sentence.toLowerCase().replace(/[?.!]/g, '').trim();
   const words = s.split(/\s+/);
 
+  // "X ran and ran and ran and fell in the Y"
+  if (s.includes('ran and ran') && s.includes('fell')) {
+    const a = findNoun(words);
+    const container = words[words.length - 1];
+    return { type: 'ran-fell', a: a?.noun || 'pup', container };
+  }
+  // "sam pat the X and pet the Y"
+  if (s.includes('pat') && s.includes('pet')) {
+    const patIdx = words.indexOf('pat');
+    const a = findNoun(words, patIdx + 1);
+    const petIdx = words.indexOf('pet');
+    const b = findNoun(words, petIdx + 1);
+    return { type: 'pat-and-pet', a: a?.noun || 'hen', b: b?.noun || 'pup' };
+  }
+  // "X got mud on his Y"
+  if (s.includes('got mud on')) {
+    const a = findNoun(words);
+    const lastWord = words[words.length - 1];
+    return { type: 'got-mud', a: a?.noun || 'hen', bodyPart: lastWord };
+  }
+  // "X did a big hop in the mud"
+  if (s.includes('big hop')) {
+    const a = findNoun(words);
+    return { type: 'big-hop', a: a?.noun || 'pup' };
+  }
+  // "X ran and hid in the Y"
+  if (s.includes('ran and hid')) {
+    const a = findNoun(words);
+    const container = words[words.length - 1];
+    return { type: 'ran-hid', a: a?.noun || 'pup', container };
+  }
   // "the X hit the Y and ran"
   if (s.includes('hit') && s.includes('and ran')) {
     const a = findNoun(words);
@@ -428,6 +463,128 @@ function FedScene({ a, b }) {
   );
 }
 
+// -- Got mud on: animal covered in mud splatters --
+function GotMudScene({ noun, bodyPart }) {
+  const emoji = E[noun] || '🐱';
+  const partEmoji = E[bodyPart] || '🤷';
+  return (
+    <div className="relative flex flex-col items-center">
+      <div className="text-[7rem] leading-none" style={{ animation: 'mudShake 0.8s ease-in-out infinite' }}>
+        {emoji}
+      </div>
+      {/* Mud splatters everywhere */}
+      <div className="absolute top-0 left-4 text-4xl" style={{ animation: 'mudSplat 1s ease-out infinite' }}>🟤</div>
+      <div className="absolute top-8 right-2 text-3xl" style={{ animation: 'mudSplat 1s ease-out 0.2s infinite' }}>🟤</div>
+      <div className="absolute top-16 left-8 text-2xl" style={{ animation: 'mudSplat 1s ease-out 0.4s infinite' }}>🟤</div>
+      {/* Body part with mud */}
+      <div className="flex items-center gap-2 mt-2">
+        <span className="text-4xl">{partEmoji}</span>
+        <span className="text-3xl" style={{ animation: 'mudDrip 1.2s ease-in infinite' }}>💩</span>
+      </div>
+      <div className="text-xl font-bold text-amber-700 mt-1" style={{ animation: 'fadeInOut 2s ease-in-out infinite' }}>
+        ~ so muddy! ~
+      </div>
+    </div>
+  );
+}
+
+// -- Big hop in mud: animal leaping with huge splash --
+function BigHopScene({ noun }) {
+  const emoji = E[noun] || '🐶';
+  return (
+    <div className="relative flex flex-col items-center">
+      {/* Animal mid-jump */}
+      <div className="text-[7rem] leading-none" style={{ animation: 'bigHop 1.2s ease-in-out infinite' }}>
+        {emoji}
+      </div>
+      {/* Mud puddle */}
+      <div className="text-6xl -mt-4">🟤</div>
+      {/* Splash effects */}
+      <div className="absolute bottom-8 left-0 text-3xl" style={{ animation: 'splash1 1.2s ease-out infinite' }}>💦</div>
+      <div className="absolute bottom-12 right-0 text-3xl" style={{ animation: 'splash2 1.2s ease-out 0.1s infinite' }}>💦</div>
+      <div className="absolute bottom-16 left-8 text-2xl" style={{ animation: 'splash1 1.2s ease-out 0.2s infinite' }}>🟤</div>
+      <div className="absolute bottom-4 right-8 text-2xl" style={{ animation: 'splash2 1.2s ease-out 0.3s infinite' }}>🟤</div>
+      <div className="text-2xl font-bold text-amber-700 mt-1" style={{ animation: 'fadeInOut 1.2s ease-in-out infinite' }}>
+        SPLAT!
+      </div>
+    </div>
+  );
+}
+
+// -- Ran and fell in mud: running then faceplanting --
+function RanAndFellScene({ noun, container }) {
+  const emoji = E[noun] || '🐶';
+  const containerEmoji = container === 'mud' ? '🟤' : (E[container] || '📦');
+  return (
+    <div className="relative w-80 h-48 flex items-center justify-center">
+      {/* Running animal that trips */}
+      <div className="absolute text-7xl" style={{ animation: 'runAndTrip 2.5s ease-in-out infinite' }}>
+        {emoji}
+      </div>
+      {/* Mud/container */}
+      <div className="absolute right-4 bottom-4 text-6xl">{containerEmoji}</div>
+      {/* Dust from running */}
+      <div className="absolute bottom-6 left-0 text-3xl" style={{ animation: 'dustPuff 2.5s ease-out 0s infinite' }}>💨</div>
+      <div className="absolute bottom-10 left-8 text-2xl" style={{ animation: 'dustPuff 2.5s ease-out 0.2s infinite' }}>💨</div>
+      {/* Splash on impact */}
+      <div className="absolute right-0 bottom-12 text-3xl" style={{ animation: 'tripSplash 2.5s ease-out 1.5s infinite' }}>💥</div>
+      {/* Stars from dizzy */}
+      <div className="absolute right-8 top-4 text-2xl" style={{ animation: 'tripStars 2.5s ease-out 1.8s infinite' }}>⭐</div>
+      <div className="absolute right-16 top-0 text-xl" style={{ animation: 'tripStars 2.5s ease-out 2s infinite' }}>💫</div>
+    </div>
+  );
+}
+
+// -- Pat and pet: sam patting one and petting another, double love --
+function PatAndPetScene({ a, b }) {
+  const emojiA = E[a] || '🐔';
+  const emojiB = E[b] || '🐶';
+  return (
+    <div className="relative flex items-center gap-2">
+      {/* First animal being patted */}
+      <div className="text-6xl" style={{ animation: 'happyWobble 0.8s ease-in-out infinite' }}>
+        {emojiA}
+      </div>
+      {/* Sam in the middle */}
+      <div className="text-7xl" style={{ animation: 'samPat 1s ease-in-out infinite' }}>
+        👦
+      </div>
+      {/* Second animal being petted */}
+      <div className="text-6xl" style={{ animation: 'happyWobble 0.8s ease-in-out 0.4s infinite' }}>
+        {emojiB}
+      </div>
+      {/* Hearts from both sides */}
+      <div className="absolute -top-8 left-4 text-3xl" style={{ animation: 'heartFloat 1.5s ease-out infinite' }}>❤️</div>
+      <div className="absolute -top-6 right-4 text-3xl" style={{ animation: 'heartFloat 1.5s ease-out 0.5s infinite' }}>💕</div>
+      <div className="absolute -top-12 left-1/2 text-2xl" style={{ animation: 'heartFloat 1.5s ease-out 0.3s infinite' }}>💖</div>
+      {/* Hands */}
+      <div className="absolute top-2 left-16 text-3xl" style={{ animation: 'patHand 0.6s ease-in-out infinite' }}>🤚</div>
+      <div className="absolute top-2 right-16 text-3xl" style={{ animation: 'patHand 0.6s ease-in-out 0.3s infinite' }}>🤚</div>
+    </div>
+  );
+}
+
+// -- Ran and hid: running then hiding --
+function RanAndHidScene({ noun, container }) {
+  const emoji = E[noun] || '🐶';
+  const containerEmoji = container === 'mud' ? '🟤' : (E[container] || '📦');
+  return (
+    <div className="relative flex flex-col items-center">
+      {/* Animal running then peeking from container */}
+      <div className="text-6xl -mb-8 relative z-10" style={{ animation: 'runThenPeek 3s ease-in-out infinite' }}>
+        {emoji}
+      </div>
+      <div className="text-[7rem] leading-none relative z-20" style={{ animation: 'containerShake 3s ease-in-out infinite' }}>
+        {containerEmoji}
+      </div>
+      <div className="absolute top-4 text-3xl z-30" style={{ animation: 'peekEyes 3s ease-in-out infinite' }}>👀</div>
+      {/* Dust from running */}
+      <div className="absolute top-8 -left-12 text-3xl" style={{ animation: 'dustPuff 3s ease-out 0s infinite' }}>💨</div>
+      <div className="absolute -right-8 top-0 text-3xl" style={{ animation: 'fadeInOut 3s ease-in-out 1.5s infinite' }}>🤫</div>
+    </div>
+  );
+}
+
 // Master scene renderer
 function SceneRenderer({ sentence }) {
   const parsed = parseSentence(sentence);
@@ -446,6 +603,11 @@ function SceneRenderer({ sentence }) {
     case 'hid': return <HidScene noun={parsed.a} container={parsed.container} />;
     case 'pet': return <PetScene a={parsed.a} b={parsed.b} />;
     case 'fed': return <FedScene a={parsed.a} b={parsed.b} />;
+    case 'got-mud': return <GotMudScene noun={parsed.a} bodyPart={parsed.bodyPart} />;
+    case 'big-hop': return <BigHopScene noun={parsed.a} />;
+    case 'ran-fell': return <RanAndFellScene noun={parsed.a} container={parsed.container} />;
+    case 'pat-and-pet': return <PatAndPetScene a={parsed.a} b={parsed.b} />;
+    case 'ran-hid': return <RanAndHidScene noun={parsed.a} container={parsed.container} />;
     default: return <FatScene noun={parsed.a} />;
   }
 }
@@ -620,6 +782,68 @@ const SCENE_STYLES = `
     0%, 100% { transform: scaleY(1); }
     40% { transform: scaleY(0.9) scaleX(1.1); }
     60% { transform: scaleY(1.1) scaleX(0.95); }
+  }
+  @keyframes mudShake {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-5deg); }
+    40% { transform: rotate(5deg); }
+    60% { transform: rotate(-3deg); }
+    80% { transform: rotate(3deg); }
+  }
+  @keyframes mudSplat {
+    0% { transform: scale(0.5); opacity: 0; }
+    30% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(0.8) translateY(10px); opacity: 0; }
+  }
+  @keyframes mudDrip {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(20px); opacity: 0; }
+  }
+  @keyframes bigHop {
+    0%, 100% { transform: translateY(0) scaleX(1) scaleY(1); }
+    20% { transform: translateY(10px) scaleX(1.2) scaleY(0.8); }
+    50% { transform: translateY(-80px) scaleX(0.9) scaleY(1.15); }
+    75% { transform: translateY(-20px) scaleX(1) scaleY(1); }
+    90% { transform: translateY(5px) scaleX(1.15) scaleY(0.85); }
+  }
+  @keyframes splash1 {
+    0%, 30% { transform: translate(0, 0) scale(0); opacity: 0; }
+    50% { transform: translate(-30px, -40px) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50px, -60px) scale(0.3); opacity: 0; }
+  }
+  @keyframes splash2 {
+    0%, 30% { transform: translate(0, 0) scale(0); opacity: 0; }
+    50% { transform: translate(30px, -40px) scale(1.2); opacity: 1; }
+    100% { transform: translate(50px, -60px) scale(0.3); opacity: 0; }
+  }
+  @keyframes runAndTrip {
+    0% { left: -10%; top: 40%; transform: scaleX(1); }
+    40% { left: 40%; top: 40%; transform: scaleX(1); }
+    55% { left: 55%; top: 30%; transform: scaleX(1) rotate(-30deg); }
+    70% { left: 60%; top: 50%; transform: scaleX(1) rotate(-90deg); }
+    80% { left: 60%; top: 55%; transform: scaleX(1) rotate(-90deg) scale(1.1); }
+    100% { left: 60%; top: 55%; transform: scaleX(1) rotate(-90deg) scale(1); }
+  }
+  @keyframes tripSplash {
+    0%, 55% { transform: scale(0); opacity: 0; }
+    65% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(0.5); opacity: 0; }
+  }
+  @keyframes tripStars {
+    0%, 65% { transform: scale(0) rotate(0deg); opacity: 0; }
+    75% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0.5) rotate(360deg); opacity: 0; }
+  }
+  @keyframes samPat {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg) translateX(-8px); }
+    75% { transform: rotate(8deg) translateX(8px); }
+  }
+  @keyframes runThenPeek {
+    0%, 10% { transform: translateY(30px) translateX(-60px); }
+    30% { transform: translateY(30px) translateX(0); }
+    40%, 70% { transform: translateY(0) translateX(0); }
+    80%, 100% { transform: translateY(30px) translateX(0); }
   }
 `;
 
