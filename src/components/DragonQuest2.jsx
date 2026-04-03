@@ -26,18 +26,6 @@ const ZONE_COLORS = [
 const BUBBLES_PER_WORD = 4;
 const TOTAL_BUBBLES = 20;
 
-// 20 positions in a 5x4 snaking grid
-const GRID_POSITIONS = [];
-for (let row = 0; row < 4; row++) {
-  for (let col = 0; col < 5; col++) {
-    const actualCol = row % 2 === 0 ? col : 4 - col; // snake
-    GRID_POSITIONS.push({
-      x: 12 + actualCol * 19,
-      y: 8 + row * 24,
-    });
-  }
-}
-
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -63,9 +51,9 @@ function generateBubbles(words) {
 }
 
 /* ============================================================
-   DRAGGABLE BUBBLE
+   FLOATING DRAGGABLE BUBBLE — large, centered, drag to a column
    ============================================================ */
-function DragBubble({ bubble, state, onDrop, dropZoneRefs, style }) {
+function FloatingBubble({ bubble, onDrop, dropZoneRefs }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isWrong, setIsWrong] = useState(false);
   const controls = useAnimation();
@@ -85,8 +73,7 @@ function DragBubble({ bubble, state, onDrop, dropZoneRefs, style }) {
     for (const [idx, el] of Object.entries(dropZoneRefs.current || {})) {
       if (!el) continue;
       const rect = el.getBoundingClientRect();
-      const pad = 30;
-      if (cx >= rect.left - pad && cx <= rect.right + pad && cy >= rect.top - pad && cy <= rect.bottom + pad) {
+      if (cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom) {
         return parseInt(idx);
       }
     }
@@ -94,7 +81,6 @@ function DragBubble({ bubble, state, onDrop, dropZoneRefs, style }) {
   }, [dropZoneRefs]);
 
   const handlePointerDown = useCallback((e) => {
-    if (state !== 'active') return;
     e.preventDefault();
     e.stopPropagation();
     const el = ref.current;
@@ -104,20 +90,20 @@ function DragBubble({ bubble, state, onDrop, dropZoneRefs, style }) {
     lastDelta.current = { x: 0, y: 0 };
     dragging.current = true;
     setIsDragging(true);
-    controls.set({ scale: 1.15 });
-  }, [state, controls]);
+    controls.set({ scale: 1.1 });
+  }, [controls]);
 
   const handlePointerMove = useCallback((e) => {
-    if (!dragging.current || state !== 'active') return;
+    if (!dragging.current) return;
     e.preventDefault();
     const dx = e.clientX - startPos.current.x;
     const dy = e.clientY - startPos.current.y;
     lastDelta.current = { x: dx, y: dy };
-    controls.set({ x: dx, y: dy, scale: 1.15 });
-  }, [state, controls]);
+    controls.set({ x: dx, y: dy, scale: 1.1 });
+  }, [controls]);
 
   const handlePointerUp = useCallback((e) => {
-    if (!dragging.current || state !== 'active') return;
+    if (!dragging.current) return;
     e.preventDefault();
     dragging.current = false;
     setIsDragging(false);
@@ -133,35 +119,17 @@ function DragBubble({ bubble, state, onDrop, dropZoneRefs, style }) {
         setIsWrong(true);
         const cx = lastDelta.current.x;
         controls.start({
-          x: [cx, cx + 12, cx - 12, cx + 8, cx - 8, 0],
+          x: [cx, cx + 14, cx - 14, cx + 10, cx - 10, 0],
           y: [lastDelta.current.y, lastDelta.current.y, lastDelta.current.y, lastDelta.current.y, lastDelta.current.y, 0],
           scale: 1,
-          transition: { duration: 0.6, ease: 'easeOut' },
+          transition: { duration: 0.5, ease: 'easeOut' },
         }).then(() => { setIsWrong(false); lastDelta.current = { x: 0, y: 0 }; });
         return;
       }
     }
     controls.start({ x: 0, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 25 } });
     lastDelta.current = { x: 0, y: 0 };
-  }, [state, bubble.id, checkDropZone, onDrop, controls]);
-
-  if (state === 'completed') {
-    return (
-      <div className="absolute flex items-center justify-center rounded-full bg-green-400 border-2 border-green-500 shadow-sm"
-        style={{ width: 56, height: 56, ...style }}>
-        <span className="text-2xl text-white font-bold select-none">✓</span>
-      </div>
-    );
-  }
-
-  if (state === 'future') {
-    return (
-      <div className="absolute flex items-center justify-center rounded-full bg-gray-300/60 border-2 border-gray-400/40 shadow-sm"
-        style={{ width: 56, height: 56, ...style }}>
-        <span className="text-lg font-extrabold text-gray-400/50 select-none">{bubble.word}</span>
-      </div>
-    );
-  }
+  }, [bubble.id, checkDropZone, onDrop, controls]);
 
   return (
     <motion.div
@@ -170,17 +138,17 @@ function DragBubble({ bubble, state, onDrop, dropZoneRefs, style }) {
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      className={`absolute flex items-center justify-center rounded-full cursor-grab active:cursor-grabbing z-20
-        ${isWrong ? 'bg-red-400/80 border-red-500 border-3' : 'bg-indigo-200/70 border-indigo-300/80 border-2'}
-        ${isDragging ? 'shadow-xl z-30' : 'shadow-md'}
+      className={`flex items-center justify-center rounded-3xl cursor-grab active:cursor-grabbing z-30
+        ${isWrong ? 'bg-red-400/90 border-red-500 border-4' : 'bg-white border-indigo-400 border-4'}
+        ${isDragging ? 'shadow-2xl z-40' : 'shadow-xl'}
       `}
       style={{
-        width: 80, height: 80, ...style, touchAction: 'none',
-        boxShadow: isDragging ? undefined : '0 0 16px 4px rgba(129, 140, 248, 0.5)',
+        width: 160, height: 100, touchAction: 'none',
+        boxShadow: isDragging ? undefined : '0 0 24px 8px rgba(129, 140, 248, 0.4)',
         animation: !isDragging && !isWrong ? 'pulse-glow 2s ease-in-out infinite' : undefined,
       }}
     >
-      <span className="text-3xl font-extrabold text-gray-800 select-none pointer-events-none">{bubble.word}</span>
+      <span className="text-5xl font-extrabold text-gray-800 select-none pointer-events-none">{bubble.word}</span>
     </motion.div>
   );
 }
@@ -331,31 +299,43 @@ function GameScreen({ level, onComplete, onBack }) {
 
   const activeIndex = bubbles.findIndex(b => !b.placed);
 
+  const activeBubble = activeIndex >= 0 ? bubbles[activeIndex] : null;
+  const placedCount = bubbles.filter(b => b.placed).length;
+
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 relative overflow-hidden flex flex-col">
+    <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 relative overflow-hidden">
       <button onClick={onBack}
         className="absolute top-2 left-2 z-20 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-4 py-1.5 text-lg shadow-md transition-all hover:scale-105 active:scale-95">
         ← Back
       </button>
 
+      {/* Progress counter */}
+      <div className="absolute top-2 right-2 z-20 bg-white/80 rounded-full px-4 py-1.5 shadow">
+        <span className="text-lg font-extrabold text-indigo-600">{placedCount}/{TOTAL_BUBBLES}</span>
+      </div>
+
       {/* Intro overlay */}
       {phase === 'intro' && <IntroOverlay words={words} onDone={() => setPhase('playing')} />}
 
-      {/* Drop zones — top row */}
-      <div className={`flex gap-2 px-2 pt-12 pb-2 justify-center transition-opacity duration-500 ${phase === 'intro' ? 'opacity-0' : 'opacity-100'}`}>
+      {/* 5 full-height columns as drop zones */}
+      <div className={`flex w-full h-full transition-opacity duration-500 ${phase === 'intro' ? 'opacity-0' : 'opacity-100'}`}>
         {words.map((word, i) => {
           const c = ZONE_COLORS[i];
           return (
             <div key={i} ref={(el) => setDropRef(i, el)}
-              className={`flex flex-col items-center ${c.bg} ${c.border} border-3 rounded-xl px-3 py-2 shadow-md min-w-[80px]`}
-              style={{ boxShadow: `0 0 12px 3px ${c.glow}` }}>
-              <span className="text-3xl leading-none">{ZONE_EMOJIS[i]}</span>
-              <span className={`text-2xl font-extrabold ${c.text} mt-1`}>{word}</span>
+              className={`flex-1 flex flex-col items-center pt-14 pb-6 ${c.bg} border-r-2 ${c.border} last:border-r-0 transition-all`}
+              style={{ boxShadow: `inset 0 0 20px 5px ${c.glow}` }}>
+              {/* Emoji */}
+              <span className="text-5xl leading-none mb-2">{ZONE_EMOJIS[i]}</span>
+              {/* Word label */}
+              <div className={`${c.border} border-3 rounded-xl px-4 py-2 bg-white/70 shadow-md mb-3`}>
+                <span className={`text-4xl font-extrabold ${c.text}`}>{word}</span>
+              </div>
               {/* Collection dots */}
-              <div className="flex gap-1 mt-1 h-4">
+              <div className="flex flex-col gap-2 items-center mt-2">
                 {Array.from({ length: collected[i] }).map((_, d) => (
                   <motion.div key={d} initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    className={`w-3.5 h-3.5 rounded-full ${c.dot} border border-white shadow-sm`} />
+                    className={`w-6 h-6 rounded-full ${c.dot} border-2 border-white shadow-sm`} />
                 ))}
               </div>
             </div>
@@ -363,40 +343,20 @@ function GameScreen({ level, onComplete, onBack }) {
         })}
       </div>
 
-      {/* Bubble field */}
-      <div className={`flex-1 relative transition-opacity duration-500 ${phase === 'intro' ? 'opacity-0' : 'opacity-100'}`}>
-        {/* Connector lines */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-          {GRID_POSITIONS.map((pos, i) => {
-            if (i === GRID_POSITIONS.length - 1) return null;
-            const next = GRID_POSITIONS[i + 1];
-            return (
-              <line key={i}
-                x1={`${pos.x}%`} y1={`${pos.y}%`}
-                x2={`${next.x}%`} y2={`${next.y}%`}
-                stroke="#c7c7cc" strokeWidth="2" strokeDasharray="6 5" strokeLinecap="round" opacity="0.4" />
-            );
-          })}
-        </svg>
-
-        {bubbles.map((bubble, i) => {
-          const pos = GRID_POSITIONS[i];
-          let state;
-          if (bubble.placed) state = 'completed';
-          else if (activeIndex === i) state = 'active';
-          else state = 'future';
-          const size = state === 'active' ? 80 : 56;
-
-          return (
-            <DragBubble key={bubble.id} bubble={bubble} state={state}
-              onDrop={handleDrop} dropZoneRefs={dropZoneRefs}
-              style={{
-                left: `calc(${pos.x}% - ${size / 2}px)`,
-                top: `calc(${pos.y}% - ${size / 2}px)`,
-              }} />
-          );
-        })}
-      </div>
+      {/* Floating active bubble — centered at bottom */}
+      {phase === 'playing' && activeBubble && (
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30">
+          <AnimatePresence mode="wait">
+            <motion.div key={activeBubble.id}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}>
+              <FloatingBubble bubble={activeBubble} onDrop={handleDrop} dropZoneRefs={dropZoneRefs} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
 
       {showVictory && <VictoryScreen onComplete={onComplete} />}
     </div>
