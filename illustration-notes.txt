@@ -1,0 +1,114 @@
+ILLUSTRATION/CHARACTER SYSTEM — Current Approach
+=================================================
+
+There are TWO separate illustration systems in the app, one for each
+sentence practice mode.
+
+
+1. SentencePractice.jsx (Sentence Practice — original)
+------------------------------------------------------
+Uses a STATIC scene-key mapping. Each sentence in sentences.js has a
+hardcoded `scene` field (e.g., "fat-cat", "rat-hid-box") which maps
+to a named React component via the SCENES lookup object.
+
+  Location: src/components/SentencePractice.jsx, line ~403
+  Pattern:  sentence data → scene key string → SCENES[key] → component
+
+Each scene is a standalone function component that renders CSS-animated
+divs. They use:
+  - Tailwind classes for layout, sizing, color
+  - Inline `style` with CSS @keyframes for animation
+  - No emojis — all scenes are built from colored divs, rounded shapes,
+    and CSS transforms (e.g., ears = two rotated ovals, body = big
+    rounded div, etc.)
+
+Scenes map (60+ entries):
+  Simple nouns: cat, rat, bat, lip, hat, hip, man, can, tin, bin, pin,
+    nan, fan, pit, mit, pan, pen, hen, net, pet, mat, dog, dad, mum,
+    fox, pig, sun
+  Compound: fat-cat, fat-bat, fat-rat, fat-cat-sat, fat-bat-sat,
+    fat-rat-sat, cat-bit-cake, rat-bit-cheese, bat-bit-apple
+  Positional: cat-on-rat, cat-on-mat, rat-on-cat, rat-on-mat,
+    bat-on-cat, bat-on-mat
+  Emotional: sad-cat, sad-rat, sad-mat, mad-cat, mad-rat, mad-mat
+  Action: rat-hit-cat, cat-hit-rat, bat-hit-cat, cat-hit-bat,
+    cat-hid-box, rat-hid-box, bat-hid-box
+
+Adding a new scene requires:
+  1. Writing a new function component (e.g., function NewScene() {...})
+  2. Adding it to the SCENES object
+  3. Using the scene key in sentences.js data
+
+
+2. SentencePractice2.jsx (Sentence Reading 2)
+----------------------------------------------
+Uses a DYNAMIC sentence parser. No scene keys in the data — the
+sentence string itself is parsed at runtime to determine which
+scene component to render.
+
+  Location: src/components/SentencePractice2.jsx, line ~102 (parser),
+            line ~589 (SceneRenderer switch)
+  Pattern:  sentence string → parseSentence() → {type, a, b, ...}
+            → SceneRenderer switch → parameterized component
+
+Characters are represented by EMOJIS, not CSS shapes:
+
+  const E = {
+    cat: '🐱', bat: '🦇', rat: '🐀', hen: '🐔', fox: '🦊',
+    pig: '🐷', ant: '🐜', pup: '🐶',
+    sam: '👦', nan: '👵',
+    pen: '🖊️', net: '🥅', pan: '🍳', bin: '🗑️', box: '📦', hat: '🎩',
+    mud: '🟤', bed: '🛏️', leg: '🦵', hip: '💃', lip: '👄',
+  };
+
+Scene components are PARAMETERIZED — one component handles all animals:
+  - FatScene({ noun, red })    — wobbling fat emoji + sweat drops
+  - SamHadScene({ noun })      — Sam holding thing + sparkles
+  - BitScene({ noun, red })    — chomping on cookie + crumbs
+  - SatScene({ noun })         — plop onto couch + thud
+  - IsFatScene({ noun, red })  — tipping scale
+  - QuestionScene({ noun, red, fatAndRed }) — bouncing ? + magnifier
+  - HitAndRanScene({ a, b })   — POW! + dust clouds fleeing
+  - HidScene({ noun, container }) — peeking eyes from box/bin
+  - PetScene({ a, b })         — patting with floating hearts
+  - FedScene({ a, b })         — food traveling + munching
+  - GotMudScene({ noun, bodyPart }) — mud splatters + dripping
+  - BigHopScene({ noun })      — jumping into mud + SPLAT!
+  - RanAndFellScene({ noun, container }) — running, tripping, faceplant
+  - PatAndPetScene({ a, b })   — Sam patting two animals + hearts
+  - RanAndHidScene({ noun, container }) — running then hiding
+
+All animations use CSS @keyframes injected via a SCENE_STYLES string
+rendered in a <style> tag. ~40 keyframe definitions covering:
+  wobble, drip, fadeInOut, float, samDance, sparkle, chomp, cookieShake,
+  crumb1/2/3, plop, squish, popStar, bellyBounce, tipScale, tiltHead,
+  bounceQ, thoughtBubble, searchSwing, stunned, spinStar, pow,
+  hitAndRun, dustPuff, peek, peekEyes, containerShake, petMotion,
+  patHand, happyWobble, heartFloat, feedLean, foodTravel, munch,
+  mudShake, mudSplat, mudDrip, bigHop, splash1/2, runAndTrip,
+  tripSplash, tripStars, samPat, runThenPeek
+
+The sentence parser (parseSentence) uses pattern matching on the
+sentence string in priority order — more specific patterns checked
+first (e.g., "ran and ran...fell" before generic "ran"). It extracts
+nouns using findNoun() which scans for any word matching the E emoji
+map keys.
+
+Adding a new scene type requires:
+  1. Adding a pattern match in parseSentence() (return {type, ...})
+  2. Writing a parameterized scene component
+  3. Adding a case to the SceneRenderer switch
+  4. Adding any new @keyframes to SCENE_STYLES
+  5. Adding any new nouns to the E emoji map
+
+
+Key differences between the two systems:
+-----------------------------------------
+| Aspect         | SentencePractice (1)    | SentencePractice2 (2)    |
+|----------------|------------------------|--------------------------|
+| Characters     | CSS shapes (divs)      | Emoji characters         |
+| Scene mapping  | Static key lookup      | Dynamic sentence parsing |
+| Components     | 1 per specific scene   | Parameterized (reusable) |
+| Adding scenes  | New component + key    | Parser rule + component  |
+| Animation      | CSS @keyframes inline  | CSS @keyframes in const  |
+| Data coupling  | Tight (scene key req.) | Loose (auto-parsed)      |

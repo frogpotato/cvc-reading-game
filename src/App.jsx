@@ -106,7 +106,7 @@ export default function App() {
     );
   }
 
-  if (page === 'dragon2') {
+if (page === 'dragon2') {
     return <DragonQuest2 onBack={() => setPage('home')} />;
   }
 

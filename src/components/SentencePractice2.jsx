@@ -1,5 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import sentenceSets from '../data/sentenceSets';
+import Cat from './characters/Cat';
+import Rat from './characters/Rat';
+import Bat from './characters/Bat';
+import Hen from './characters/Hen';
+import Fox from './characters/Fox';
+import Pig from './characters/Pig';
+import Ant from './characters/Ant';
+import Pup from './characters/Pup';
+import Sam from './characters/Sam';
+import Nan from './characters/Nan';
 
 const REWARD_GIFS = [
   'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzk3bXFwOWJleTVnaWVscGZwazEyb2Q0bzFnamRrNXM1NHUzN3U0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zsbYm28afpsPJxrzHS/giphy.gif',
@@ -80,8 +90,20 @@ function generateRandom20() {
 }
 
 /* ============================================================
-   EMOJI MAPS & SENTENCE PARSER
+   CHARACTER & EMOJI MAPS
    ============================================================ */
+const SVG_CHARS = {
+  cat: Cat, rat: Rat, bat: Bat, hen: Hen, fox: Fox, pig: Pig, ant: Ant, pup: Pup,
+  sam: Sam, nan: Nan,
+};
+
+function Char({ name, size = 140, style, className }) {
+  const Comp = SVG_CHARS[name];
+  if (Comp) return <div style={style} className={className}><Comp size={size} /></div>;
+  const fallback = E[name] || '❓';
+  return <div style={{ fontSize: size * 0.55, lineHeight: 1, ...style }} className={className}>{fallback}</div>;
+}
+
 const E = {
   cat: '🐱', bat: '🦇', rat: '🐀', hen: '🐔', fox: '🦊', pig: '🐷', ant: '🐜', pup: '🐶',
   sam: '👦', nan: '👵',
@@ -220,23 +242,16 @@ function parseSentence(sentence) {
 
 // -- Fat animal: comically round, wobbling, with sweat drops --
 function FatScene({ noun, red }) {
-  const emoji = E[noun] || '🐱';
   return (
     <div className="relative flex flex-col items-center">
-      <div
-        className="text-[8rem] leading-none"
+      <Char name={noun} size={180}
         style={{
           animation: 'wobble 1s ease-in-out infinite',
-          transform: 'scaleX(1.4) scaleY(1.1)',
           filter: red ? 'hue-rotate(-30deg) saturate(2)' : undefined,
         }}
-      >
-        {emoji}
-      </div>
-      {/* Sweat drops */}
-      <div className="absolute -top-2 right-4 text-3xl" style={{ animation: 'drip 1.5s ease-in infinite' }}>💧</div>
-      <div className="absolute top-6 -left-2 text-2xl" style={{ animation: 'drip 1.5s ease-in 0.4s infinite' }}>💧</div>
-      {/* Belly jiggle lines */}
+      />
+      <div className="absolute -top-2 right-0 text-3xl" style={{ animation: 'drip 1.5s ease-in infinite' }}>💧</div>
+      <div className="absolute top-6 -left-6 text-2xl" style={{ animation: 'drip 1.5s ease-in 0.4s infinite' }}>💧</div>
       <div className="text-2xl font-bold text-amber-400 mt-1" style={{ animation: 'fadeInOut 2s ease-in-out infinite' }}>
         ~ so round ~
       </div>
@@ -246,41 +261,27 @@ function FatScene({ noun, red }) {
 
 // -- Sam had a X: Sam proudly holding the thing above his head --
 function SamHadScene({ noun }) {
-  const emoji = E[noun] || '🐱';
   return (
     <div className="relative flex flex-col items-center">
-      {/* The thing Sam has — bouncing above */}
-      <div className="text-7xl mb-2" style={{ animation: 'float 1.5s ease-in-out infinite' }}>
-        {emoji}
-      </div>
-      {/* Sam looking proud */}
-      <div className="text-[7rem] leading-none" style={{ animation: 'samDance 1.2s ease-in-out infinite' }}>
-        👦
-      </div>
-      {/* Sparkles */}
-      <div className="absolute top-0 left-8 text-3xl" style={{ animation: 'sparkle 0.8s ease-in-out infinite' }}>✨</div>
-      <div className="absolute top-4 right-6 text-2xl" style={{ animation: 'sparkle 0.8s ease-in-out 0.3s infinite' }}>✨</div>
+      <Char name={noun} size={100} style={{ animation: 'float 1.5s ease-in-out infinite' }} />
+      <Char name="sam" size={160} style={{ animation: 'samDance 1.2s ease-in-out infinite' }} />
+      <div className="absolute top-0 left-4 text-3xl" style={{ animation: 'sparkle 0.8s ease-in-out infinite' }}>✨</div>
+      <div className="absolute top-4 right-2 text-2xl" style={{ animation: 'sparkle 0.8s ease-in-out 0.3s infinite' }}>✨</div>
     </div>
   );
 }
 
 // -- Bit it: animal chomping on a cookie with crumbs flying --
 function BitScene({ noun, red }) {
-  const emoji = E[noun] || '🐱';
   return (
     <div className="relative flex items-center gap-1">
-      <div
-        className="text-[7rem] leading-none"
+      <Char name={noun} size={150}
         style={{
           animation: 'chomp 0.6s ease-in-out infinite',
           filter: red ? 'hue-rotate(-30deg) saturate(2)' : undefined,
         }}
-      >
-        {emoji}
-      </div>
-      {/* Cookie being bitten */}
+      />
       <div className="text-6xl" style={{ animation: 'cookieShake 0.3s ease-in-out infinite' }}>🍪</div>
-      {/* Crumbs flying */}
       <div className="absolute top-4 right-0 text-2xl" style={{ animation: 'crumb1 1s ease-out infinite' }}>💥</div>
       <div className="absolute top-12 right-8 text-xl" style={{ animation: 'crumb2 1.2s ease-out 0.2s infinite' }}>🍞</div>
       <div className="absolute top-0 right-12 text-lg" style={{ animation: 'crumb3 1s ease-out 0.4s infinite' }}>✨</div>
@@ -290,25 +291,14 @@ function BitScene({ noun, red }) {
 
 // -- Sat: animal plops down onto a cushion with bounce --
 function SatScene({ noun }) {
-  const emoji = E[noun] || '🐱';
   return (
     <div className="relative flex flex-col items-center">
-      {/* The animal dropping down */}
-      <div
-        className="text-[7rem] leading-none"
-        style={{
-          animation: 'plop 1.5s ease-in-out infinite',
-          transform: 'scaleX(1.3) scaleY(1.1)',
-        }}
-      >
-        {emoji}
-      </div>
-      {/* Cushion squishing */}
+      <Char name={noun} size={160}
+        style={{ animation: 'plop 1.5s ease-in-out infinite' }}
+      />
       <div className="text-5xl -mt-4" style={{ animation: 'squish 1.5s ease-in-out infinite' }}>🛋️</div>
-      {/* Stars from impact */}
-      <div className="absolute top-8 left-2 text-2xl" style={{ animation: 'popStar 1.5s ease-out infinite' }}>⭐</div>
-      <div className="absolute top-12 right-0 text-xl" style={{ animation: 'popStar 1.5s ease-out 0.3s infinite' }}>💫</div>
-      {/* Ground shake lines */}
+      <div className="absolute top-4 left-0 text-2xl" style={{ animation: 'popStar 1.5s ease-out infinite' }}>⭐</div>
+      <div className="absolute top-8 right-0 text-xl" style={{ animation: 'popStar 1.5s ease-out 0.3s infinite' }}>💫</div>
       <div className="text-xl text-amber-600 font-bold mt-1" style={{ animation: 'fadeInOut 1.5s ease-in-out infinite' }}>
         ~ thud! ~
       </div>
@@ -318,20 +308,14 @@ function SatScene({ noun }) {
 
 // -- Is fat: shows the animal on a scale that tips --
 function IsFatScene({ noun, red }) {
-  const emoji = E[noun] || '🐱';
   return (
     <div className="relative flex flex-col items-center">
-      <div
-        className="text-[7rem] leading-none"
+      <Char name={noun} size={160}
         style={{
           animation: 'bellyBounce 1s ease-in-out infinite',
-          transform: 'scaleX(1.4) scaleY(1.1)',
           filter: red ? 'hue-rotate(-30deg) saturate(2)' : undefined,
         }}
-      >
-        {emoji}
-      </div>
-      {/* Scale tipping */}
+      />
       <div className="text-5xl" style={{ animation: 'tipScale 1s ease-in-out infinite' }}>⚖️</div>
       <div className="text-xl font-bold text-red-500 mt-1" style={{ animation: 'fadeInOut 1.5s ease-in-out infinite' }}>
         {red ? '🔴 so red! 🔴' : '😱 so heavy!'}
@@ -342,25 +326,18 @@ function IsFatScene({ noun, red }) {
 
 // -- Question scenes: big bouncing question mark with the subject --
 function QuestionScene({ noun, red, fatAndRed }) {
-  const emoji = E[noun] || '🐱';
   return (
     <div className="relative flex items-center gap-6">
-      <div
-        className="text-[7rem] leading-none"
+      <Char name={noun} size={150}
         style={{
           animation: 'tiltHead 2s ease-in-out infinite',
-          transform: fatAndRed ? 'scaleX(1.4) scaleY(1.1)' : undefined,
           filter: (red || fatAndRed) ? 'hue-rotate(-30deg) saturate(2)' : undefined,
         }}
-      >
-        {emoji}
-      </div>
+      />
       <div className="flex flex-col items-center">
         <div className="text-8xl font-extrabold text-indigo-600" style={{ animation: 'bounceQ 0.8s ease-in-out infinite' }}>?</div>
-        {/* Thought bubbles */}
         <div className="absolute -top-4 right-4 text-3xl" style={{ animation: 'thoughtBubble 2s ease-in-out infinite' }}>💭</div>
       </div>
-      {/* Magnifying glass searching */}
       <div className="absolute bottom-0 left-0 text-4xl" style={{ animation: 'searchSwing 2s ease-in-out infinite' }}>🔍</div>
     </div>
   );
@@ -368,26 +345,19 @@ function QuestionScene({ noun, red, fatAndRed }) {
 
 // -- Hit and ran: attacker bonks victim then zooms away --
 function HitAndRanScene({ a, b }) {
-  const emojiA = E[a] || '🐱';
-  const emojiB = E[b] || '🐀';
   return (
-    <div className="relative w-80 h-48 flex items-center justify-center">
-      {/* Victim standing there looking stunned */}
-      <div className="absolute right-8 text-7xl" style={{ animation: 'stunned 0.5s ease-in-out infinite' }}>
-        {emojiB}
+    <div className="relative w-96 h-56 flex items-center justify-center">
+      <div className="absolute right-4 top-8" style={{ animation: 'stunned 0.5s ease-in-out infinite' }}>
+        <Char name={b} size={120} />
       </div>
-      {/* Stars around victim */}
-      <div className="absolute right-4 top-2 text-3xl" style={{ animation: 'spinStar 1s linear infinite' }}>⭐</div>
-      <div className="absolute right-16 top-0 text-2xl" style={{ animation: 'spinStar 1s linear 0.3s infinite' }}>💫</div>
-      {/* POW effect */}
-      <div className="absolute right-20 top-8 text-4xl font-extrabold text-red-500" style={{ animation: 'pow 1.5s ease-out infinite' }}>
+      <div className="absolute right-0 top-0 text-3xl" style={{ animation: 'spinStar 1s linear infinite' }}>⭐</div>
+      <div className="absolute right-20 -top-2 text-2xl" style={{ animation: 'spinStar 1s linear 0.3s infinite' }}>💫</div>
+      <div className="absolute right-24 top-4 text-4xl font-extrabold text-red-500" style={{ animation: 'pow 1.5s ease-out infinite' }}>
         POW!
       </div>
-      {/* Attacker running away */}
-      <div className="absolute text-7xl" style={{ animation: 'hitAndRun 2s ease-in-out infinite' }}>
-        {emojiA}
+      <div className="absolute" style={{ animation: 'hitAndRun 2s ease-in-out infinite' }}>
+        <Char name={a} size={120} />
       </div>
-      {/* Dust clouds */}
       <div className="absolute bottom-2 left-0 text-3xl" style={{ animation: 'dustPuff 2s ease-out 1s infinite' }}>💨</div>
       <div className="absolute bottom-6 left-8 text-2xl" style={{ animation: 'dustPuff 2s ease-out 1.2s infinite' }}>💨</div>
     </div>
@@ -396,21 +366,16 @@ function HitAndRanScene({ a, b }) {
 
 // -- Hid in box/bin: animal peeking out with eyes --
 function HidScene({ noun, container }) {
-  const emoji = E[noun] || '🐱';
   const containerEmoji = E[container] || '📦';
   return (
     <div className="relative flex flex-col items-center">
-      {/* Peeking animal */}
-      <div className="text-6xl -mb-8 relative z-10" style={{ animation: 'peek 2.5s ease-in-out infinite' }}>
-        {emoji}
+      <div className="-mb-10 relative z-10" style={{ animation: 'peek 2.5s ease-in-out infinite' }}>
+        <Char name={noun} size={110} />
       </div>
-      {/* Container */}
       <div className="text-[7rem] leading-none relative z-20" style={{ animation: 'containerShake 3s ease-in-out infinite' }}>
         {containerEmoji}
       </div>
-      {/* Eyes peeking */}
       <div className="absolute top-4 text-3xl z-30" style={{ animation: 'peekEyes 2.5s ease-in-out infinite' }}>👀</div>
-      {/* Shh! */}
       <div className="absolute -right-8 top-0 text-3xl" style={{ animation: 'fadeInOut 3s ease-in-out infinite' }}>🤫</div>
     </div>
   );
@@ -418,21 +383,11 @@ function HidScene({ noun, container }) {
 
 // -- Pet: one animal lovingly patting another, hearts flying --
 function PetScene({ a, b }) {
-  const emojiA = E[a] || '🐱';
-  const emojiB = E[b] || '🐀';
   return (
-    <div className="relative flex items-end gap-2">
-      {/* Petter */}
-      <div className="text-7xl" style={{ animation: 'petMotion 1s ease-in-out infinite' }}>
-        {emojiA}
-      </div>
-      {/* Hand patting */}
+    <div className="relative flex items-end gap-4">
+      <Char name={a} size={130} style={{ animation: 'petMotion 1s ease-in-out infinite' }} />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 text-4xl" style={{ animation: 'patHand 0.6s ease-in-out infinite' }}>🤚</div>
-      {/* The one being pet — happy wobble */}
-      <div className="text-7xl" style={{ animation: 'happyWobble 0.8s ease-in-out infinite' }}>
-        {emojiB}
-      </div>
-      {/* Hearts floating up */}
+      <Char name={b} size={130} style={{ animation: 'happyWobble 0.8s ease-in-out infinite' }} />
       <div className="absolute -top-8 left-1/4 text-3xl" style={{ animation: 'heartFloat 1.5s ease-out infinite' }}>❤️</div>
       <div className="absolute -top-4 right-1/4 text-2xl" style={{ animation: 'heartFloat 1.5s ease-out 0.4s infinite' }}>💕</div>
       <div className="absolute -top-12 left-1/2 text-3xl" style={{ animation: 'heartFloat 1.5s ease-out 0.8s infinite' }}>💖</div>
@@ -442,21 +397,11 @@ function PetScene({ a, b }) {
 
 // -- Fed: one animal giving food to another --
 function FedScene({ a, b }) {
-  const emojiA = E[a] || '🐱';
-  const emojiB = E[b] || '🐀';
   return (
     <div className="relative flex items-center gap-4">
-      {/* Feeder with food */}
-      <div className="text-7xl" style={{ animation: 'feedLean 1.5s ease-in-out infinite' }}>
-        {emojiA}
-      </div>
-      {/* Food traveling from A to B */}
+      <Char name={a} size={130} style={{ animation: 'feedLean 1.5s ease-in-out infinite' }} />
       <div className="text-4xl" style={{ animation: 'foodTravel 1.5s ease-in-out infinite' }}>🍖</div>
-      {/* Happy eater — mouth open then munching */}
-      <div className="text-7xl" style={{ animation: 'munch 0.8s ease-in-out infinite' }}>
-        {emojiB}
-      </div>
-      {/* Yum effects */}
+      <Char name={b} size={130} style={{ animation: 'munch 0.8s ease-in-out infinite' }} />
       <div className="absolute -top-4 right-4 text-3xl" style={{ animation: 'fadeInOut 1.5s ease-in-out infinite' }}>😋</div>
       <div className="absolute top-0 right-12 text-2xl" style={{ animation: 'sparkle 1s ease-in-out 0.5s infinite' }}>✨</div>
     </div>
@@ -465,18 +410,13 @@ function FedScene({ a, b }) {
 
 // -- Got mud on: animal covered in mud splatters --
 function GotMudScene({ noun, bodyPart }) {
-  const emoji = E[noun] || '🐱';
   const partEmoji = E[bodyPart] || '🤷';
   return (
     <div className="relative flex flex-col items-center">
-      <div className="text-[7rem] leading-none" style={{ animation: 'mudShake 0.8s ease-in-out infinite' }}>
-        {emoji}
-      </div>
-      {/* Mud splatters everywhere */}
+      <Char name={noun} size={160} style={{ animation: 'mudShake 0.8s ease-in-out infinite' }} />
       <div className="absolute top-0 left-4 text-4xl" style={{ animation: 'mudSplat 1s ease-out infinite' }}>🟤</div>
       <div className="absolute top-8 right-2 text-3xl" style={{ animation: 'mudSplat 1s ease-out 0.2s infinite' }}>🟤</div>
       <div className="absolute top-16 left-8 text-2xl" style={{ animation: 'mudSplat 1s ease-out 0.4s infinite' }}>🟤</div>
-      {/* Body part with mud */}
       <div className="flex items-center gap-2 mt-2">
         <span className="text-4xl">{partEmoji}</span>
         <span className="text-3xl" style={{ animation: 'mudDrip 1.2s ease-in infinite' }}>💩</span>
@@ -490,16 +430,10 @@ function GotMudScene({ noun, bodyPart }) {
 
 // -- Big hop in mud: animal leaping with huge splash --
 function BigHopScene({ noun }) {
-  const emoji = E[noun] || '🐶';
   return (
     <div className="relative flex flex-col items-center">
-      {/* Animal mid-jump */}
-      <div className="text-[7rem] leading-none" style={{ animation: 'bigHop 1.2s ease-in-out infinite' }}>
-        {emoji}
-      </div>
-      {/* Mud puddle */}
+      <Char name={noun} size={160} style={{ animation: 'bigHop 1.2s ease-in-out infinite' }} />
       <div className="text-6xl -mt-4">🟤</div>
-      {/* Splash effects */}
       <div className="absolute bottom-8 left-0 text-3xl" style={{ animation: 'splash1 1.2s ease-out infinite' }}>💦</div>
       <div className="absolute bottom-12 right-0 text-3xl" style={{ animation: 'splash2 1.2s ease-out 0.1s infinite' }}>💦</div>
       <div className="absolute bottom-16 left-8 text-2xl" style={{ animation: 'splash1 1.2s ease-out 0.2s infinite' }}>🟤</div>
@@ -513,22 +447,16 @@ function BigHopScene({ noun }) {
 
 // -- Ran and fell in mud: running then faceplanting --
 function RanAndFellScene({ noun, container }) {
-  const emoji = E[noun] || '🐶';
   const containerEmoji = container === 'mud' ? '🟤' : (E[container] || '📦');
   return (
-    <div className="relative w-80 h-48 flex items-center justify-center">
-      {/* Running animal that trips */}
-      <div className="absolute text-7xl" style={{ animation: 'runAndTrip 2.5s ease-in-out infinite' }}>
-        {emoji}
+    <div className="relative w-96 h-56 flex items-center justify-center">
+      <div className="absolute" style={{ animation: 'runAndTrip 2.5s ease-in-out infinite' }}>
+        <Char name={noun} size={120} />
       </div>
-      {/* Mud/container */}
       <div className="absolute right-4 bottom-4 text-6xl">{containerEmoji}</div>
-      {/* Dust from running */}
       <div className="absolute bottom-6 left-0 text-3xl" style={{ animation: 'dustPuff 2.5s ease-out 0s infinite' }}>💨</div>
       <div className="absolute bottom-10 left-8 text-2xl" style={{ animation: 'dustPuff 2.5s ease-out 0.2s infinite' }}>💨</div>
-      {/* Splash on impact */}
       <div className="absolute right-0 bottom-12 text-3xl" style={{ animation: 'tripSplash 2.5s ease-out 1.5s infinite' }}>💥</div>
-      {/* Stars from dizzy */}
       <div className="absolute right-8 top-4 text-2xl" style={{ animation: 'tripStars 2.5s ease-out 1.8s infinite' }}>⭐</div>
       <div className="absolute right-16 top-0 text-xl" style={{ animation: 'tripStars 2.5s ease-out 2s infinite' }}>💫</div>
     </div>
@@ -537,48 +465,32 @@ function RanAndFellScene({ noun, container }) {
 
 // -- Pat and pet: sam patting one and petting another, double love --
 function PatAndPetScene({ a, b }) {
-  const emojiA = E[a] || '🐔';
-  const emojiB = E[b] || '🐶';
   return (
     <div className="relative flex items-center gap-2">
-      {/* First animal being patted */}
-      <div className="text-6xl" style={{ animation: 'happyWobble 0.8s ease-in-out infinite' }}>
-        {emojiA}
-      </div>
-      {/* Sam in the middle */}
-      <div className="text-7xl" style={{ animation: 'samPat 1s ease-in-out infinite' }}>
-        👦
-      </div>
-      {/* Second animal being petted */}
-      <div className="text-6xl" style={{ animation: 'happyWobble 0.8s ease-in-out 0.4s infinite' }}>
-        {emojiB}
-      </div>
-      {/* Hearts from both sides */}
+      <Char name={a} size={110} style={{ animation: 'happyWobble 0.8s ease-in-out infinite' }} />
+      <Char name="sam" size={140} style={{ animation: 'samPat 1s ease-in-out infinite' }} />
+      <Char name={b} size={110} style={{ animation: 'happyWobble 0.8s ease-in-out 0.4s infinite' }} />
       <div className="absolute -top-8 left-4 text-3xl" style={{ animation: 'heartFloat 1.5s ease-out infinite' }}>❤️</div>
       <div className="absolute -top-6 right-4 text-3xl" style={{ animation: 'heartFloat 1.5s ease-out 0.5s infinite' }}>💕</div>
       <div className="absolute -top-12 left-1/2 text-2xl" style={{ animation: 'heartFloat 1.5s ease-out 0.3s infinite' }}>💖</div>
-      {/* Hands */}
-      <div className="absolute top-2 left-16 text-3xl" style={{ animation: 'patHand 0.6s ease-in-out infinite' }}>🤚</div>
-      <div className="absolute top-2 right-16 text-3xl" style={{ animation: 'patHand 0.6s ease-in-out 0.3s infinite' }}>🤚</div>
+      <div className="absolute top-0 left-16 text-3xl" style={{ animation: 'patHand 0.6s ease-in-out infinite' }}>🤚</div>
+      <div className="absolute top-0 right-16 text-3xl" style={{ animation: 'patHand 0.6s ease-in-out 0.3s infinite' }}>🤚</div>
     </div>
   );
 }
 
 // -- Ran and hid: running then hiding --
 function RanAndHidScene({ noun, container }) {
-  const emoji = E[noun] || '🐶';
   const containerEmoji = container === 'mud' ? '🟤' : (E[container] || '📦');
   return (
     <div className="relative flex flex-col items-center">
-      {/* Animal running then peeking from container */}
-      <div className="text-6xl -mb-8 relative z-10" style={{ animation: 'runThenPeek 3s ease-in-out infinite' }}>
-        {emoji}
+      <div className="-mb-10 relative z-10" style={{ animation: 'runThenPeek 3s ease-in-out infinite' }}>
+        <Char name={noun} size={110} />
       </div>
       <div className="text-[7rem] leading-none relative z-20" style={{ animation: 'containerShake 3s ease-in-out infinite' }}>
         {containerEmoji}
       </div>
       <div className="absolute top-4 text-3xl z-30" style={{ animation: 'peekEyes 3s ease-in-out infinite' }}>👀</div>
-      {/* Dust from running */}
       <div className="absolute top-8 -left-12 text-3xl" style={{ animation: 'dustPuff 3s ease-out 0s infinite' }}>💨</div>
       <div className="absolute -right-8 top-0 text-3xl" style={{ animation: 'fadeInOut 3s ease-in-out 1.5s infinite' }}>🤫</div>
     </div>
@@ -848,96 +760,15 @@ const SCENE_STYLES = `
 `;
 
 /* ============================================================
-   READING TRACKER
+   SENTENCE DISPLAY (simple black text)
    ============================================================ */
-function ReadingTracker({ sentence }) {
-  const containerRef = useRef(null);
-  const charRefs = useRef([]);
-  const [progress, setProgress] = useState(0);
-  const [charPositions, setCharPositions] = useState([]);
-  const [trackWidth, setTrackWidth] = useState(0);
-  const dragging = useRef(false);
-
-  const chars = sentence.split('');
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const containerRect = container.getBoundingClientRect();
-    const cLeft = containerRect.left;
-    const positions = charRefs.current.map((el) => {
-      if (!el) return { mid: 0 };
-      const r = el.getBoundingClientRect();
-      return { mid: (r.left + r.right) / 2 - cLeft };
-    });
-    setCharPositions(positions);
-    setTrackWidth(containerRect.width);
-  }, [sentence]);
-
-  const updateProgress = useCallback((clientX) => {
-    const container = containerRef.current;
-    if (!container) return;
-    const rect = container.getBoundingClientRect();
-    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    setProgress(x);
-  }, []);
-
-  const onPointerDown = useCallback((e) => {
-    dragging.current = true;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    updateProgress(e.clientX);
-  }, [updateProgress]);
-
-  const onPointerMove = useCallback((e) => {
-    if (!dragging.current) return;
-    updateProgress(e.clientX);
-  }, [updateProgress]);
-
-  const onPointerUp = useCallback(() => {
-    dragging.current = false;
-  }, []);
-
-  const progressFraction = trackWidth > 0 ? progress / trackWidth : 0;
-
+function SentenceDisplay({ sentence }) {
   return (
     <div className="w-full max-w-2xl">
-      <div ref={containerRef} className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg mb-3">
-        <span className="text-5xl font-extrabold leading-snug">
-          {chars.map((ch, i) => {
-            const pos = charPositions[i];
-            const isRead = pos ? progress >= pos.mid : false;
-            return (
-              <span
-                key={i}
-                ref={(el) => { charRefs.current[i] = el; }}
-                className="transition-colors duration-150"
-                style={{ color: isRead ? '#1e293b' : '#cbd5e1' }}
-              >
-                {ch}
-              </span>
-            );
-          })}
+      <div className="bg-white/80 rounded-2xl px-8 py-4 shadow-lg">
+        <span className="text-5xl font-extrabold leading-snug text-slate-900">
+          {sentence}
         </span>
-      </div>
-      <div
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        className="relative mx-8 cursor-pointer"
-        style={{ height: 56, touchAction: 'none' }}
-      >
-        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 rounded-full bg-gray-200" style={{ height: 12 }} />
-        <div className="absolute top-1/2 -translate-y-1/2 left-0 rounded-full bg-gradient-to-r from-amber-400 to-orange-400" style={{ height: 12, width: `${progressFraction * 100}%` }} />
-        <div
-          className="absolute top-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg border-4 border-white flex items-center justify-center"
-          style={{
-            width: 52, height: 52,
-            left: `calc(${progressFraction * 100}% - 26px)`,
-            transition: dragging.current ? 'none' : 'left 0.1s ease-out',
-          }}
-        >
-          <span className="text-2xl select-none">👆</span>
-        </div>
       </div>
     </div>
   );
@@ -1054,7 +885,7 @@ export default function SentencePractice2({ onBack }) {
 
       {/* Sentence display */}
       <div className="flex-shrink-0 pt-14 pb-2 px-6 flex flex-col items-center justify-center">
-        <ReadingTracker key={`${selectedLevel}-${sentenceIdx}`} sentence={current} />
+        <SentenceDisplay key={`${selectedLevel}-${sentenceIdx}`} sentence={current} />
       </div>
 
       {/* Scene area */}
