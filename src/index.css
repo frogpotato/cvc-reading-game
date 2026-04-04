@@ -2,6 +2,8 @@
 
 * {
   font-family: 'Nunito', sans-serif;
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
   -webkit-user-select: none;
   user-select: none;
 }
