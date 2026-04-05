@@ -64,7 +64,7 @@ function generateSentences(patterns, count) {
 const allPatterns = levels.flatMap(l => l.patterns);
 
 // Hard patterns only (level6+) for Random 20
-const hardPatterns = levels.filter(l => ['level6', 'level7', 'level8'].includes(l.key)).flatMap(l => l.patterns);
+const hardPatterns = levels.filter(l => ['level6', 'level7', 'level8', 'level9'].includes(l.key)).flatMap(l => l.patterns);
 
 // Generate a "Random 20" — only from hard levels (6+), at least 1 from each pattern type
 function generateRandom20() {
@@ -93,7 +93,7 @@ function generateRandom20() {
    CHARACTER & EMOJI MAPS
    ============================================================ */
 const SVG_CHARS = {
-  cat: Cat, rat: Rat, bat: Bat, hen: Hen, fox: Fox, pig: Pig, ant: Ant, pup: Pup,
+  cat: Cat, rat: Rat, bat: Bat, hen: Hen, fox: Fox, pig: Pig, ant: Ant, pup: Pup, pug: Pup,
   sam: Sam, nan: Nan,
 };
 
@@ -109,6 +109,7 @@ const E = {
   sam: '👦', nan: '👵',
   pen: '🖊️', net: '🥅', pan: '🍳', bin: '🗑️', box: '📦', hat: '🎩',
   mud: '🟤', bed: '🛏️', leg: '🦵', hip: '💃', lip: '👄',
+  pot: '🍯', pit: '🕳️', hut: '🛖', pug: '🐶', fun: '🎉', hug: '🤗',
 };
 
 const NOUNS = Object.keys(E);
@@ -162,13 +163,44 @@ function parseSentence(sentence) {
     const b = findNoun(words, (a?.idx || 0) + 2);
     return { type: 'hit-ran', a: a?.noun || 'cat', b: b?.noun || 'rat' };
   }
+  // "the X and Y had a hug"
+  if (s.includes('and') && s.includes('had a hug')) {
+    const a = findNoun(words);
+    const andIdx = words.indexOf('and');
+    const b = findNoun(words, andIdx + 1);
+    return { type: 'pair-hug', a: a?.noun || 'pig', b: b?.noun || 'fox' };
+  }
+  // "the X had a hug"
+  if (s.includes('had a hug')) {
+    const a = findNoun(words);
+    return { type: 'solo-hug', a: a?.noun || 'pup' };
+  }
+  // "the X had fun"
+  if (s.includes('had fun')) {
+    const a = findNoun(words);
+    return { type: 'had-fun', a: a?.noun || 'pig' };
+  }
+  // "the X put the Y on"
+  if (s.includes('put') && s.includes('on')) {
+    const a = findNoun(words);
+    const putIdx = words.indexOf('put');
+    const b = findNoun(words, putIdx + 1);
+    return { type: 'put-on', a: a?.noun || 'pup', b: b?.noun || 'hat' };
+  }
+  // "the X sat on/in the Y"
+  if (words.includes('sat') && (s.includes('sat on') || s.includes('sat in'))) {
+    const a = findNoun(words);
+    const container = words[words.length - 1];
+    const prep = s.includes('sat on') ? 'on' : 'in';
+    return { type: 'sat-place', a: a?.noun || 'hen', container, prep };
+  }
   // "the X hid in the Y"
   if (s.includes('hid in')) {
     const a = findNoun(words);
     const container = words[words.length - 1];
     return { type: 'hid', a: a?.noun || 'cat', container };
   }
-  // "the X pet the Y"
+  // "the X pet the Y" / "sam pet the X"
   if (words.includes('pet')) {
     const a = findNoun(words);
     const b = findNoun(words, (a?.idx || 0) + 2);
@@ -179,6 +211,20 @@ function parseSentence(sentence) {
     const a = findNoun(words);
     const b = findNoun(words, (a?.idx || 0) + 2);
     return { type: 'fed', a: a?.noun || 'cat', b: b?.noun || 'rat' };
+  }
+  // "sam pat the X" (simple pat without "and pet")
+  if (words.includes('pat') && !words.includes('pet')) {
+    const patIdx = words.indexOf('pat');
+    const a = findNoun(words);
+    const b = findNoun(words, patIdx + 1);
+    return { type: 'pat-simple', a: a?.noun || 'sam', b: b?.noun || 'hen' };
+  }
+  // "the X had a Y" (generic possession like "the hen had a hat")
+  if (s.includes('had a') && !s.includes('had fun') && !s.includes('had a hug')) {
+    const a = findNoun(words);
+    const hadIdx = words.indexOf('had');
+    const b = findNoun(words, hadIdx + 1);
+    return { type: 'had-thing', a: a?.noun || 'hen', b: b?.noun || 'hat' };
   }
   // "is the X fat and red"
   if (s.startsWith('is') && s.includes('fat and red')) {
@@ -689,6 +735,155 @@ function RanAndHidScene({ noun, container }) {
   );
 }
 
+// -- Sat on/in: animal plops down onto/into a thing --
+function SatPlaceScene({ noun, container, prep }) {
+  const containerEmoji = E[container] || '📦';
+  return (
+    <div className="relative w-72 h-56 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-green-100 rounded-full" />
+      {/* The container/place */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2" style={{ animation: 'satCushionSquash 2.5s ease-in-out infinite' }}>
+        <span className="text-6xl">{containerEmoji}</span>
+      </div>
+      {/* Animal sitting down onto it */}
+      <div className="absolute left-1/2 -translate-x-1/2" style={{ animation: 'satDrop 2.5s ease-in-out infinite' }}>
+        <div style={{ animation: 'satSquashStretch 2.5s ease-in-out infinite' }}>
+          <Char name={noun} size={130} />
+        </div>
+      </div>
+      <div className="absolute bottom-4 left-4" style={{ animation: 'satDustL 2.5s ease-out infinite' }}>
+        <span className="text-xl">💨</span>
+      </div>
+      <div className="absolute bottom-4 right-4" style={{ animation: 'satDustR 2.5s ease-out infinite' }}>
+        <span className="text-xl">💨</span>
+      </div>
+    </div>
+  );
+}
+
+// -- Put on: animal picks up thing and puts it on its head, wobbles --
+function PutOnScene({ a, b }) {
+  const thingEmoji = E[b] || '🎩';
+  return (
+    <div className="relative w-72 h-56 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-green-100 rounded-full" />
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2" style={{ animation: 'putOnReach 3s ease-in-out infinite' }}>
+        <Char name={a} size={140} />
+      </div>
+      {/* The thing being put on — rises from ground to head */}
+      <div className="absolute left-1/2 -translate-x-1/2 text-5xl" style={{ animation: 'putOnItem 3s ease-in-out infinite' }}>
+        {thingEmoji}
+      </div>
+      {/* Ta-da sparkle */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-2xl" style={{ animation: 'putOnTaDa 3s ease-out infinite' }}>✨</div>
+    </div>
+  );
+}
+
+// -- Had fun: animal jumping, spinning, celebrating --
+function HadFunScene({ noun }) {
+  return (
+    <div className="relative w-72 h-56 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-yellow-100 rounded-full" />
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2" style={{ animation: 'funJump 2s ease-in-out infinite' }}>
+        <div style={{ animation: 'funSpin 2s ease-in-out infinite' }}>
+          <Char name={noun} size={140} />
+        </div>
+      </div>
+      {/* Confetti / joy particles */}
+      <div className="absolute top-4 left-8 text-2xl" style={{ animation: 'funConfetti1 2s ease-out infinite' }}>🎉</div>
+      <div className="absolute top-8 right-8 text-xl" style={{ animation: 'funConfetti2 2s ease-out 0.3s infinite' }}>⭐</div>
+      <div className="absolute top-2 right-16 text-lg" style={{ animation: 'funConfetti1 2s ease-out 0.6s infinite' }}>🎊</div>
+    </div>
+  );
+}
+
+// -- Pair hug: two animals walk toward each other, embrace, hearts --
+function PairHugScene({ a, b }) {
+  return (
+    <div className="relative w-80 h-48 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-pink-100 rounded-full" />
+      {/* Animal A approaches from left */}
+      <div className="absolute bottom-2" style={{ animation: 'hugApproachL 3s ease-in-out infinite' }}>
+        <Char name={a} size={120} />
+      </div>
+      {/* Animal B approaches from right */}
+      <div className="absolute bottom-2" style={{ animation: 'hugApproachR 3s ease-in-out infinite' }}>
+        <Char name={b} size={120} />
+      </div>
+      {/* Warm hearts rising when they meet */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 text-3xl" style={{ animation: 'hugHeart 3s ease-in-out infinite' }}>❤️</div>
+      <div className="absolute top-4 left-1/3 text-xl" style={{ animation: 'hugHeart 3s ease-in-out 0.5s infinite' }}>💕</div>
+      <div className="absolute top-2 right-1/3 text-xl" style={{ animation: 'hugHeart 3s ease-in-out 1s infinite' }}>💖</div>
+    </div>
+  );
+}
+
+// -- Solo hug: animal hugs itself, squeezes tight, content smile --
+function SoloHugScene({ noun }) {
+  return (
+    <div className="relative w-64 h-48 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-pink-100 rounded-full" />
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2" style={{ animation: 'soloHugSqueeze 2.5s ease-in-out infinite' }}>
+        <Char name={noun} size={150} />
+      </div>
+      {/* Warm glow / hearts */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-2xl" style={{ animation: 'petHeartSlow 2.5s ease-in-out infinite' }}>❤️</div>
+      <div className="absolute top-0 left-1/3 text-lg" style={{ animation: 'petHeartSlow 2.5s ease-in-out 0.8s infinite' }}>💕</div>
+      {/* Content purr lines */}
+      <div className="absolute bottom-16 left-1/2 translate-x-8" style={{ animation: 'petPurrLines 2.5s ease-in-out infinite' }}>
+        <div className="flex flex-col gap-0.5 opacity-50">
+          <div className="w-4 h-0.5 bg-pink-300 rounded" style={{ animation: 'petPurrWave 1s ease-in-out infinite' }} />
+          <div className="w-3 h-0.5 bg-pink-300 rounded" style={{ animation: 'petPurrWave 1s ease-in-out 0.2s infinite' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -- Pat simple: one character gently pats another, tender --
+function PatSimpleScene({ a, b }) {
+  return (
+    <div className="relative w-72 h-48 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-green-100 rounded-full" />
+      <div className="absolute bottom-2 left-10" style={{ animation: 'petLeanIn 3s ease-in-out infinite' }}>
+        <Char name={a} size={130} />
+      </div>
+      <div className="absolute bottom-2 right-10" style={{ animation: 'petReceive 3s ease-in-out infinite' }}>
+        <div style={{ animation: 'petEyesClose 3s ease-in-out infinite' }}>
+          <Char name={b} size={120} />
+        </div>
+      </div>
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-xl" style={{ animation: 'petHeartSlow 3s ease-in-out infinite' }}>❤️</div>
+      <div className="absolute bottom-16 right-10" style={{ animation: 'petPurrLines 3s ease-in-out 0.5s infinite' }}>
+        <div className="flex flex-col gap-0.5 opacity-50">
+          <div className="w-4 h-0.5 bg-pink-300 rounded" style={{ animation: 'petPurrWave 1s ease-in-out infinite' }} />
+          <div className="w-3 h-0.5 bg-pink-300 rounded" style={{ animation: 'petPurrWave 1s ease-in-out 0.3s infinite' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -- Had a thing: animal holds something up proudly --
+function HadThingScene({ a, b }) {
+  const thingEmoji = E[b] || '❓';
+  return (
+    <div className="relative w-64 h-56 flex items-end justify-center">
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-green-100 rounded-full" />
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2" style={{ animation: 'samLift 3s ease-in-out infinite' }}>
+        <Char name={a} size={140} />
+      </div>
+      <div className="absolute left-1/2 -translate-x-1/2 text-5xl" style={{ animation: 'samHeldUp 3s ease-in-out infinite' }}>
+        <div style={{ animation: 'heldDangle 1.5s ease-in-out 1.2s infinite' }}>
+          {thingEmoji}
+        </div>
+      </div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 text-2xl" style={{ animation: 'samPrideSparkle 3s ease-out infinite' }}>✨</div>
+    </div>
+  );
+}
+
 // Master scene renderer
 function SceneRenderer({ sentence }) {
   const parsed = parseSentence(sentence);
@@ -712,6 +907,13 @@ function SceneRenderer({ sentence }) {
     case 'ran-fell': return <RanAndFellScene noun={parsed.a} container={parsed.container} />;
     case 'pat-and-pet': return <PatAndPetScene a={parsed.a} b={parsed.b} />;
     case 'ran-hid': return <RanAndHidScene noun={parsed.a} container={parsed.container} />;
+    case 'sat-place': return <SatPlaceScene noun={parsed.a} container={parsed.container} prep={parsed.prep} />;
+    case 'put-on': return <PutOnScene a={parsed.a} b={parsed.b} />;
+    case 'had-fun': return <HadFunScene noun={parsed.a} />;
+    case 'pair-hug': return <PairHugScene a={parsed.a} b={parsed.b} />;
+    case 'solo-hug': return <SoloHugScene noun={parsed.a} />;
+    case 'pat-simple': return <PatSimpleScene a={parsed.a} b={parsed.b} />;
+    case 'had-thing': return <HadThingScene a={parsed.a} b={parsed.b} />;
     default: return <FatScene noun={parsed.a} />;
   }
 }
@@ -1269,6 +1471,73 @@ const SCENE_STYLES = `
     0%, 52% { transform: scale(0); opacity: 0; }
     58% { transform: scale(1.3); opacity: 0.7; }
     80%, 100% { transform: scale(2) translateX(-15px); opacity: 0; }
+  }
+
+  /* === PUT ON SCENE === */
+  @keyframes putOnReach {
+    0%, 20% { transform: translateX(-50%) translateY(0); }
+    30% { transform: translateX(-50%) translateY(5px); }
+    50%, 100% { transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes putOnItem {
+    0%, 20% { bottom: 8px; transform: translateX(-50%) scale(1); }
+    30% { bottom: 20px; transform: translateX(-50%) scale(1.1); }
+    50% { bottom: 155px; transform: translateX(-50%) scale(1); }
+    55% { bottom: 150px; transform: translateX(-50%) rotate(-8deg); }
+    60% { bottom: 155px; transform: translateX(-50%) rotate(5deg); }
+    65%, 100% { bottom: 152px; transform: translateX(-50%) rotate(0deg); }
+  }
+  @keyframes putOnTaDa {
+    0%, 60% { transform: translateX(-50%) scale(0); opacity: 0; }
+    68% { transform: translateX(-50%) scale(1.5); opacity: 1; }
+    80% { transform: translateX(-50%) scale(1); opacity: 1; }
+    100% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  }
+
+  /* === HAD FUN SCENE === */
+  @keyframes funJump {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    25% { transform: translateX(-50%) translateY(-50px); }
+    35% { transform: translateX(-50%) translateY(0); }
+    55% { transform: translateX(-50%) translateY(-35px); }
+    65% { transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes funSpin {
+    0%, 10% { transform: rotate(0deg); }
+    30% { transform: rotate(360deg); }
+    40%, 100% { transform: rotate(360deg); }
+  }
+  @keyframes funConfetti1 {
+    0% { transform: translate(0, 0) scale(0); opacity: 0; }
+    20% { transform: translate(-10px, -20px) scale(1.2); opacity: 1; }
+    100% { transform: translate(-30px, 40px) scale(0.5); opacity: 0; }
+  }
+  @keyframes funConfetti2 {
+    0% { transform: translate(0, 0) scale(0); opacity: 0; }
+    20% { transform: translate(10px, -25px) scale(1.1); opacity: 1; }
+    100% { transform: translate(20px, 35px) scale(0.4); opacity: 0; }
+  }
+
+  /* === HUG SCENES === */
+  @keyframes hugApproachL {
+    0% { left: 5%; }
+    35% { left: 28%; }
+    40%, 100% { left: 28%; transform: rotate(5deg); }
+  }
+  @keyframes hugApproachR {
+    0% { right: 5%; }
+    35% { right: 28%; }
+    40%, 100% { right: 28%; transform: rotate(-5deg); }
+  }
+  @keyframes hugHeart {
+    0%, 35% { transform: translateX(-50%) translateY(0) scale(0); opacity: 0; }
+    45% { transform: translateX(-50%) translateY(-5px) scale(1); opacity: 0.9; }
+    70% { transform: translateX(-50%) translateY(-25px) scale(0.8); opacity: 0.6; }
+    100% { transform: translateX(-50%) translateY(-45px) scale(0.3); opacity: 0; }
+  }
+  @keyframes soloHugSqueeze {
+    0%, 100% { transform: translateX(-50%) scaleX(1) scaleY(1); }
+    30%, 70% { transform: translateX(-50%) scaleX(1.1) scaleY(0.95); }
   }
 `;
 

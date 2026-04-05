@@ -283,6 +283,77 @@ const sentenceSets = {
       },
     ],
   },
+  level9: {
+    name: "Mixed Actions",
+    patterns: [
+      {
+        type: "sat_on_in",
+        weight: 2,
+        sentences: [
+          "the hen sat on the pot",
+          "the pug sat in the pit",
+        ],
+      },
+      {
+        type: "put_on",
+        weight: 1.5,
+        sentences: [
+          "the pup put the hat on",
+        ],
+      },
+      {
+        type: "pet_simple",
+        weight: 2,
+        sentences: [
+          "sam pet the hen",
+          "the pup pet the pig",
+        ],
+      },
+      {
+        type: "pat_simple",
+        weight: 2,
+        sentences: [
+          "sam pat the hen",
+          "sam pat the pig",
+        ],
+      },
+      {
+        type: "hid_in_new",
+        weight: 2,
+        sentences: [
+          "the hen hid in the hut",
+          "the pup hid in the pit",
+          "the hen hid in the pot",
+        ],
+      },
+      {
+        type: "had_fun",
+        weight: 2,
+        sentences: [
+          "the pig had fun",
+          "the pup had fun",
+        ],
+      },
+      {
+        type: "had_a_hug",
+        weight: 2.5,
+        sentences: [
+          "the pig and fox had a hug",
+          "the hen and fox had a hug",
+          "the pug had a hug",
+          "the pup had a hug",
+          "the hen had a hug",
+        ],
+      },
+      {
+        type: "had_a_thing",
+        weight: 1.5,
+        sentences: [
+          "the hen had a hat",
+        ],
+      },
+    ],
+  },
 };
 
 export default sentenceSets;
