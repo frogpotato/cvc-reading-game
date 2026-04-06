@@ -14,6 +14,20 @@ const LEVELS = [
   { name: 'h words 2', words: ['had', 'hen', 'his', 'hot', 'hug'] },
 ];
 
+/* ============================================================
+   DICE POOLS — random 5 drawn each time
+   ============================================================ */
+const DICE_POOLS = {
+  p: ['pot', 'put', 'pug', 'pup', 'pan', 'pet', 'pig', 'peg', 'pen', 'pat', 'pin', 'pop', 'pit'],
+  h: ['had', 'has', 'hit', 'hid', 'his', 'hug', 'hut', 'hot', 'hop', 'hen', 'ham', 'hip', 'hog', 'hum', 'hat'],
+  f: ['fan', 'fed', 'fig', 'fin', 'fit', 'fog', 'fun'],
+};
+
+function pickRandom5(pool) {
+  const shuffled = shuffle([...pool]);
+  return shuffled.slice(0, 5);
+}
+
 const ZONE_EMOJIS = ['🐉', '🧝', '🦕', '🦸', '👻'];
 const ZONE_COLORS = [
   { bg: 'bg-amber-100', border: 'border-amber-400', text: 'text-amber-700', dot: 'bg-amber-400', glow: 'rgba(245,158,11,0.3)' },
@@ -400,16 +414,36 @@ function GameScreen({ level, onComplete, onBack }) {
 /* ============================================================
    LEVEL SELECT
    ============================================================ */
-function LevelSelect({ onSelectLevel, onBack }) {
+function LevelSelect({ onSelectLevel, onDice, onBack }) {
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 overflow-auto">
       <button onClick={onBack}
         className="absolute top-3 left-3 z-20 bg-white/80 hover:bg-white text-indigo-700 font-extrabold rounded-full px-5 py-2 text-xl shadow-md transition-all hover:scale-105 active:scale-95">
         ← Home
       </button>
-      <div className="flex flex-col items-center pt-16 px-4">
+      <div className="flex flex-col items-center pt-16 px-4 pb-8">
         <h1 className="text-5xl font-extrabold text-indigo-700 drop-shadow-md mb-2">Dragon Quest 2</h1>
-        <p className="text-2xl text-indigo-400 mb-8">Match 20 words to 5 targets!</p>
+        <p className="text-2xl text-indigo-400 mb-6">Match 20 words to 5 targets!</p>
+
+        {/* Dice options */}
+        <div className="flex gap-3 mb-6 w-full max-w-sm">
+          <button onClick={() => onDice('p')}
+            className="flex-1 py-4 rounded-2xl bg-gradient-to-br from-rose-100 to-red-200 border-4 border-rose-400 shadow-lg text-2xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-1">
+            <span className="text-4xl">🎲</span>
+            <span>p dice</span>
+          </button>
+          <button onClick={() => onDice('h')}
+            className="flex-1 py-4 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-200 border-4 border-cyan-400 shadow-lg text-2xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-1">
+            <span className="text-4xl">🎲</span>
+            <span>h dice</span>
+          </button>
+          <button onClick={() => onDice('f')}
+            className="flex-1 py-4 rounded-2xl bg-gradient-to-br from-lime-100 to-green-200 border-4 border-lime-400 shadow-lg text-2xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-1">
+            <span className="text-4xl">🎲</span>
+            <span>f dice</span>
+          </button>
+        </div>
+
         <div className="flex flex-col gap-4 w-full max-w-sm">
           {LEVELS.map((level, i) => (
             <button key={i} onClick={() => onSelectLevel(i)}
@@ -433,9 +467,26 @@ function LevelSelect({ onSelectLevel, onBack }) {
    ============================================================ */
 export default function DragonQuest2({ onBack }) {
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [diceLevel, setDiceLevel] = useState(null);
+
+  const handleDice = useCallback((letter) => {
+    const words = pickRandom5(DICE_POOLS[letter]);
+    setDiceLevel({ name: `${letter} dice`, words });
+  }, []);
+
+  if (diceLevel) {
+    return (
+      <GameScreen
+        key={`dice-${diceLevel.words.join('-')}`}
+        level={diceLevel}
+        onComplete={() => setDiceLevel(null)}
+        onBack={() => setDiceLevel(null)}
+      />
+    );
+  }
 
   if (selectedLevel === null) {
-    return <LevelSelect onSelectLevel={setSelectedLevel} onBack={onBack} />;
+    return <LevelSelect onSelectLevel={setSelectedLevel} onDice={handleDice} onBack={onBack} />;
   }
 
   const level = LEVELS[selectedLevel];
