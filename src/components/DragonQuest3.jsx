@@ -4,17 +4,41 @@ import useSounds from '../hooks/useSounds';
 
 /* ============================================================
    LEVEL DATA — 8 words per level, 2 bubbles each = 16 total
+   Levels 1-3 use word pools (randomly pick 8 each time)
    ============================================================ */
-const LEVELS = [
-  { name: 'a / i vowels', words: ['pat', 'pit', 'bat', 'bit', 'hat', 'hit', 'sat', 'sit'] },
-  { name: 'a / u vowels', words: ['pat', 'put', 'bat', 'but', 'hat', 'hut', 'cat', 'cut'] },
-  { name: 'i / u vowels', words: ['bit', 'but', 'hit', 'hut', 'pit', 'put', 'fit', 'fun'] },
+const P_POOL = ['pot', 'put', 'pug', 'pup', 'pan', 'pet', 'pig', 'peg', 'pen', 'pat', 'pin', 'pop'];
+const H_POOL = ['had', 'has', 'hit', 'hid', 'his', 'hug', 'hut', 'hot', 'hop', 'hen', 'ham', 'hip', 'hog', 'hum'];
+const F_POOL = ['fan', 'fed', 'fig', 'fin', 'fit', 'fog', 'fun'];
+
+function pickRandom8(pool) {
+  const shuffled = shuffle([...pool]);
+  return shuffled.slice(0, 8);
+}
+
+function pickRandom8WithFill(primary, ...extras) {
+  const shuffled = shuffle([...primary]);
+  if (shuffled.length >= 8) return shuffled.slice(0, 8);
+  const remaining = 8 - shuffled.length;
+  const fillers = shuffle([...extras.flat()]).slice(0, remaining);
+  return shuffle([...shuffled, ...fillers]);
+}
+
+const FIXED_LEVELS = [
   { name: 'e / o vowels', words: ['pet', 'pot', 'bet', 'bot', 'hen', 'hon', 'net', 'not'] },
   { name: 'all vowels 1', words: ['pat', 'pet', 'pit', 'pot', 'bat', 'bet', 'bit', 'but'] },
   { name: 'all vowels 2', words: ['hat', 'hit', 'hot', 'hut', 'fan', 'fin', 'fon', 'fun'] },
   { name: 'h / p words', words: ['hat', 'pat', 'hen', 'pen', 'hit', 'pit', 'hot', 'pot'] },
   { name: 'b / f words', words: ['bat', 'fat', 'bit', 'fit', 'but', 'fun', 'bed', 'fed'] },
 ];
+
+function buildLevels() {
+  return [
+    { name: 'p words', words: pickRandom8(P_POOL) },
+    { name: 'h words', words: pickRandom8(H_POOL) },
+    { name: 'f words', words: pickRandom8WithFill(F_POOL, P_POOL, H_POOL) },
+    ...FIXED_LEVELS,
+  ];
+}
 
 const ZONE_EMOJIS = ['🐉', '🧝', '🦕', '🦸', '🦊', '🐸', '🦄', '🐙'];
 const ZONE_COLORS = [
@@ -433,7 +457,7 @@ function GameScreen({ level, onComplete, onBack }) {
 /* ============================================================
    LEVEL SELECT
    ============================================================ */
-function LevelSelect({ onSelectLevel, onBack }) {
+function LevelSelect({ levels, onSelectLevel, onBack }) {
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 overflow-auto">
       <button onClick={onBack}
@@ -444,7 +468,7 @@ function LevelSelect({ onSelectLevel, onBack }) {
         <h1 className="text-5xl font-extrabold text-indigo-700 drop-shadow-md mb-2">Dragon Quest 3</h1>
         <p className="text-2xl text-indigo-400 mb-8">Match 16 words to 8 targets!</p>
         <div className="flex flex-col gap-4 w-full max-w-md pb-8">
-          {LEVELS.map((level, i) => (
+          {levels.map((level, i) => (
             <button key={i} onClick={() => onSelectLevel(i)}
               className="w-full py-4 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 border-4 border-amber-400 shadow-lg text-xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all">
               <div className="flex flex-wrap justify-center gap-1.5 mb-2 px-2">
@@ -466,18 +490,24 @@ function LevelSelect({ onSelectLevel, onBack }) {
    ============================================================ */
 export default function DragonQuest3({ onBack }) {
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [levels, setLevels] = useState(buildLevels);
+
+  const handleBack = useCallback(() => {
+    setSelectedLevel(null);
+    setLevels(buildLevels()); // re-randomize pools 1-3 each time
+  }, []);
 
   if (selectedLevel === null) {
-    return <LevelSelect onSelectLevel={setSelectedLevel} onBack={onBack} />;
+    return <LevelSelect levels={levels} onSelectLevel={setSelectedLevel} onBack={onBack} />;
   }
 
-  const level = LEVELS[selectedLevel];
+  const level = levels[selectedLevel];
   return (
     <GameScreen
-      key={selectedLevel}
+      key={`${selectedLevel}-${level.words.join()}`}
       level={level}
-      onComplete={() => setSelectedLevel(null)}
-      onBack={() => setSelectedLevel(null)}
+      onComplete={handleBack}
+      onBack={handleBack}
     />
   );
 }
