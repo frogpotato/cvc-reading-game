@@ -3,35 +3,33 @@ import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import useSounds from '../hooks/useSounds';
 
 /* ============================================================
-   LEVEL DATA — 10 words per level, 2 bubbles each = 20 total
+   LEVEL DATA — 8 words per level, 2 bubbles each = 16 total
    ============================================================ */
 const LEVELS = [
-  { name: 'a / i vowels', words: ['pat', 'pit', 'bat', 'bit', 'hat', 'hit', 'sat', 'sit', 'mat', 'mit'] },
-  { name: 'a / u vowels', words: ['pat', 'put', 'bat', 'but', 'hat', 'hut', 'cat', 'cut', 'ran', 'run'] },
-  { name: 'i / u vowels', words: ['bit', 'but', 'hit', 'hut', 'pit', 'put', 'fit', 'fun', 'pig', 'pug'] },
-  { name: 'e / o vowels', words: ['pet', 'pot', 'bet', 'bot', 'hen', 'hon', 'net', 'not', 'pen', 'pon'] },
-  { name: 'all vowels 1', words: ['pat', 'pet', 'pit', 'pot', 'put', 'bat', 'bet', 'bit', 'bot', 'but'] },
-  { name: 'all vowels 2', words: ['hat', 'het', 'hit', 'hot', 'hut', 'fan', 'fen', 'fin', 'fon', 'fun'] },
-  { name: 'h / p words', words: ['hat', 'pat', 'hen', 'pen', 'hit', 'pit', 'hot', 'pot', 'hug', 'pug'] },
-  { name: 'b / f words', words: ['bat', 'fat', 'bit', 'fit', 'but', 'fun', 'bed', 'fed', 'bin', 'fin'] },
+  { name: 'a / i vowels', words: ['pat', 'pit', 'bat', 'bit', 'hat', 'hit', 'sat', 'sit'] },
+  { name: 'a / u vowels', words: ['pat', 'put', 'bat', 'but', 'hat', 'hut', 'cat', 'cut'] },
+  { name: 'i / u vowels', words: ['bit', 'but', 'hit', 'hut', 'pit', 'put', 'fit', 'fun'] },
+  { name: 'e / o vowels', words: ['pet', 'pot', 'bet', 'bot', 'hen', 'hon', 'net', 'not'] },
+  { name: 'all vowels 1', words: ['pat', 'pet', 'pit', 'pot', 'bat', 'bet', 'bit', 'but'] },
+  { name: 'all vowels 2', words: ['hat', 'hit', 'hot', 'hut', 'fan', 'fin', 'fon', 'fun'] },
+  { name: 'h / p words', words: ['hat', 'pat', 'hen', 'pen', 'hit', 'pit', 'hot', 'pot'] },
+  { name: 'b / f words', words: ['bat', 'fat', 'bit', 'fit', 'but', 'fun', 'bed', 'fed'] },
 ];
 
-const ZONE_EMOJIS = ['🐉', '🧝', '🦕', '🦸', '👻', '🦊', '🐸', '🦄', '🐙', '🎃'];
+const ZONE_EMOJIS = ['🐉', '🧝', '🦕', '🦸', '🦊', '🐸', '🦄', '🐙'];
 const ZONE_COLORS = [
   { bg: 'bg-amber-100', border: 'border-amber-400', text: 'text-amber-700', dot: 'bg-amber-400', glow: 'rgba(245,158,11,0.25)' },
   { bg: 'bg-teal-100', border: 'border-teal-400', text: 'text-teal-700', dot: 'bg-teal-400', glow: 'rgba(20,184,166,0.25)' },
   { bg: 'bg-green-100', border: 'border-green-400', text: 'text-green-700', dot: 'bg-green-400', glow: 'rgba(34,197,94,0.25)' },
   { bg: 'bg-purple-100', border: 'border-purple-400', text: 'text-purple-700', dot: 'bg-purple-400', glow: 'rgba(168,85,247,0.25)' },
-  { bg: 'bg-sky-100', border: 'border-sky-400', text: 'text-sky-700', dot: 'bg-sky-400', glow: 'rgba(14,165,233,0.25)' },
   { bg: 'bg-rose-100', border: 'border-rose-400', text: 'text-rose-700', dot: 'bg-rose-400', glow: 'rgba(244,63,94,0.25)' },
   { bg: 'bg-lime-100', border: 'border-lime-400', text: 'text-lime-700', dot: 'bg-lime-400', glow: 'rgba(132,204,22,0.25)' },
   { bg: 'bg-orange-100', border: 'border-orange-400', text: 'text-orange-700', dot: 'bg-orange-400', glow: 'rgba(249,115,22,0.25)' },
   { bg: 'bg-indigo-100', border: 'border-indigo-400', text: 'text-indigo-700', dot: 'bg-indigo-400', glow: 'rgba(99,102,241,0.25)' },
-  { bg: 'bg-pink-100', border: 'border-pink-400', text: 'text-pink-700', dot: 'bg-pink-400', glow: 'rgba(236,72,153,0.25)' },
 ];
 
 const BUBBLES_PER_WORD = 2;
-const TOTAL_BUBBLES = 20;
+const TOTAL_BUBBLES = 16;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -255,22 +253,21 @@ function VictoryScreen({ onComplete }) {
 }
 
 /* ============================================================
-   INTRO — show all 10 words, 2 at a time (row by row)
+   INTRO — show all 8 words, 1 at a time
    ============================================================ */
 function IntroOverlay({ words, onDone }) {
   const [step, setStep] = useState(0);
-  const pairs = 5; // show 2 words at a time (one from each row)
+  const total = words.length; // 8
 
   const advance = useCallback(() => {
-    if (step < pairs - 1) {
+    if (step < total - 1) {
       setStep(s => s + 1);
     } else {
       onDone();
     }
-  }, [step, pairs, onDone]);
+  }, [step, total, onDone]);
 
-  const topWord = words[step];
-  const bottomWord = words[step + 5];
+  const word = words[step];
 
   return (
     <div className="absolute inset-0 z-30 flex items-center justify-center">
@@ -279,21 +276,13 @@ function IntroOverlay({ words, onDone }) {
         <motion.div key={step} className="flex flex-col items-center gap-6 z-40"
           initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.3 }}>
-          <div className="flex gap-6">
-            <div className="flex flex-col items-center">
-              <span className="text-6xl leading-none mb-2">{ZONE_EMOJIS[step]}</span>
-              <div className={`${ZONE_COLORS[step].bg} ${ZONE_COLORS[step].border} border-4 rounded-2xl px-6 py-3 shadow-lg`}>
-                <span className="text-5xl font-extrabold text-gray-800">{topWord}</span>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-6xl leading-none mb-2">{ZONE_EMOJIS[step + 5]}</span>
-              <div className={`${ZONE_COLORS[step + 5].bg} ${ZONE_COLORS[step + 5].border} border-4 rounded-2xl px-6 py-3 shadow-lg`}>
-                <span className="text-5xl font-extrabold text-gray-800">{bottomWord}</span>
-              </div>
+          <div className="flex flex-col items-center">
+            <span className="text-6xl leading-none mb-2">{ZONE_EMOJIS[step]}</span>
+            <div className={`${ZONE_COLORS[step].bg} ${ZONE_COLORS[step].border} border-4 rounded-2xl px-6 py-3 shadow-lg`}>
+              <span className="text-5xl font-extrabold text-gray-800">{word}</span>
             </div>
           </div>
-          <p className="text-xl text-indigo-400 font-bold">{step + 1} of {pairs}</p>
+          <p className="text-xl text-indigo-400 font-bold">{step + 1} of {total}</p>
         </motion.div>
       </AnimatePresence>
       <button onClick={advance}
@@ -304,13 +293,13 @@ function IntroOverlay({ words, onDone }) {
 }
 
 /* ============================================================
-   GAME SCREEN — 2 rows x 5 columns, bubble in center
+   GAME SCREEN — 2 rows x 4 columns, bubble in center
    ============================================================ */
 function GameScreen({ level, onComplete, onBack }) {
   const { words } = level;
   const sounds = useSounds();
   const [bubbles, setBubbles] = useState(() => generateBubbles(words));
-  const [collected, setCollected] = useState(() => Array(10).fill(0));
+  const [collected, setCollected] = useState(() => Array(8).fill(0));
   const [showVictory, setShowVictory] = useState(false);
   const [phase, setPhase] = useState('intro');
   const dropZoneRefs = useRef({});
@@ -351,9 +340,9 @@ function GameScreen({ level, onComplete, onBack }) {
   const activeBubble = activeIndex >= 0 ? bubbles[activeIndex] : null;
   const placedCount = bubbles.filter(b => b.placed).length;
 
-  // Split words into top row (0-4) and bottom row (5-9)
-  const topRow = words.slice(0, 5);
-  const bottomRow = words.slice(5, 10);
+  // Split words into top row (0-3) and bottom row (4-7)
+  const topRow = words.slice(0, 4);
+  const bottomRow = words.slice(4, 8);
 
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 relative overflow-hidden flex flex-col">
@@ -373,7 +362,7 @@ function GameScreen({ level, onComplete, onBack }) {
 
       {/* Main grid area */}
       <div className={`flex-1 flex flex-col transition-opacity duration-500 ${phase === 'intro' ? 'opacity-0' : 'opacity-100'}`}>
-        {/* Top row — 5 columns */}
+        {/* Top row — 4 columns */}
         <div className="flex flex-1">
           {topRow.map((word, i) => {
             const c = ZONE_COLORS[i];
@@ -411,10 +400,10 @@ function GameScreen({ level, onComplete, onBack }) {
           )}
         </div>
 
-        {/* Bottom row — 5 columns */}
+        {/* Bottom row — 4 columns */}
         <div className="flex flex-1">
           {bottomRow.map((word, i) => {
-            const idx = i + 5;
+            const idx = i + 4;
             const c = ZONE_COLORS[idx];
             return (
               <div key={idx} ref={(el) => setDropRef(idx, el)}
@@ -453,7 +442,7 @@ function LevelSelect({ onSelectLevel, onBack }) {
       </button>
       <div className="flex flex-col items-center pt-16 px-4">
         <h1 className="text-5xl font-extrabold text-indigo-700 drop-shadow-md mb-2">Dragon Quest 3</h1>
-        <p className="text-2xl text-indigo-400 mb-8">Match 20 words to 10 targets!</p>
+        <p className="text-2xl text-indigo-400 mb-8">Match 16 words to 8 targets!</p>
         <div className="flex flex-col gap-4 w-full max-w-md pb-8">
           {LEVELS.map((level, i) => (
             <button key={i} onClick={() => onSelectLevel(i)}
