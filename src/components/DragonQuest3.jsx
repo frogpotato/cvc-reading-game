@@ -6,7 +6,7 @@ import useSounds from '../hooks/useSounds';
    LEVEL DATA — 8 words per level, 2 bubbles each = 16 total
    Levels 1-3 use word pools (randomly pick 8 each time)
    ============================================================ */
-const P_POOL = ['pot', 'put', 'pug', 'pup', 'pan', 'pet', 'pig', 'peg', 'pen', 'pat', 'pin', 'pop'];
+const P_POOL = ['pot', 'put', 'pug', 'pup', 'pan', 'pet', 'pig', 'peg', 'pen', 'pat', 'pin', 'pop', 'pic'];
 const H_POOL = ['had', 'has', 'hit', 'hid', 'his', 'hug', 'hut', 'hot', 'hop', 'hen', 'ham', 'hip', 'hog', 'hum'];
 const F_POOL = ['fan', 'fed', 'fig', 'fin', 'fit', 'fog', 'fun'];
 
