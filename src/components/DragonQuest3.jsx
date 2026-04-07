@@ -52,8 +52,8 @@ const ZONE_COLORS = [
   { bg: 'bg-indigo-100', border: 'border-indigo-400', text: 'text-indigo-700', dot: 'bg-indigo-400', glow: 'rgba(99,102,241,0.25)' },
 ];
 
-const BUBBLES_PER_WORD = 2;
-const TOTAL_BUBBLES = 16;
+const BUBBLES_PER_WORD = 4;
+const TOTAL_BUBBLES = 32; // 8 words × 4 each
 
 function shuffle(arr) {
   const a = [...arr];
@@ -65,13 +65,13 @@ function shuffle(arr) {
 }
 
 function generateBubbles(words) {
-  const allWords = [];
-  for (const word of words) {
-    for (let i = 0; i < BUBBLES_PER_WORD; i++) {
-      allWords.push(word);
-    }
-  }
-  return shuffle(allWords).map((word, i) => ({
+  // Each word appears 4 times, always in back-to-back pairs.
+  // Build pairs for each word, shuffle the pairs into two rounds,
+  // then concatenate so each word shows up twice in round 1 and twice in round 2.
+  const pairs1 = shuffle(words.map(w => [w, w])).flat();
+  const pairs2 = shuffle(words.map(w => [w, w])).flat();
+  const ordered = [...pairs1, ...pairs2];
+  return ordered.map((word, i) => ({
     id: `b-${i}-${Date.now()}-${Math.random()}`,
     word,
     placed: false,
@@ -401,7 +401,7 @@ function GameScreen({ level, onComplete, onBack }) {
                 <div className="flex gap-1 mt-1">
                   {Array.from({ length: collected[i] }).map((_, d) => (
                     <motion.div key={d} initial={{ scale: 0 }} animate={{ scale: 1 }}
-                      className={`w-4 h-4 rounded-full ${c.dot} border border-white shadow-sm`} />
+                      className={`w-3 h-3 rounded-full ${c.dot} border border-white shadow-sm`} />
                   ))}
                 </div>
               </div>
@@ -440,7 +440,7 @@ function GameScreen({ level, onComplete, onBack }) {
                 <div className="flex gap-1 mt-1">
                   {Array.from({ length: collected[idx] }).map((_, d) => (
                     <motion.div key={d} initial={{ scale: 0 }} animate={{ scale: 1 }}
-                      className={`w-4 h-4 rounded-full ${c.dot} border border-white shadow-sm`} />
+                      className={`w-3 h-3 rounded-full ${c.dot} border border-white shadow-sm`} />
                   ))}
                 </div>
               </div>
