@@ -10,6 +10,7 @@ const P_POOL = ['pot', 'put', 'pug', 'pup', 'pan', 'pet', 'pig', 'peg', 'pen', '
 const H_POOL = ['had', 'has', 'hit', 'hid', 'his', 'hug', 'hut', 'hot', 'hop', 'hen', 'ham', 'hip', 'hog', 'hum'];
 const F_POOL = ['fan', 'fed', 'fig', 'fin', 'fit', 'fog', 'fun'];
 const G_POOL = ['grin', 'gran', 'grip', 'gram', 'grab', 'grass', 'grasp', 'grunt', 'gas', 'get'];
+const U_POOL = ['run', 'ran', 'rut', 'nut', 'fun', 'sun', 'rug', 'mug', 'tub', 'hut'];
 
 function pickRandom8(pool) {
   const shuffled = shuffle([...pool]);
@@ -38,6 +39,7 @@ function buildLevels() {
     { name: 'h words', words: pickRandom8(H_POOL) },
     { name: 'f words', words: pickRandom8WithFill(F_POOL, P_POOL, H_POOL) },
     { name: 'g words', words: pickRandom8(G_POOL) },
+    { name: 'short u words', words: pickRandom8(U_POOL) },
     ...FIXED_LEVELS,
   ];
 }
