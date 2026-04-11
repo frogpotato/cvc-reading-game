@@ -35,10 +35,11 @@ const FIXED_LEVELS = [
 
 function buildLevels() {
   return [
+    { name: 'blends mix', words: ['fat', 'fast', 'raft', 'rat', 'sad', 'sand', 'net', 'nest'] },
+    { name: 'g words', words: pickRandom8(G_POOL) },
     { name: 'p words', words: pickRandom8(P_POOL) },
     { name: 'h words', words: pickRandom8(H_POOL) },
     { name: 'f words', words: pickRandom8WithFill(F_POOL, P_POOL, H_POOL) },
-    { name: 'g words', words: pickRandom8(G_POOL) },
     { name: 'short u words', words: pickRandom8(U_POOL) },
     ...FIXED_LEVELS,
   ];
