@@ -21,7 +21,6 @@ const DICE_POOLS = {
   p: ['pot', 'put', 'pug', 'pup', 'pan', 'pet', 'pig', 'peg', 'pen', 'pat', 'pin', 'pop', 'pit'],
   h: ['had', 'has', 'hit', 'hid', 'his', 'hug', 'hut', 'hot', 'hop', 'hen', 'ham', 'hip', 'hog', 'hum', 'hat'],
   f: ['fan', 'fed', 'fig', 'fin', 'fit', 'fog', 'fun'],
-  'w/m': ['win', 'min', 'won', 'mon', 'met', 'wet'],
 };
 
 function pickRandom5(pool) {
@@ -442,11 +441,6 @@ function LevelSelect({ onSelectLevel, onDice, onBack }) {
             className="flex-1 py-4 rounded-2xl bg-gradient-to-br from-lime-100 to-green-200 border-4 border-lime-400 shadow-lg text-2xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-1">
             <span className="text-4xl">🎲</span>
             <span>f dice</span>
-          </button>
-          <button onClick={() => onDice('w/m')}
-            className="flex-1 py-4 rounded-2xl bg-gradient-to-br from-amber-100 to-yellow-200 border-4 border-amber-400 shadow-lg text-2xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-1">
-            <span className="text-4xl">🎲</span>
-            <span>w/m dice</span>
           </button>
         </div>
 
