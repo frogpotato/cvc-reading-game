@@ -6,6 +6,7 @@ import useSounds from '../hooks/useSounds';
    LEVEL DATA — 6 levels, each with 5 words
    ============================================================ */
 const LEVELS = [
+  { name: 'w / m', words: ['w', 'm', 'win', 'min', 'won', 'mon', 'met', 'wet'] },
   { name: 'p vowels', words: ['pat', 'pit', 'pot', 'put', 'pet'] },
   { name: 'p blends', words: ['pig', 'pit', 'peg', 'pet', 'pug'] },
   { name: 'h words', words: ['hit', 'hid', 'hat', 'hut', 'hug'] },
@@ -28,17 +29,19 @@ function pickRandom5(pool) {
   return shuffled.slice(0, 5);
 }
 
-const ZONE_EMOJIS = ['🐉', '🧝', '🦕', '🦸', '👻'];
+const ZONE_EMOJIS = ['🐉', '🧝', '🦕', '🦸', '👻', '🦊', '🐸', '🦄'];
 const ZONE_COLORS = [
   { bg: 'bg-amber-100', border: 'border-amber-400', text: 'text-amber-700', dot: 'bg-amber-400', glow: 'rgba(245,158,11,0.3)' },
   { bg: 'bg-teal-100', border: 'border-teal-400', text: 'text-teal-700', dot: 'bg-teal-400', glow: 'rgba(20,184,166,0.3)' },
   { bg: 'bg-green-100', border: 'border-green-400', text: 'text-green-700', dot: 'bg-green-400', glow: 'rgba(34,197,94,0.3)' },
   { bg: 'bg-purple-100', border: 'border-purple-400', text: 'text-purple-700', dot: 'bg-purple-400', glow: 'rgba(168,85,247,0.3)' },
   { bg: 'bg-sky-100', border: 'border-sky-400', text: 'text-sky-700', dot: 'bg-sky-400', glow: 'rgba(14,165,233,0.3)' },
+  { bg: 'bg-rose-100', border: 'border-rose-400', text: 'text-rose-700', dot: 'bg-rose-400', glow: 'rgba(244,63,94,0.3)' },
+  { bg: 'bg-lime-100', border: 'border-lime-400', text: 'text-lime-700', dot: 'bg-lime-400', glow: 'rgba(132,204,22,0.3)' },
+  { bg: 'bg-orange-100', border: 'border-orange-400', text: 'text-orange-700', dot: 'bg-orange-400', glow: 'rgba(249,115,22,0.3)' },
 ];
 
 const BUBBLES_PER_WORD = 4;
-const TOTAL_BUBBLES = 20;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -267,14 +270,15 @@ function VictoryScreen({ onComplete }) {
    ============================================================ */
 function IntroOverlay({ words, onDone }) {
   const [step, setStep] = useState(0);
+  const total = words.length;
 
   const advance = useCallback(() => {
-    if (step < 4) {
+    if (step < total - 1) {
       setStep(s => s + 1);
     } else {
       onDone();
     }
-  }, [step, onDone]);
+  }, [step, total, onDone]);
 
   const word = words[step];
   const emoji = ZONE_EMOJIS[step];
@@ -291,7 +295,7 @@ function IntroOverlay({ words, onDone }) {
           <div className={`${color.bg} ${color.border} border-4 rounded-2xl px-10 py-5 shadow-lg mt-4`}>
             <span className="text-7xl font-extrabold text-gray-800">{word}</span>
           </div>
-          <p className="text-xl text-indigo-400 font-bold mt-4">{step + 1} of 5</p>
+          <p className="text-xl text-indigo-400 font-bold mt-4">{step + 1} of {total}</p>
         </motion.div>
       </AnimatePresence>
       <button onClick={advance}
@@ -308,7 +312,7 @@ function GameScreen({ level, onComplete, onBack }) {
   const { words } = level;
   const sounds = useSounds();
   const [bubbles, setBubbles] = useState(() => generateBubbles(words));
-  const [collected, setCollected] = useState([0, 0, 0, 0, 0]);
+  const [collected, setCollected] = useState(() => Array(words.length).fill(0));
   const [showVictory, setShowVictory] = useState(false);
   const [phase, setPhase] = useState('intro');
   const dropZoneRefs = useRef({});
@@ -335,7 +339,7 @@ function GameScreen({ level, onComplete, onBack }) {
     setCollected(newCollected);
 
     const totalPlaced = newCollected.reduce((s, c) => s + c, 0);
-    if (totalPlaced === TOTAL_BUBBLES) {
+    if (totalPlaced === words.length * BUBBLES_PER_WORD) {
       setTimeout(() => {
         sounds.playFanfare();
         setShowVictory(true);
@@ -359,7 +363,7 @@ function GameScreen({ level, onComplete, onBack }) {
 
       {/* Progress counter */}
       <div className="absolute top-2 right-2 z-20 bg-white/80 rounded-full px-4 py-1.5 shadow">
-        <span className="text-lg font-extrabold text-indigo-600">{placedCount}/{TOTAL_BUBBLES}</span>
+        <span className="text-lg font-extrabold text-indigo-600">{placedCount}/{words.length * BUBBLES_PER_WORD}</span>
       </div>
 
       {/* Intro overlay */}
@@ -374,16 +378,16 @@ function GameScreen({ level, onComplete, onBack }) {
               className={`flex-1 flex flex-col items-center pt-14 pb-6 ${c.bg} border-r-2 ${c.border} last:border-r-0 transition-all`}
               style={{ boxShadow: `inset 0 0 20px 5px ${c.glow}` }}>
               {/* Emoji */}
-              <span className="text-5xl leading-none mb-2">{ZONE_EMOJIS[i]}</span>
+              <span className={`${words.length > 5 ? 'text-3xl' : 'text-5xl'} leading-none mb-2`}>{ZONE_EMOJIS[i]}</span>
               {/* Word label */}
-              <div className={`${c.border} border-3 rounded-xl px-4 py-2 bg-white/70 shadow-md mb-3`}>
-                <span className={`text-4xl font-extrabold ${c.text}`}>{word}</span>
+              <div className={`${c.border} border-3 rounded-xl ${words.length > 5 ? 'px-2 py-1' : 'px-4 py-2'} bg-white/70 shadow-md mb-3`}>
+                <span className={`${words.length > 5 ? 'text-2xl' : 'text-4xl'} font-extrabold ${c.text}`}>{word}</span>
               </div>
               {/* Collection dots */}
-              <div className="flex flex-col gap-2 items-center mt-2">
+              <div className={`flex flex-col ${words.length > 5 ? 'gap-1' : 'gap-2'} items-center mt-2`}>
                 {Array.from({ length: collected[i] }).map((_, d) => (
                   <motion.div key={d} initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    className={`w-6 h-6 rounded-full ${c.dot} border-2 border-white shadow-sm`} />
+                    className={`${words.length > 5 ? 'w-4 h-4' : 'w-6 h-6'} rounded-full ${c.dot} border-2 border-white shadow-sm`} />
                 ))}
               </div>
             </div>

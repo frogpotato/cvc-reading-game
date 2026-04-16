@@ -35,7 +35,6 @@ const FIXED_LEVELS = [
 
 function buildLevels() {
   return [
-    { name: 'w / m', words: ['w', 'm', 'win', 'min', 'won', 'mon', 'met', 'wet'] },
     { name: 'b words', words: ['blob', 'blub', 'bulb', 'band', 'bend', 'blend', 'bed', 'bad'] },
     { name: 'blends mix 2', words: ['fog', 'frog', 'cap', 'camp', 'last', 'lost', 'lad', 'glad'] },
     { name: 'blends mix', words: ['fat', 'fast', 'raft', 'rat', 'sad', 'sand', 'net', 'nest'] },
