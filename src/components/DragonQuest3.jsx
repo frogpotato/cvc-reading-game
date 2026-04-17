@@ -37,6 +37,7 @@ function buildLevels() {
   return [
     { name: 'w words 1', words: ['wet', 'win', 'wag', 'web', 'wig', 'wed', 'are', 'and'] },
     { name: 'w words 2', words: ['west', 'wind', 'went', 'wisp', 'well', 'wink', 'are', 'and'] },
+    { name: 'm / w mix', words: ['mind', 'milk', 'mess', 'mist', 'west', 'wind', 'went', 'wisp'] },
     { name: 'b words', words: ['blob', 'blub', 'bulb', 'band', 'bend', 'blend', 'bed', 'bad'] },
     { name: 'blends mix 2', words: ['fog', 'frog', 'cap', 'camp', 'last', 'lost', 'lad', 'glad'] },
     { name: 'blends mix', words: ['fat', 'fast', 'raft', 'rat', 'sad', 'sand', 'net', 'nest'] },
