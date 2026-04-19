@@ -6,6 +6,7 @@ import useSounds from '../hooks/useSounds';
    LEVEL DATA — 6 levels, each with 5 words
    ============================================================ */
 const LEVELS = [
+  { name: 'are / red / and', words: ['are', 'red', 'and'] },
   { name: 'w / m', words: ['w', 'm', 'win', 'min', 'won', 'mon', 'met', 'wet'] },
   { name: 'p vowels', words: ['pat', 'pit', 'pot', 'put', 'pet'] },
   { name: 'p blends', words: ['pig', 'pit', 'peg', 'pet', 'pug'] },
