@@ -36,6 +36,7 @@ const FIXED_LEVELS = [
 function buildLevels() {
   return [
     { name: 'level 42', words: ['tuck', 'truck', 'are', 'and', 'back', 'black', 'look', 'lock'] },
+    { name: 'level 42 b', words: ['cab', 'crab', 'tips', 'trips', 'tick', 'trick', 'look', 'lock'] },
     { name: 'w words 1', words: ['wet', 'win', 'wag', 'web', 'wig', 'wed', 'are', 'and'] },
     { name: 'w words 2', words: ['west', 'wind', 'went', 'wisp', 'well', 'wink', 'are', 'and'] },
     { name: 'm / w mix', words: ['mind', 'milk', 'mess', 'mist', 'west', 'wind', 'went', 'wisp'] },
