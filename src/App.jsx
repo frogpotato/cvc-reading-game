@@ -7,6 +7,7 @@ import LetterPractice from './components/LetterPractice';
 import SentencePractice2 from './components/SentencePractice2';
 import DragonQuest2 from './components/DragonQuest2';
 import DragonQuest3 from './components/DragonQuest3';
+import DigraphQuest from './components/DigraphQuest';
 import allWorlds from './data/wordSets';
 
 function loadCompleted() {
@@ -104,6 +105,7 @@ export default function App() {
         onSentencePractice={() => setPage('sentences')}
         onSentencePractice2={() => setPage('sentences2')}
         onLetterPractice={() => setPage('letters')}
+        onDigraphQuest={() => setPage('digraph')}
       />
     );
   }
@@ -114,6 +116,10 @@ export default function App() {
 
   if (page === 'dragon3') {
     return <DragonQuest3 onBack={() => setPage('home')} />;
+  }
+
+  if (page === 'digraph') {
+    return <DigraphQuest onBack={() => setPage('home')} />;
   }
 
   if (page === 'sentences') {

@@ -1,4 +1,4 @@
-export default function MainMenu({ onDragonQuest, onDragonQuest2, onDragonQuest3, onSentencePractice, onSentencePractice2, onLetterPractice }) {
+export default function MainMenu({ onDragonQuest, onDragonQuest2, onDragonQuest3, onSentencePractice, onSentencePractice2, onLetterPractice, onDigraphQuest }) {
   return (
     <div className="w-screen h-screen bg-gradient-to-br from-purple-200 via-indigo-100 to-sky-200 flex flex-col items-center justify-center gap-8 px-6">
       <h1 className="text-5xl font-extrabold text-indigo-700 drop-shadow-md text-center">
@@ -52,6 +52,14 @@ export default function MainMenu({ onDragonQuest, onDragonQuest2, onDragonQuest3
         >
           <span className="text-6xl">🔤</span>
           Letter Practice
+        </button>
+
+        <button
+          onClick={onDigraphQuest}
+          className="w-full py-8 rounded-3xl bg-gradient-to-br from-fuchsia-100 to-pink-200 border-4 border-fuchsia-400 shadow-xl text-3xl font-extrabold text-indigo-800 hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-2"
+        >
+          <span className="text-6xl">🎰</span>
+          Digraph Quest
         </button>
       </div>
     </div>
