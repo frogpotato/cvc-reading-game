@@ -74,7 +74,7 @@ export default function DigraphQuest({ onBack }) {
     const digraph = round.digraph;
     const rest = w.slice(digraph.length).split('');
     const fixed = digraph.split('').map(letter => ({ letter, locked: true, fixed: true }));
-    const variable = rest.map(() => ({ letter: randomLetter(), locked: false, fixed: false }));
+    const variable = rest.map(() => ({ letter: '', locked: false, fixed: false }));
     return [...fixed, ...variable];
   }, [round.digraph]);
 
