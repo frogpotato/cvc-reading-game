@@ -44,6 +44,15 @@ function randomLetter() {
   return ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
 }
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function Tile({ letter, locked, fixed }) {
   const bg = fixed
     ? 'from-amber-200 to-yellow-300 border-amber-500'
@@ -61,6 +70,7 @@ function Tile({ letter, locked, fixed }) {
 
 export default function DigraphQuest({ onBack }) {
   const round = ROUNDS[0];
+  const [shuffledWords, setShuffledWords] = useState(() => shuffle(round.words));
   const [wordIdx, setWordIdx] = useState(0);
   const [tiles, setTiles] = useState([]); // array of { letter, locked, fixed }
   const [spinning, setSpinning] = useState(false);
@@ -68,7 +78,7 @@ export default function DigraphQuest({ onBack }) {
   const tickRef = useRef(null);
   const timeoutsRef = useRef([]);
 
-  const word = round.words[wordIdx];
+  const word = shuffledWords[wordIdx];
 
   const initTilesForWord = useCallback((w) => {
     const digraph = round.digraph;
@@ -140,14 +150,15 @@ export default function DigraphQuest({ onBack }) {
   }, [spinning, word, round.digraph]);
 
   const handleNext = useCallback(() => {
-    if (wordIdx + 1 < round.words.length) {
+    if (wordIdx + 1 < shuffledWords.length) {
       setWordIdx(wordIdx + 1);
     } else {
+      setShuffledWords(shuffle(round.words));
       setWordIdx(0);
     }
-  }, [wordIdx, round.words.length]);
+  }, [wordIdx, shuffledWords.length, round.words]);
 
-  const isLast = wordIdx === round.words.length - 1;
+  const isLast = wordIdx === shuffledWords.length - 1;
 
   return (
     <div className="w-screen min-h-screen bg-gradient-to-br from-fuchsia-200 via-pink-100 to-amber-100 flex flex-col items-center justify-start gap-6 px-6 py-8">
@@ -162,7 +173,7 @@ export default function DigraphQuest({ onBack }) {
           Digraph Quest: {round.digraph}
         </h1>
         <div className="text-sm sm:text-base font-bold text-indigo-700 bg-white/70 px-3 py-2 rounded-xl">
-          {wordIdx + 1} / {round.words.length}
+          {wordIdx + 1} / {shuffledWords.length}
         </div>
       </div>
 
