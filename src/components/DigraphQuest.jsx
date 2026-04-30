@@ -6,6 +6,11 @@ const ROUNDS = [
     digraph: 'qu',
     words: ['quiz', 'queen', 'quack', 'quit', 'quick', 'quilt'],
   },
+  {
+    name: 'squ words',
+    digraph: 'squ',
+    words: ['square', 'squirrel', 'squeak', 'squeeze', 'squid', 'squash'],
+  },
 ];
 
 const ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
@@ -69,8 +74,9 @@ function Tile({ letter, locked, fixed }) {
 }
 
 export default function DigraphQuest({ onBack }) {
-  const round = ROUNDS[0];
-  const [shuffledWords, setShuffledWords] = useState(() => shuffle(round.words));
+  const [roundIdx, setRoundIdx] = useState(0);
+  const round = ROUNDS[roundIdx];
+  const [shuffledWords, setShuffledWords] = useState(() => shuffle(ROUNDS[0].words));
   const [wordIdx, setWordIdx] = useState(0);
   const [tiles, setTiles] = useState([]); // array of { letter, locked, fixed }
   const [spinning, setSpinning] = useState(false);
@@ -175,6 +181,28 @@ export default function DigraphQuest({ onBack }) {
         <div className="text-sm sm:text-base font-bold text-indigo-700 bg-white/70 px-3 py-2 rounded-xl">
           {wordIdx + 1} / {shuffledWords.length}
         </div>
+      </div>
+
+      <div className="flex gap-2">
+        {ROUNDS.map((r, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              if (spinning) return;
+              setRoundIdx(i);
+              setShuffledWords(shuffle(ROUNDS[i].words));
+              setWordIdx(0);
+            }}
+            disabled={spinning}
+            className={`px-4 py-2 rounded-xl border-2 font-bold shadow transition-all ${
+              i === roundIdx
+                ? 'bg-fuchsia-500 border-fuchsia-700 text-white scale-105'
+                : 'bg-white/70 border-fuchsia-300 text-fuchsia-700 hover:scale-105'
+            } disabled:opacity-50`}
+          >
+            Level {i + 1}: {r.digraph}
+          </button>
+        ))}
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center gap-8 mt-8">
