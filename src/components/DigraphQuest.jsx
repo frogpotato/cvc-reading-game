@@ -131,9 +131,17 @@ function Tile({ letter, locked, fixed }) {
     : locked
       ? 'from-emerald-200 to-green-300 border-emerald-500'
       : 'from-slate-100 to-slate-200 border-slate-400';
+  // Wider tile for multi-letter digraphs; smaller font when 3+ letters
+  const wide = letter && letter.length >= 2;
+  const widthClass = wide
+    ? 'w-28 h-20 sm:w-40 sm:h-28'
+    : 'w-20 h-20 sm:w-28 sm:h-28';
+  const fontClass = letter && letter.length >= 3
+    ? 'text-4xl sm:text-6xl'
+    : 'text-5xl sm:text-7xl';
   return (
     <div
-      className={`w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br ${bg} border-4 shadow-lg flex items-center justify-center text-5xl sm:text-7xl font-extrabold text-indigo-800 select-none`}
+      className={`${widthClass} rounded-2xl bg-gradient-to-br ${bg} border-4 shadow-lg flex items-center justify-center ${fontClass} font-extrabold text-indigo-800 select-none`}
     >
       {letter}
     </div>
@@ -157,7 +165,7 @@ export default function DigraphQuest({ onBack }) {
   const initTilesForWord = useCallback((w) => {
     const digraph = round.digraph;
     const rest = w.slice(digraph.length).split('');
-    const fixed = digraph.split('').map(letter => ({ letter, locked: true, fixed: true }));
+    const fixed = [{ letter: digraph, locked: true, fixed: true }];
     const variable = rest.map(() => ({ letter: '', locked: false, fixed: false }));
     return [...fixed, ...variable];
   }, [round.digraph]);
@@ -183,34 +191,37 @@ export default function DigraphQuest({ onBack }) {
 
     const target = word.split('');
     const digraphLen = round.digraph.length;
+    const FIXED = 1; // single tile holds the full digraph
+    const variableCount = target.length - digraphLen;
 
     // Start spinning all variable tiles
     setTiles(prev => prev.map((t, i) =>
-      i < digraphLen ? t : { ...t, letter: randomLetter(), locked: false }
+      i < FIXED ? t : { ...t, letter: randomLetter(), locked: false }
     ));
 
     tickRef.current = setInterval(() => {
       setTiles(prev => prev.map((t, i) => {
-        if (i < digraphLen) return t;
+        if (i < FIXED) return t;
         if (t.locked) return t;
         return { ...t, letter: randomLetter() };
       }));
     }, SPIN_TICK_MS);
 
     // Lock each variable tile in sequence to its target letter
-    for (let i = digraphLen; i < target.length; i++) {
-      const lockAt = SPIN_DURATION_MS + (i - digraphLen) * STAGGER_MS;
-      const idx = i;
+    for (let k = 0; k < variableCount; k++) {
+      const tileIdx = FIXED + k;
+      const targetLetter = target[digraphLen + k];
+      const lockAt = SPIN_DURATION_MS + k * STAGGER_MS;
       const t = setTimeout(() => {
         setTiles(prev => prev.map((tile, j) =>
-          j === idx ? { letter: target[idx], locked: true, fixed: false } : tile
+          j === tileIdx ? { letter: targetLetter, locked: true, fixed: false } : tile
         ));
       }, lockAt);
       timeoutsRef.current.push(t);
     }
 
     // Stop ticking + finish
-    const totalTime = SPIN_DURATION_MS + (target.length - digraphLen) * STAGGER_MS + 100;
+    const totalTime = SPIN_DURATION_MS + variableCount * STAGGER_MS + 100;
     const done = setTimeout(() => {
       if (tickRef.current) {
         clearInterval(tickRef.current);
