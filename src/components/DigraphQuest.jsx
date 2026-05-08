@@ -294,20 +294,28 @@ export default function DigraphQuest({ onBack }) {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center gap-8 mt-8">
-        <div className="flex gap-2 sm:gap-3">
-          {tiles.map((t, i) => (
-            <Tile key={i} letter={t.letter} locked={t.locked} fixed={t.fixed} />
-          ))}
-        </div>
-
-        {revealed && (
-          <button
-            onClick={() => speak(word)}
-            className="text-4xl sm:text-6xl font-extrabold text-fuchsia-700 hover:scale-105 active:scale-95 transition-transform"
-          >
-            {word}
-          </button>
-        )}
+        <button
+          onClick={revealed ? () => speak(word) : undefined}
+          disabled={!revealed}
+          className="px-10 py-8 rounded-3xl bg-white/80 border-4 border-fuchsia-400 shadow-xl min-w-[18rem] sm:min-w-[28rem] flex items-center justify-center disabled:cursor-default"
+        >
+          <span className="text-7xl sm:text-9xl font-extrabold tracking-wider select-none">
+            {tiles.map((t, i) => (
+              <span
+                key={i}
+                className={
+                  t.fixed
+                    ? 'text-amber-600'
+                    : t.locked
+                      ? 'text-emerald-600'
+                      : 'text-slate-400'
+                }
+              >
+                {t.letter || '_'}
+              </span>
+            ))}
+          </span>
+        </button>
 
         <div className="flex gap-4 mt-4">
           {!revealed ? (
