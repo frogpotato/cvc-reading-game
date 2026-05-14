@@ -1,31 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-const ROUNDS = [
+const BASE_ROUNDS = [
   {
-    name: 'qu words',
     digraph: 'qu',
     position: 'start',
     words: ['quiz', 'queen', 'quack', 'quit', 'quick', 'quilt'],
   },
   {
-    name: 'squ words',
     digraph: 'squ',
     position: 'start',
     words: ['square', 'squirrel', 'squeak', 'squeeze', 'squid', 'squash'],
   },
   {
-    name: 'sh words',
     digraph: 'sh',
     position: 'start',
     words: ['shell', 'sheep', 'ship', 'sheet', 'shin', 'shut', 'shark', 'shop'],
   },
   {
-    name: 'ng words',
     digraph: 'ng',
     position: 'end',
     words: ['king', 'sing', 'wing', 'fling', 'bing', 'bling'],
   },
 ];
+
+const ROUNDS = BASE_ROUNDS.flatMap(r => [
+  { ...r, colored: true, label: `${r.digraph} A` },
+  { ...r, colored: false, label: `${r.digraph} B` },
+]);
 
 const REWARD_GIFS = [
   'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzk3bXFwOWJleTVnaWVscGZwazEyb2Q0bzFnamRrNXM1NHUzN3U0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zsbYm28afpsPJxrzHS/giphy.gif',
@@ -290,14 +291,14 @@ export default function DigraphQuest({ onBack }) {
           ← Back
         </button>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-fuchsia-700 drop-shadow">
-          Digraph Quest: {round.digraph}
+          Digraph Quest: {round.label}
         </h1>
         <div className="text-sm sm:text-base font-bold text-indigo-700 bg-white/70 px-3 py-2 rounded-xl">
           {wordIdx + 1} / {shuffledWords.length}
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap justify-center max-w-3xl">
         {ROUNDS.map((r, i) => (
           <button
             key={i}
@@ -308,13 +309,13 @@ export default function DigraphQuest({ onBack }) {
               setWordIdx(0);
             }}
             disabled={spinning}
-            className={`px-4 py-2 rounded-xl border-2 font-bold shadow transition-all ${
+            className={`px-3 py-2 rounded-xl border-2 font-bold shadow transition-all text-sm sm:text-base ${
               i === roundIdx
                 ? 'bg-fuchsia-500 border-fuchsia-700 text-white scale-105'
                 : 'bg-white/70 border-fuchsia-300 text-fuchsia-700 hover:scale-105'
             } disabled:opacity-50`}
           >
-            Level {i + 1}: {r.digraph}
+            {r.label}
           </button>
         ))}
       </div>
@@ -326,20 +327,19 @@ export default function DigraphQuest({ onBack }) {
           className="px-10 py-8 rounded-3xl bg-white/80 border-4 border-fuchsia-400 shadow-xl min-w-[18rem] sm:min-w-[28rem] flex items-center justify-center disabled:cursor-default"
         >
           <span className="text-7xl sm:text-9xl font-extrabold tracking-wider select-none">
-            {tiles.map((t, i) => (
-              <span
-                key={i}
-                className={
-                  t.fixed
-                    ? 'text-amber-600'
-                    : t.locked
-                      ? 'text-emerald-600'
-                      : 'text-slate-400'
-                }
-              >
-                {t.letter || '_'}
-              </span>
-            ))}
+            {tiles.map((t, i) => {
+              let cls;
+              if (round.colored) {
+                cls = t.fixed ? 'text-amber-600' : t.locked ? 'text-emerald-600' : 'text-slate-400';
+              } else {
+                cls = t.letter ? 'text-indigo-800' : 'text-slate-400';
+              }
+              return (
+                <span key={i} className={cls}>
+                  {t.letter || '_'}
+                </span>
+              );
+            })}
           </span>
         </button>
 
