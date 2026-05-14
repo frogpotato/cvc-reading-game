@@ -4,12 +4,26 @@ const ROUNDS = [
   {
     name: 'qu words',
     digraph: 'qu',
+    position: 'start',
     words: ['quiz', 'queen', 'quack', 'quit', 'quick', 'quilt'],
   },
   {
     name: 'squ words',
     digraph: 'squ',
+    position: 'start',
     words: ['square', 'squirrel', 'squeak', 'squeeze', 'squid', 'squash'],
+  },
+  {
+    name: 'sh words',
+    digraph: 'sh',
+    position: 'start',
+    words: ['shell', 'sheep', 'ship', 'sheet', 'shin', 'shut', 'shark', 'shop'],
+  },
+  {
+    name: 'ng words',
+    digraph: 'ng',
+    position: 'end',
+    words: ['king', 'sing', 'wing', 'fling', 'bing', 'bling'],
   },
 ];
 
@@ -164,11 +178,14 @@ export default function DigraphQuest({ onBack }) {
 
   const initTilesForWord = useCallback((w) => {
     const digraph = round.digraph;
-    const rest = w.slice(digraph.length).split('');
-    const fixed = [{ letter: digraph, locked: true, fixed: true }];
+    const atEnd = round.position === 'end';
+    const rest = atEnd
+      ? w.slice(0, w.length - digraph.length).split('')
+      : w.slice(digraph.length).split('');
+    const fixed = { letter: digraph, locked: true, fixed: true };
     const variable = rest.map(() => ({ letter: '', locked: false, fixed: false }));
-    return [...fixed, ...variable];
-  }, [round.digraph]);
+    return atEnd ? [...variable, fixed] : [fixed, ...variable];
+  }, [round.digraph, round.position]);
 
   // Set up initial tiles when word changes
   useEffect(() => {
@@ -191,17 +208,26 @@ export default function DigraphQuest({ onBack }) {
 
     const target = word.split('');
     const digraphLen = round.digraph.length;
-    const FIXED = 1; // single tile holds the full digraph
+    const atEnd = round.position === 'end';
     const variableCount = target.length - digraphLen;
+    // Indices in the tile array that hold variable letters
+    const variableTileIdx = atEnd
+      ? Array.from({ length: variableCount }, (_, k) => k)
+      : Array.from({ length: variableCount }, (_, k) => 1 + k);
+    // Word-letter indices for those variable tiles
+    const variableWordIdx = atEnd
+      ? Array.from({ length: variableCount }, (_, k) => k)
+      : Array.from({ length: variableCount }, (_, k) => digraphLen + k);
+    const isVariable = (i) => variableTileIdx.includes(i);
 
     // Start spinning all variable tiles
     setTiles(prev => prev.map((t, i) =>
-      i < FIXED ? t : { ...t, letter: randomLetter(), locked: false }
+      isVariable(i) ? { ...t, letter: randomLetter(), locked: false } : t
     ));
 
     tickRef.current = setInterval(() => {
       setTiles(prev => prev.map((t, i) => {
-        if (i < FIXED) return t;
+        if (!isVariable(i)) return t;
         if (t.locked) return t;
         return { ...t, letter: randomLetter() };
       }));
@@ -209,8 +235,8 @@ export default function DigraphQuest({ onBack }) {
 
     // Lock each variable tile in sequence to its target letter
     for (let k = 0; k < variableCount; k++) {
-      const tileIdx = FIXED + k;
-      const targetLetter = target[digraphLen + k];
+      const tileIdx = variableTileIdx[k];
+      const targetLetter = target[variableWordIdx[k]];
       const lockAt = SPIN_DURATION_MS + k * STAGGER_MS;
       const t = setTimeout(() => {
         setTiles(prev => prev.map((tile, j) =>
@@ -232,7 +258,7 @@ export default function DigraphQuest({ onBack }) {
       speak(word);
     }, totalTime);
     timeoutsRef.current.push(done);
-  }, [spinning, word, round.digraph]);
+  }, [spinning, word, round.digraph, round.position]);
 
   const handleNext = useCallback(() => {
     if (wordIdx + 1 < shuffledWords.length) {
