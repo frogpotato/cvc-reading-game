@@ -14,7 +14,12 @@ const BASE_ROUNDS = [
   {
     digraph: 'sh',
     position: 'start',
-    words: ['shell', 'sheep', 'ship', 'sheet', 'shin', 'shut', 'shark', 'shop'],
+    words: ['shell', 'sheep', 'ship', 'sheet', 'shin', 'shut', 'shark', 'shop', 'shed', 'shirt', 'shelf'],
+  },
+  {
+    digraph: 'sh',
+    position: 'end',
+    words: ['fish', 'dish', 'cash', 'rash', 'dash', 'mash', 'wish', 'wash', 'hush', 'mush', 'brush'],
   },
   {
     digraph: 'ng',
@@ -23,10 +28,13 @@ const BASE_ROUNDS = [
   },
 ];
 
-const ROUNDS = BASE_ROUNDS.flatMap(r => [
-  { ...r, colored: true, label: `${r.digraph} A` },
-  { ...r, colored: false, label: `${r.digraph} B` },
-]);
+const ROUNDS = BASE_ROUNDS.flatMap(r => {
+  const tag = r.position === 'end' ? `-${r.digraph}` : `${r.digraph}-`;
+  return [
+    { ...r, colored: true, label: `${tag} A` },
+    { ...r, colored: false, label: `${tag} B` },
+  ];
+});
 
 const REWARD_GIFS = [
   'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzk3bXFwOWJleTVnaWVscGZwazEyb2Q0bzFnamRrNXM1NHUzN3U0bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zsbYm28afpsPJxrzHS/giphy.gif',
